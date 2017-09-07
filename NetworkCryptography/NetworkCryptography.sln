@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkCryptography", "NetworkCryptography\NetworkCryptography.csproj", "{56FA9A29-7D8C-457D-8963-A944FFBE587B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sandbox", "Sandbox\Sandbox.csproj", "{FF2800E2-0201-4FAD-906B-C02E6CB5B2C0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csproj", "{D41F086D-1A20-474C-988D-111BD7DD3FEE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +13,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{56FA9A29-7D8C-457D-8963-A944FFBE587B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{56FA9A29-7D8C-457D-8963-A944FFBE587B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{56FA9A29-7D8C-457D-8963-A944FFBE587B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{56FA9A29-7D8C-457D-8963-A944FFBE587B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF2800E2-0201-4FAD-906B-C02E6CB5B2C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF2800E2-0201-4FAD-906B-C02E6CB5B2C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF2800E2-0201-4FAD-906B-C02E6CB5B2C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF2800E2-0201-4FAD-906B-C02E6CB5B2C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D41F086D-1A20-474C-988D-111BD7DD3FEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D41F086D-1A20-474C-988D-111BD7DD3FEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D41F086D-1A20-474C-988D-111BD7DD3FEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D41F086D-1A20-474C-988D-111BD7DD3FEE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
