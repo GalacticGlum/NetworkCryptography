@@ -8,15 +8,15 @@ namespace Sandbox
 
         private static void Main(string[] args)
         {
-            TestCaeserCryptographicMethod();
+            TestCryptographicMethod<CaeserCryptographicMethod>();
 
             Console.ReadLine();
         }
 
-        private static void TestCaeserCryptographicMethod()
+        private static void TestCryptographicMethod<T>() where T : ICryptographicMethod, new()
         {
-            CaeserCryptographicMethod caeserCryptographic = new CaeserCryptographicMethod();
-            AssertTest("Caeser Cipher", caeserCryptographic.Decrypt(caeserCryptographic.Encrypt(TestMessage)));
+            ICryptographicMethod cryptographic = new T();
+            AssertTest(typeof(T).Name, cryptographic.Decrypt(cryptographic.Encrypt(TestMessage)));
         }
 
         private static void AssertTest(string testName, string messageAfter)
