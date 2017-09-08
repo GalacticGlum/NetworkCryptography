@@ -1,4 +1,5 @@
 ﻿using System;
+using Sandbox.Helpers;
 
 namespace Sandbox
 {
@@ -9,6 +10,10 @@ namespace Sandbox
         private static void Main(string[] args)
         {
             TestCryptographicMethod<CaeserCryptographicMethod>();
+
+            byte[] buffer = {2, 2, 2, 2};
+            Console.WriteLine(buffer.ToUint32());
+            Console.WriteLine(BitConverter.ToUInt32(buffer, 0));
 
             Console.ReadLine();
         }
