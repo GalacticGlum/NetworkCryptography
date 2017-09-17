@@ -15,7 +15,7 @@ namespace Sandbox
     public class CaeserCryptographicMethod : ICryptographicMethod
     {
         /// <summary>
-        /// The amount to shift by (they key).
+        /// The amount to shift by (also known as the key).
         /// </summary>
         private const int ShiftOffset = 3;
 

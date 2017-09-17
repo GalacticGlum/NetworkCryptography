@@ -25,7 +25,9 @@ namespace Sandbox.Helpers
         {
             uint result = 0;
             for (int i = 0; i < buffer.Length; i++)
-            {             
+            {
+                // The resulting uint is the 256 to the power of the amount of bytes "passed" 
+                // times the value of the byte at i. 
                 result += (uint) Math.Pow(256, buffer.Length - 1 - i) * buffer[i];
             }
 

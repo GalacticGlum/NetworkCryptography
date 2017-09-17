@@ -4,7 +4,7 @@
  * Project Name: NetworkCryptography
  * Creation Date: 9/8/2017
  * Modified Date: 9/8/2017
- * Description: Generic symmetric cryptographic implementation which allows a cient to specify the round (F) function.
+ * Description: Generic symmetric cryptographic implementation which allows a cient to specify the round f(k, r) function.
  */
 
 using System;
