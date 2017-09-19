@@ -8,13 +8,15 @@
  */
 
 using System;
+using System.Collections;
+using System.Linq;
 
 namespace Sandbox.Helpers
 {
     public static class BitHelper
     {
         /// <summary>
-        /// The size of a ulong in bits.
+        /// The size of a ulong in destination.
         /// </summary>
         private const int UlongBitSize = sizeof(ulong) * 8;
 
@@ -36,10 +38,39 @@ namespace Sandbox.Helpers
             return result;
         }
 
+
+        /// <summary>
+        /// Copies a BitSet into a destination BitSet, starting from the front of the BitSet.
+        /// </summary>
+        /// <param name="destination">The BitSet to copy into.</param>
+        /// <param name="readStartPosition">The position to begin reading, on the source.</param>
+        /// <param name="source">The BitSet to copy from.</param>
+        /// <param name="copyLength">The number of bits to copy.</param>
+        public static void CopyFrom(this BitSet destination, int readStartPosition, BitSet source, int copyLength)
+        {
+            CopyFrom(destination, readStartPosition, source, 0, copyLength);
+        }
+
+        /// <summary>
+        /// Copies a BitSet into a destination BitSet, starting from a specified index.
+        /// </summary>
+        /// <param name="destination">The BitSet to copy into.</param>
+        /// <param name="readStartPosition">The position to begin reading, on the source.</param>
+        /// <param name="source">The BitSet to copy from.</param>
+        /// <param name="initialPosition">The position to begin writing the copied bits, on the destination.</param>
+        /// <param name="copyLength">The number of bits to copy.</param>
+        public static void CopyFrom(this BitSet destination, int readStartPosition, BitSet source, int initialPosition, int copyLength)
+        {
+            for (int i = initialPosition, j = readStartPosition; i < initialPosition + copyLength; i++, j++)
+            {
+                destination.Set(i, source.Get(j));
+            }
+        }
+
         /// <summary>
         /// Prints an integer in binary format.
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="value">The value to print as binary.</param>
         public static void PrintAsBinary(this int value)
         {
             Console.WriteLine(Convert.ToString(value, 2).PadLeft(8, '0'));
@@ -48,7 +79,7 @@ namespace Sandbox.Helpers
         /// <summary>
         /// Prints a byte in binary format.
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="value">The value to print as binary.</param>
         public static void PrintAsBinary(this byte value)
         {
             Console.WriteLine(Convert.ToString(value, 2).PadLeft(8, '0'));

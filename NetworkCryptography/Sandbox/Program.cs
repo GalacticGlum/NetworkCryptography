@@ -7,7 +7,9 @@ namespace Sandbox
         private const string TestMessage = "this is a test message";
 
         private static void Main(string[] args)
-        {       
+        {
+            new DesCryptographicMethod(new byte[] { 14, 14, 14 });
+
             TestCryptographicMethod<CaeserCryptographicMethod>();
             Console.ReadLine();
         }

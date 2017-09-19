@@ -7,9 +7,11 @@
  * Description: An implementation of the DES cryptographic method.
  */
 
+using System.Collections;
+
 namespace Sandbox
 {
-    public class DesCryptographicMethod : ICryptographicMethod
+    public class DesCryptographicMethod : FiestelCrpytographicMethod
     {
         /// <summary>
         /// Initial permuation table.
@@ -100,7 +102,7 @@ namespace Sandbox
         /// <summary>
         /// Substitution boxes.
         /// </summary>
-        public static byte[,] SubstitutionBoxes =
+        private static byte[,] SubstitutionBoxes =
         {
             {
                 14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7,
@@ -155,19 +157,41 @@ namespace Sandbox
         /// <summary>
         /// The round left shifts.
         /// </summary>
-        public static int[] LeftShifts =
+        private static int[] LeftShifts =
         {
             1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1
         };
 
-        public string Encrypt(string message)
+        public DesCryptographicMethod(byte[] keys, int rounds = 16, int blockBitSizeInBits = 64) : base(keys, rounds, blockBitSizeInBits)
+        {          
+            //Encrypt("hellhell");
+        }
+
+
+        protected override void InitialPermutation(BitSet cipherText)
         {
             throw new System.NotImplementedException();
         }
 
-        public string Decrypt(string encryptedMessage)
+        protected override void FinalPermutation(BitSet cipherText)
         {
             throw new System.NotImplementedException();
         }
+
+        protected override BitSet Round(BitSet right, BitSet key)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        protected override BitSet GetEncryptionKey(BitSet key, int round)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        protected override BitSet GetDecryptionKey(BitSet key, int round)
+        {
+            throw new System.NotImplementedException();
+        }
+
     }
 }
