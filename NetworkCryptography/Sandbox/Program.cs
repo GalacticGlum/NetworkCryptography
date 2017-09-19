@@ -7,8 +7,7 @@ namespace Sandbox
         private const string TestMessage = "this is a test message";
 
         private static void Main(string[] args)
-        {
-            SymmetricCryptographicMethod.GetBlocks("hello");
+        {       
             TestCryptographicMethod<CaeserCryptographicMethod>();
             Console.ReadLine();
         }

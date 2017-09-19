@@ -3,7 +3,7 @@
  * File Name: ArrayHelper.cs
  * Project Name: NetworkCryptography
  * Creation Date: 9/18/2017
- * Modified Date: 9/18/2017
+ * Modified Date: 9/19/2017
  * Description: A collection of extra array functionality.
  */
 

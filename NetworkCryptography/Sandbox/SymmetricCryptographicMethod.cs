@@ -3,7 +3,7 @@
  * File Name: SymmetricCryptographicMethod.cs
  * Project Name: NetworkCryptography
  * Creation Date: 9/8/2017
- * Modified Date: 9/18/2017
+ * Modified Date: 9/19/2017
  * Description: Generic symmetric cryptographic implementation which allows a cient to specify the round f(k, r) function.
  */
 
@@ -21,6 +21,9 @@ namespace Sandbox
     {
         public const int BlockSize = 4;
 
+        protected abstract byte[] Keys { get; set; }
+        protected abstract byte Round(byte key, byte r);
+
         public string Encrypt(string message)
         {
             throw new System.NotImplementedException();
@@ -36,7 +39,7 @@ namespace Sandbox
         /// </summary>
         /// <param name="text">The string to convert to blocks.</param>
         /// <returns>An array of unsigned integers containing the blocks.</returns>
-        public static uint[] GetBlocks(string text)
+        private uint[] GetBlocks(string text)
         {
             byte[] buffer = Encoding.ASCII.GetBytes(text);
 

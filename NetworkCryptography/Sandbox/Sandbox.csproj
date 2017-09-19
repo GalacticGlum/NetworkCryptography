@@ -43,7 +43,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CaeserCryptographicMethod.cs" />
+    <Compile Include="DesCryptographicMethod.cs" />
     <Compile Include="Helpers\ArrayHelper.cs" />
+    <Compile Include="Helpers\BitHelper.cs" />
     <Compile Include="Helpers\ConversionHelper.cs" />
     <Compile Include="ICryptographicMethod.cs" />
     <Compile Include="Program.cs" />
