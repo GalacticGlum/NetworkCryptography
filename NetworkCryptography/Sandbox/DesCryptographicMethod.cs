@@ -11,7 +11,7 @@ using System.Collections;
 
 namespace Sandbox
 {
-    public class DesCryptographicMethod : FiestelCrpytographicMethod
+    public class DesCryptographicMethod : FiestelCryptographicMethod
     {
         /// <summary>
         /// Initial permuation table.

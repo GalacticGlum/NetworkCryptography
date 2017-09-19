@@ -74,6 +74,7 @@ namespace Sandbox.Helpers
         /// </summary>
         /// <typeparam name="T">The type of the array.</typeparam>
         /// <param name="array">The array to iterate through.</param>
+        /// <param name="elementSeperator">THe seperator between array elements.</param>
         public static void Print<T>(this T[] array, string elementSeperator = "")
         {
             foreach (T value in array)

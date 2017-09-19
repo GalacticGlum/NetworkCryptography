@@ -1,4 +1,13 @@
-﻿using System;
+﻿/*
+ * Author: Shon Verch
+ * File Name: FiestelCryptographicMethod.cs
+ * Project Name: NetworkCryptography
+ * Creation Date: 9/19/2017
+ * Modified Date: 9/19/2017
+ * Description: Generic Fiestel cipher implementation which allows clients to specify the permutation, key, and round functions.
+ */
+
+using System;
 using System.Collections;
 using System.IO;
 using System.Text;
@@ -6,7 +15,10 @@ using Sandbox.Helpers;
 
 namespace Sandbox
 {
-    public abstract class FiestelCrpytographicMethod : ICryptographicMethod
+    /// <summary>
+    /// Generic Fiestel cipher implementation which allows clients to specify the permutation, key, and round functions.
+    /// </summary>
+    public abstract class FiestelCryptographicMethod : ICryptographicMethod
     {
         /// <summary>
         /// The keys used for encryption and decryption.
@@ -33,7 +45,7 @@ namespace Sandbox
         protected abstract BitSet GetEncryptionKey(BitSet key, int round);
         protected abstract BitSet GetDecryptionKey(BitSet key, int round);
         
-        public FiestelCrpytographicMethod(byte[] keys, int rounds, int blockSize)
+        public FiestelCryptographicMethod(byte[] keys, int rounds, int blockSize)
         {
             BlockSize = blockSize;
             Keys = keys;
