@@ -3,7 +3,7 @@
  * File Name: SymmetricCryptographicMethod.cs
  * Project Name: NetworkCryptography
  * Creation Date: 9/8/2017
- * Modified Date: 9/8/2017
+ * Modified Date: 9/18/2017
  * Description: Generic symmetric cryptographic implementation which allows a cient to specify the round f(k, r) function.
  */
 
@@ -19,7 +19,7 @@ namespace Sandbox
     /// </summary>
     public abstract class SymmetricCryptographicMethod : ICryptographicMethod
     {
-        public const int BlockSize = 32;
+        public const int BlockSize = 4;
 
         public string Encrypt(string message)
         {
@@ -36,17 +36,24 @@ namespace Sandbox
         /// </summary>
         /// <param name="text">The string to convert to blocks.</param>
         /// <returns>An array of unsigned integers containing the blocks.</returns>
-        private uint[] GetBlocks(string text)
+        public static uint[] GetBlocks(string text)
         {
             byte[] buffer = Encoding.ASCII.GetBytes(text);
+
+            // If the text length is not a multiple of the block size then pad it with zeros.
+            if (text.Length % BlockSize != 0)
+            {
+                int lengthWithPadding = BlockSize - text.Length % BlockSize + text.Length;
+                int paddingSize = lengthWithPadding - text.Length;
+                buffer = ArrayHelper.Pad<byte>(buffer, paddingSize, 0);
+            }
 
             int blockCount = (int) Math.Ceiling(buffer.Length / (double) BlockSize);
             uint[] blocks = new uint[blockCount];
 
-            // TODO: Currently this operation is O(n * 2), this should probably be reduced into an unsafe operation
-            // which is O(n)
             for (int i = 0; i < blockCount; i++)
-            {
+            {      
+                // Skips the already retrieved blocks and then takes a block of BlockSize.
                 byte[] block = buffer.Skip(BlockSize * i).Take(BlockSize).ToArray();
                 blocks[i] = block.ToUint32();
             }

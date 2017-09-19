@@ -8,6 +8,7 @@ namespace Sandbox
 
         private static void Main(string[] args)
         {
+            SymmetricCryptographicMethod.GetBlocks("hello");
             TestCryptographicMethod<CaeserCryptographicMethod>();
             Console.ReadLine();
         }
