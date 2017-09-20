@@ -3,7 +3,7 @@
  * File Name: FiestelCryptographicMethod.cs
  * Project Name: NetworkCryptography
  * Creation Date: 9/19/2017
- * Modified Date: 9/19/2017
+ * Modified Date: 9/20/2017
  * Description: Generic Fiestel cipher implementation which allows clients to specify the permutation, key, and round functions.
  */
 
@@ -38,13 +38,48 @@ namespace Sandbox
 
         private readonly Random random;
 
+        /// <summary>
+        /// The initial permutation on the ciphertext.
+        /// </summary>
+        /// <param name="cipherText"></param>
         protected abstract void InitialPermutation(BitSet cipherText);
+
+        /// <summary>
+        /// The final permutation on the cipertext.
+        /// </summary>
+        /// <param name="cipherText"></param>
         protected abstract void FinalPermutation(BitSet cipherText);
        
+        /// <summary>
+        /// The f(k, r) function in a round.
+        /// </summary>
+        /// <param name="right"></param>
+        /// <param name="key"></param>
+        /// <returns>The computed right value.</returns>
         protected abstract BitSet Round(BitSet right, BitSet key);
+
+        /// <summary>
+        /// The specific key generation for a round when encrypting.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="round"></param>
+        /// <returns>The key.</returns>
         protected abstract BitSet GetEncryptionKey(BitSet key, int round);
+        
+        /// <summary>
+        /// The specific key generation for a round when decrypting.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="round"></param>
+        /// <returns></returns>
         protected abstract BitSet GetDecryptionKey(BitSet key, int round);
         
+        /// <summary>
+        /// Generic constructor for a Feistel cipher.
+        /// </summary>
+        /// <param name="keys">The keys to be used in this session.</param>
+        /// <param name="rounds">The amount of rounds.</param>
+        /// <param name="blockSize">The size of a block, in bits.</param>
         public FiestelCryptographicMethod(byte[] keys, int rounds, int blockSize)
         {
             BlockSize = blockSize;
@@ -61,7 +96,7 @@ namespace Sandbox
         /// <returns></returns>
         public byte[] Encrypt(string message)
         {
-            // Create our block buffer
+            // Create the block buffer, this will store the contents of the active block. 
             int blockSizeInBytes = BlockSize / (sizeof(byte) * 8);
             byte[] blockBuffer = new byte[blockSizeInBytes];
 
