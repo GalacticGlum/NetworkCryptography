@@ -113,7 +113,6 @@ namespace Sandbox
                     // Write the initialization vector to the output
                     outputBuffer.Write(currentCipherBlock.ToBytes(), 0, blockSizeInBytes);
 
-                    // Read our data
                     while (bytesRead > 0)
                     {
                         // If we have read less than a block data, we need to pad the block with data.
@@ -125,7 +124,7 @@ namespace Sandbox
                         // Process our block buffer and encrypt a new block of data.
                         BitSet blockBits = new BitSet(blockBuffer);
                         blockBits.Xor(currentCipherBlock); 
-                        currentCipherBlock = EncryptBlock(blockBits, keyBuffer);
+                        currentCipherBlock = ProcessBlock(blockBits, keyBuffer, GetEncryptionKey);
 
                         // Write out the encrypted block to the output stream.
                         outputBuffer.Write(currentCipherBlock.ToBytes(0, BlockSize), 0, blockSizeInBytes);
@@ -152,28 +151,38 @@ namespace Sandbox
 
             using (MemoryStream dataBuffer = new MemoryStream(Encoding.Unicode.GetBytes(encryptedMessage)))
             {
-                // Read Initialization vector
+                // Read the initialization vector
                 byte[] initializationVectorBuffer = new byte[blockSizeInBytes];
                 dataBuffer.Read(initializationVectorBuffer, 0, blockSizeInBytes);
 
                 BitSet keyBuffer = new BitSet(Keys);
                 BitSet currentPlainTextBlock = new BitSet(initializationVectorBuffer);
 
+                // Read the first block of data.
                 int bytesRead = dataBuffer.Read(blockBuffer, 0, blockSizeInBytes);
                 using (MemoryStream outputBuffer = new MemoryStream())
                 {
                     while (bytesRead > 0)
                     {
                         BitSet blockBits = new BitSet(blockBuffer);
-                        int bytesAfterUnpadding = bytesRead = dataBuffer.Read(blockBuffer, 0, blockSizeInBytes);
+                        // Read in our data.
+                        bytesRead = dataBuffer.Read(blockBuffer, 0, blockSizeInBytes);
 
-                        BitSet decryptedBlock = DecryptBlock(blockBits, keyBuffer);
+                        // Our bytesAfterUnpadding is equal to the amount of bytes we have read in.
+                        // We assume that we don't need unpadding initially.
+                        int bytesAfterUnpadding = bytesRead; 
+
+                        // Process our block of data
+                        BitSet decryptedBlock = ProcessBlock(blockBits, keyBuffer, GetDecryptionKey);
                         currentPlainTextBlock.Xor(decryptedBlock);
+
+                        // If we have reached the end of the stream then let's finally unpad our data.
                         if (bytesRead <= 0)
                         {
                             bytesAfterUnpadding = Unpad(currentPlainTextBlock, blockSizeInBytes);
                         }
 
+                        // Write the new block of decrypted data to our output stream
                         outputBuffer.Write(currentPlainTextBlock.ToBytes(0, bytesAfterUnpadding * 8), 0, bytesAfterUnpadding);
                         currentPlainTextBlock = blockBits;
                     }
@@ -184,62 +193,38 @@ namespace Sandbox
         }
 
         /// <summary>
-        /// Encrypt a block of data.
+        /// Process a block of data with a specific key function.
         /// </summary>
-        /// <param name="block">The block to encrypt.</param>
+        /// <param name="block">The block to process.</param>
         /// <param name="key">The key.</param>
+        /// <param name="keyFunction">The specific key computation function.</param>
         /// <returns></returns>
-        private BitSet EncryptBlock(BitSet block, BitSet key)
+        private BitSet ProcessBlock(BitSet block, BitSet key, Func<BitSet, int, BitSet> keyFunction)
         {
             // Create a copy of the data before we begin manipulating it.
-            BitSet cipherBuffer = (BitSet)block.Clone();
+            BitSet blockBuffer = (BitSet)block.Clone();
             BitSet keyBuffer = (BitSet) key.Clone();
 
-            InitialPermutation(cipherBuffer);
+            // Execute our initial permutation onto the block of data.
+            InitialPermutation(blockBuffer);
 
-            BitSet left = cipherBuffer.GetBits(0, BlockSize / 2);
-            BitSet right = cipherBuffer.GetBits(BlockSize / 2, BlockSize);
+            // Get the left and right segments of the block.
+            BitSet left = blockBuffer.GetBits(0, BlockSize / 2);
+            BitSet right = blockBuffer.GetBits(BlockSize / 2, BlockSize);
 
             for (int i = 0; i < Rounds; i++)
             {
-                StepRound(left, right, GetEncryptionKey(keyBuffer, i));
+                StepRound(left, right, keyFunction(keyBuffer, i));
             }
 
+            // Copy the manipulated segments back to our block buffer.
             SwapBits(left, right);
-            cipherBuffer.CopyFrom(0, left, BlockSize / 2);
-            cipherBuffer.CopyFrom(BlockSize / 2, right, BlockSize / 2);
+            blockBuffer.CopyFrom(0, left, BlockSize / 2);
+            blockBuffer.CopyFrom(BlockSize / 2, right, BlockSize / 2);
             
-            FinalPermutation(cipherBuffer);
-            return cipherBuffer;
-        }
-
-        /// <summary>
-        /// Decrypt a block of data.
-        /// </summary>
-        /// <param name="block"></param>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        private BitSet DecryptBlock(BitSet block, BitSet key)
-        {
-            BitSet plainTextBuffer = (BitSet) block.Clone();
-            BitSet keyBuffer = (BitSet) key.Clone();
-
-            InitialPermutation(plainTextBuffer);
-
-            BitSet left = plainTextBuffer.GetBits(0, BlockSize / 2);
-            BitSet right = plainTextBuffer.GetBits(BlockSize / 2, BlockSize);
-
-            for (int i = 0; i < Rounds; i++)
-            {
-                StepRound(left, right, GetDecryptionKey(keyBuffer, i));
-            }
-
-            SwapBits(left, right);
-            plainTextBuffer.CopyFrom(0, left, BlockSize / 2);
-            plainTextBuffer.CopyFrom(BlockSize / 2, right, BlockSize / 2);
-
-            FinalPermutation(plainTextBuffer);
-            return plainTextBuffer;
+            // Execute our final permutation onto the block of data.
+            FinalPermutation(blockBuffer);
+            return blockBuffer;
         }
 
         /// <summary>
@@ -263,9 +248,9 @@ namespace Sandbox
         {
             for (int i = 0; i < BlockSize / 2; i++)
             {
-                bool temp = left.Get(i);
+                bool leftValue = left.Get(i);
                 left.Set(i, right.Get(i));
-                right.Set(i, temp);
+                right.Set(i, leftValue);
             }
         }
 
@@ -276,6 +261,10 @@ namespace Sandbox
         /// <returns></returns>
         private BitSet CreateInitializationVector()
         {
+            // An initialization vector is just a block of data filled with random values.
+            // It is used to pseudorandomize the ciphertext without having to waste processing
+            // on re-keying the cipher.
+
             byte[] buffer = new byte[BlockSize / (sizeof(byte) * 8)];
             random.NextBytes(buffer);
 
@@ -283,14 +272,14 @@ namespace Sandbox
         }
 
         /// <summary>
-        /// Pad a byte array to a certain length with a value.
+        /// Pad data to a certain length.
         /// </summary>
         /// <param name="buffer">The byte array to pad.</param>
         /// <param name="dataSize">The size of the data inside the buffer.</param>
         /// <param name="targetSize">The target size of the whole buffer.</param>
         private static void Pad(byte[] buffer, int dataSize, int targetSize)
         {
-            // Random value to pad the buffer with; we are just using the delta size of the buffer and target.
+            // The pad value is the delta size of our CURRENT data and our target data.
             byte padValue = (byte)(targetSize - dataSize);
             for (int i = dataSize; i < targetSize; i++)
             {
@@ -298,35 +287,48 @@ namespace Sandbox
             }
         }
 
+        /// <summary>
+        /// Unpad data to a certain length.
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <param name="targetSize"></param>
+        /// <returns></returns>
         private static int Unpad(BitSet buffer, int targetSize)
         {
             byte[] data = buffer.ToBytes();
-            if (data[targetSize - 1] < targetSize && data[targetSize - 1] > 0)
+
+            // Since we pad data with the delta size between the current and target data.
+            // We can check if data is padded by seeing if the last value is less than
+            // our target size, and if it's greater than 0 (since we can't have negative size).
+            // Otherwise, we don't have padded data, return our target size.
+            if (data[targetSize - 1] >= targetSize || data[targetSize - 1] <= 0) return targetSize;
+
+            int count = 0;   
+            byte padValue = data[targetSize - 1];
+
+            for (int i = targetSize - 1; i > 0; i--)
             {
-                byte n = data[targetSize - 1];
-                int count = 0;
-                
-                for (int i = targetSize - 1; i > 0; i--)
+                // If the element at i is our padValue then increment the count.
+                if (data[i] == padValue)
                 {
-                    if (data[i] == n)
-                    {
-                        count++;
-                    }
-                }
-
-                if (count == n)
-                {
-                    byte[] newData = new byte[targetSize - n];
-                    Array.Copy(data, 0, newData, 0, newData.Length);
-
-                    BitSet newBuffer = new BitSet(newData);
-                    buffer.Replace(newBuffer);
-
-                    return newData.Length;
+                    count++;
                 }
             }
 
-            return targetSize;
+            // If our count is equal to our pad value then this block of data is padded.
+            // This is because our pad value is the delta size betweem our current and target sizes.
+            // Therefore, if our count is equal to the amount of data that was padded, let's 
+            // unpad our data. 
+            // Otherwise, we don't have padded data, so let's return our target size.
+            if (count != padValue) return targetSize;
+
+            byte[] newData = new byte[targetSize - padValue];
+            Array.Copy(data, 0, newData, 0, newData.Length);
+
+            BitSet newBuffer = new BitSet(newData);
+            buffer.Replace(newBuffer);
+
+            return newData.Length;
         }
     }
 }
