@@ -11,8 +11,9 @@ namespace Sandbox
         {
             DesCryptographicMethod desCryptographicMethod = new DesCryptographicMethod(new byte[] { 14, 14, 14 });
 
-            byte[] encrypted = desCryptographicMethod.Encrypt(TestMessage);
-            encrypted.Print();
+            string encrypted = desCryptographicMethod.Encrypt(TestMessage);
+            Console.WriteLine(encrypted);
+
             string decrypted = desCryptographicMethod.Decrypt(encrypted);
             Console.WriteLine(decrypted);
             

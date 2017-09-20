@@ -18,7 +18,7 @@ namespace Sandbox
     /// <summary>
     /// Generic Fiestel cipher implementation which allows clients to specify the permutation, key, and round functions.
     /// </summary>
-    public abstract class FiestelCryptographicMethod 
+    public abstract class FiestelCryptographicMethod : ICryptographicMethod
     {
         /// <summary>
         /// The keys used for encryption and decryption.
@@ -94,7 +94,7 @@ namespace Sandbox
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        public byte[] Encrypt(string message)
+        public string Encrypt(string message)
         {
             // Create the block buffer, this will store the contents of the active block. 
             int blockSizeInBytes = BlockSize / (sizeof(byte) * 8);
@@ -102,6 +102,7 @@ namespace Sandbox
 
             using (MemoryStream dataBuffer = new MemoryStream(Encoding.Unicode.GetBytes(message)))
             {
+                // Read in the first block of data.
                 int bytesRead = dataBuffer.Read(blockBuffer, 0, blockSizeInBytes);
 
                 BitSet keyBuffer = new BitSet(Keys);
@@ -112,33 +113,44 @@ namespace Sandbox
                     // Write the initialization vector to the output
                     outputBuffer.Write(currentCipherBlock.ToBytes(), 0, blockSizeInBytes);
 
+                    // Read our data
                     while (bytesRead > 0)
                     {
+                        // If we have read less than a block data, we need to pad the block with data.
                         if (bytesRead < blockSizeInBytes)
                         {
                             Pad(blockBuffer, bytesRead, blockSizeInBytes);
                         }
 
+                        // Process our block buffer and encrypt a new block of data.
                         BitSet blockBits = new BitSet(blockBuffer);
-                        blockBits.Xor(currentCipherBlock);
+                        blockBits.Xor(currentCipherBlock); 
                         currentCipherBlock = EncryptBlock(blockBits, keyBuffer);
 
+                        // Write out the encrypted block to the output stream.
                         outputBuffer.Write(currentCipherBlock.ToBytes(0, BlockSize), 0, blockSizeInBytes);
+
+                        // Read in a new block of data
                         bytesRead = dataBuffer.Read(blockBuffer, 0, blockSizeInBytes);
                     }
 
-                    return outputBuffer.ToArray();
+                    return Encoding.Unicode.GetString(outputBuffer.ToArray());
                 }
             }
         }
 
-        public string Decrypt(byte[] encryptedMessage)
+        /// <summary>
+        /// Decrypt a message.
+        /// </summary>
+        /// <param name="encryptedMessage">The encrypted message.</param>
+        /// <returns>The decrypted message.</returns>
+        public string Decrypt(string encryptedMessage)
         {
             // Create our block buffer
             int blockSizeInBytes = BlockSize / (sizeof(byte) * 8);
             byte[] blockBuffer = new byte[blockSizeInBytes];
 
-            using (MemoryStream dataBuffer = new MemoryStream(encryptedMessage))
+            using (MemoryStream dataBuffer = new MemoryStream(Encoding.Unicode.GetBytes(encryptedMessage)))
             {
                 // Read Initialization vector
                 byte[] initializationVectorBuffer = new byte[blockSizeInBytes];
@@ -271,7 +283,7 @@ namespace Sandbox
         }
 
         /// <summary>
-        /// Pad a byte array to a certain length with a random value.
+        /// Pad a byte array to a certain length with a value.
         /// </summary>
         /// <param name="buffer">The byte array to pad.</param>
         /// <param name="dataSize">The size of the data inside the buffer.</param>
