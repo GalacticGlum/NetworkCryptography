@@ -62,7 +62,7 @@ namespace Sandbox.Helpers
         {
             for (int i = initialPosition, j = readStartPosition; i < initialPosition + copyLength; i++, j++)
             {
-                destination.Set(i, source.Get(j));
+                destination.Set(j, source.Get(i));
             }
         }
 

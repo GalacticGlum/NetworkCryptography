@@ -8,6 +8,7 @@
  */
 
 using System.Collections;
+using System.Security.Cryptography;
 
 namespace Sandbox
 {
@@ -164,34 +165,31 @@ namespace Sandbox
 
         public DesCryptographicMethod(byte[] keys, int rounds = 16, int blockBitSizeInBits = 64) : base(keys, rounds, blockBitSizeInBits)
         {          
-            //Encrypt("hellhell");
         }
-
 
         protected override void InitialPermutation(BitSet cipherText)
         {
-            throw new System.NotImplementedException();
+            
         }
 
         protected override void FinalPermutation(BitSet cipherText)
         {
-            throw new System.NotImplementedException();
+
         }
 
         protected override BitSet Round(BitSet right, BitSet key)
         {
-            throw new System.NotImplementedException();
+            return new BitSet(0);
         }
 
         protected override BitSet GetEncryptionKey(BitSet key, int round)
         {
-            throw new System.NotImplementedException();
+            return null;
         }
 
         protected override BitSet GetDecryptionKey(BitSet key, int round)
         {
-            throw new System.NotImplementedException();
+            return null;
         }
-
     }
 }

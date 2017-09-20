@@ -18,7 +18,7 @@ namespace Sandbox
     /// <summary>
     /// Generic Fiestel cipher implementation which allows clients to specify the permutation, key, and round functions.
     /// </summary>
-    public abstract class FiestelCryptographicMethod : ICryptographicMethod
+    public abstract class FiestelCryptographicMethod 
     {
         /// <summary>
         /// The keys used for encryption and decryption.
@@ -59,40 +59,81 @@ namespace Sandbox
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        public string Encrypt(string message)
+        public byte[] Encrypt(string message)
         {
             // Create our block buffer
-            int blockLength = BlockSize / (sizeof(byte) * 8);
-            byte[] blockBuffer = new byte[blockLength];
+            int blockSizeInBytes = BlockSize / (sizeof(byte) * 8);
+            byte[] blockBuffer = new byte[blockSizeInBytes];
 
-            MemoryStream dataBuffer = new MemoryStream(Encoding.UTF8.GetBytes(message));
-            int bytesRead = dataBuffer.Read(blockBuffer, 0, blockLength);
-
-            BitSet keyBuffer = new BitSet(Keys);
-            BitSet currentCipherBlock = CreateInitializationVector();
-            MemoryStream outputBuffer = new MemoryStream(currentCipherBlock.ToBytes(), 0, blockLength, true, true);
-
-            while (bytesRead > 0)
+            using (MemoryStream dataBuffer = new MemoryStream(Encoding.Unicode.GetBytes(message)))
             {
-                if (bytesRead < blockLength)
+                int bytesRead = dataBuffer.Read(blockBuffer, 0, blockSizeInBytes);
+
+                BitSet keyBuffer = new BitSet(Keys);
+                BitSet currentCipherBlock = CreateInitializationVector();
+
+                using (MemoryStream outputBuffer = new MemoryStream())
                 {
-                    Pad(blockBuffer, bytesRead, blockLength);
+                    // Write the initialization vector to the output
+                    outputBuffer.Write(currentCipherBlock.ToBytes(), 0, blockSizeInBytes);
+
+                    while (bytesRead > 0)
+                    {
+                        if (bytesRead < blockSizeInBytes)
+                        {
+                            Pad(blockBuffer, bytesRead, blockSizeInBytes);
+                        }
+
+                        BitSet blockBits = new BitSet(blockBuffer);
+                        blockBits.Xor(currentCipherBlock);
+                        currentCipherBlock = EncryptBlock(blockBits, keyBuffer);
+
+                        outputBuffer.Write(currentCipherBlock.ToBytes(0, BlockSize), 0, blockSizeInBytes);
+                        bytesRead = dataBuffer.Read(blockBuffer, 0, blockSizeInBytes);
+                    }
+
+                    return outputBuffer.ToArray();
                 }
-
-                BitSet blockBits = new BitSet(blockBuffer);
-                blockBits.Xor(currentCipherBlock);
-                currentCipherBlock = EncryptBlock(blockBits, keyBuffer);
-                outputBuffer.Write(currentCipherBlock.ToBytes(0, blockLength), 0, blockLength);
-
-                bytesRead = dataBuffer.Read(blockBuffer, 0, blockLength);
             }
-
-            return Encoding.UTF8.GetString(outputBuffer.GetBuffer());
         }
 
-        public string Decrypt(string encryptedMessage)
+        public string Decrypt(byte[] encryptedMessage)
         {
-            throw new NotImplementedException();
+            // Create our block buffer
+            int blockSizeInBytes = BlockSize / (sizeof(byte) * 8);
+            byte[] blockBuffer = new byte[blockSizeInBytes];
+
+            using (MemoryStream dataBuffer = new MemoryStream(encryptedMessage))
+            {
+                // Read Initialization vector
+                byte[] initializationVectorBuffer = new byte[blockSizeInBytes];
+                dataBuffer.Read(initializationVectorBuffer, 0, blockSizeInBytes);
+
+                BitSet keyBuffer = new BitSet(Keys);
+                BitSet currentPlainTextBlock = new BitSet(initializationVectorBuffer);
+
+                int bytesRead = dataBuffer.Read(blockBuffer, 0, blockSizeInBytes);
+                using (MemoryStream outputBuffer = new MemoryStream())
+                {
+                    while (bytesRead > 0)
+                    {
+                        BitSet blockBits = new BitSet(blockBuffer);
+                        int bytesAfterUnpadding = bytesRead = dataBuffer.Read(blockBuffer, 0, blockSizeInBytes);
+
+                        BitSet decryptedBlock = DecryptBlock(blockBits, keyBuffer);
+                        currentPlainTextBlock.Xor(decryptedBlock);
+                        if (bytesRead <= 0)
+                        {
+                            bytesAfterUnpadding = Unpad(currentPlainTextBlock, blockSizeInBytes);
+                        }
+
+                        outputBuffer.Write(currentPlainTextBlock.ToBytes(0, bytesAfterUnpadding * 8), 0, bytesAfterUnpadding);
+                        currentPlainTextBlock = blockBits;
+                    }
+ 
+                    return Encoding.Unicode.GetString(outputBuffer.ToArray());
+                }
+            }
         }
 
         /// <summary>
@@ -123,6 +164,35 @@ namespace Sandbox
             
             FinalPermutation(cipherBuffer);
             return cipherBuffer;
+        }
+
+        /// <summary>
+        /// Decrypt a block of data.
+        /// </summary>
+        /// <param name="block"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        private BitSet DecryptBlock(BitSet block, BitSet key)
+        {
+            BitSet plainTextBuffer = (BitSet) block.Clone();
+            BitSet keyBuffer = (BitSet) key.Clone();
+
+            InitialPermutation(plainTextBuffer);
+
+            BitSet left = plainTextBuffer.GetBits(0, BlockSize / 2);
+            BitSet right = plainTextBuffer.GetBits(BlockSize / 2, BlockSize);
+
+            for (int i = 0; i < Rounds; i++)
+            {
+                StepRound(left, right, GetDecryptionKey(keyBuffer, i));
+            }
+
+            SwapBits(left, right);
+            plainTextBuffer.CopyFrom(0, left, BlockSize / 2);
+            plainTextBuffer.CopyFrom(BlockSize / 2, right, BlockSize / 2);
+
+            FinalPermutation(plainTextBuffer);
+            return plainTextBuffer;
         }
 
         /// <summary>
@@ -159,7 +229,7 @@ namespace Sandbox
         /// <returns></returns>
         private BitSet CreateInitializationVector()
         {
-            byte[] buffer = new byte[BlockSize];
+            byte[] buffer = new byte[BlockSize / (sizeof(byte) * 8)];
             random.NextBytes(buffer);
 
             return new BitSet(buffer);
@@ -179,6 +249,37 @@ namespace Sandbox
             {
                 buffer[i] = padValue;
             }
+        }
+
+        private static int Unpad(BitSet buffer, int targetSize)
+        {
+            byte[] data = buffer.ToBytes();
+            if (data[targetSize - 1] < targetSize && data[targetSize - 1] > 0)
+            {
+                byte n = data[targetSize - 1];
+                int count = 0;
+                
+                for (int i = targetSize - 1; i > 0; i--)
+                {
+                    if (data[i] == n)
+                    {
+                        count++;
+                    }
+                }
+
+                if (count == n)
+                {
+                    byte[] newData = new byte[targetSize - n];
+                    Array.Copy(data, 0, newData, 0, newData.Length);
+
+                    BitSet newBuffer = new BitSet(newData);
+                    buffer.Replace(newBuffer);
+
+                    return newData.Length;
+                }
+            }
+
+            return targetSize;
         }
     }
 }

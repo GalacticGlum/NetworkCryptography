@@ -1,4 +1,5 @@
 ﻿using System;
+using Sandbox.Helpers;
 
 namespace Sandbox
 {
@@ -8,8 +9,13 @@ namespace Sandbox
 
         private static void Main(string[] args)
         {
-            new DesCryptographicMethod(new byte[] { 14, 14, 14 });
+            DesCryptographicMethod desCryptographicMethod = new DesCryptographicMethod(new byte[] { 14, 14, 14 });
 
+            byte[] encrypted = desCryptographicMethod.Encrypt(TestMessage);
+            encrypted.Print();
+            string decrypted = desCryptographicMethod.Decrypt(encrypted);
+            Console.WriteLine(decrypted);
+            
             TestCryptographicMethod<CaeserCryptographicMethod>();
             Console.ReadLine();
         }
