@@ -9,7 +9,7 @@
 
 using System;
 
-namespace Sandbox.Helpers
+namespace NetworkCryptography.Core.Helpers
 {
     /// <summary>
     /// A collection of extra array functionality.

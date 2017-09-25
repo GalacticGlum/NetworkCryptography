@@ -7,7 +7,7 @@
  * Description: A generic interface for all cryptography method.
  */
 
-namespace Sandbox
+namespace NetworkCryptography.Core
 {
     /// <summary>
     /// Interface for all cryptography methods.

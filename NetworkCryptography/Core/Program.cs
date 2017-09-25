@@ -1,7 +1,7 @@
 ﻿using System;
-using Sandbox.Helpers;
+using NetworkCryptography.Core.Helpers;
 
-namespace Sandbox
+namespace NetworkCryptography.Core
 {
     internal static class Program
     {

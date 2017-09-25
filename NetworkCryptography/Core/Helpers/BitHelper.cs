@@ -10,7 +10,7 @@
 using System;
 using System.Collections;
 
-namespace Sandbox.Helpers
+namespace NetworkCryptography.Core.Helpers
 {
     public static class BitHelper
     {

@@ -10,7 +10,7 @@
 using System.Collections;
 using System.Security.Cryptography;
 
-namespace Sandbox
+namespace NetworkCryptography.Core
 {
     public class DesCryptographicMethod : FiestelCryptographicMethod
     {

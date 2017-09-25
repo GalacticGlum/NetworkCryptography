@@ -7,7 +7,7 @@
  * Description: An implementation of the Caeser Chiper cryptography method.
  */
 
-namespace Sandbox
+namespace NetworkCryptography.Core
 {
     /// <summary>
     /// The Caeser Chiper crytography method.

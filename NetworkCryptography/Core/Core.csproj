@@ -5,9 +5,9 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{FF2800E2-0201-4FAD-906B-C02E6CB5B2C0}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>Sandbox</RootNamespace>
-    <AssemblyName>Sandbox</AssemblyName>
+    <OutputType>Library</OutputType>
+    <RootNamespace>NetworkCryptography.Core</RootNamespace>
+    <AssemblyName>Core</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -31,9 +31,15 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="BitSetCollection">
       <HintPath>..\..\Third Party\BitSetCollection.dll</HintPath>
+    </Reference>
+    <Reference Include="Lidgren.Network, Version=2012.1.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lidgren.Network.1.0.2\lib\net451\Lidgren.Network.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -51,12 +57,23 @@
     <Compile Include="Helpers\ArrayHelper.cs" />
     <Compile Include="Helpers\BitHelper.cs" />
     <Compile Include="Helpers\ConversionHelper.cs" />
+    <Compile Include="Helpers\NetworkHelper.cs" />
+    <Compile Include="Helpers\StringHelper.cs" />
     <Compile Include="ICryptographicMethod.cs" />
+    <Compile Include="Logging\Logger.cs" />
+    <Compile Include="Logging\LoggerDestination.cs" />
+    <Compile Include="Logging\LoggerVerbosity.cs" />
+    <Compile Include="Networking\ClientOutgoingPacketType.cs" />
+    <Compile Include="Networking\Peer.cs" />
+    <Compile Include="Networking\INetworked.cs" />
+    <Compile Include="Networking\PacketHandlerCollection.cs" />
+    <Compile Include="Networking\ServerOutgoingPacketType.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

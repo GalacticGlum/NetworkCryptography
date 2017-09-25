@@ -11,9 +11,9 @@ using System;
 using System.Collections;
 using System.IO;
 using System.Text;
-using Sandbox.Helpers;
+using NetworkCryptography.Core.Helpers;
 
-namespace Sandbox
+namespace NetworkCryptography.Core
 {
     /// <summary>
     /// Generic Fiestel cipher implementation which allows clients to specify the permutation, key, and round functions.
