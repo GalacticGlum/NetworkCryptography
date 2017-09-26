@@ -1,11 +1,11 @@
-﻿using System;
-using System.Timers;
+﻿using System.Timers;
 
 namespace NetworkCryptography.App
 {
-    internal static class CoreApp<T> where T : IAppProvider, new()
+    internal static class CoreApp
     {
-        public static T AppProvider { get; private set; }
+        public static Client Client { get; private set; }
+        public static Server Server { get; private set; }
 
         private const double TickInterval = 0.0166666667;
         private static readonly Timer tickTimer;
@@ -13,44 +13,35 @@ namespace NetworkCryptography.App
         static CoreApp()
         {
             tickTimer = new Timer(TickInterval);
-            tickTimer.Elapsed += (sender, args) => AppProvider.Tick();
+            tickTimer.Elapsed += (sender, args) => Tick();
         }
 
-        public static void Run()
+        public static void RunAsClient(string ip, int port)
         {
-            AppProvider = new T();
-            AppProvider.Initialize();
+            // If a client or server has already been initialized, we can't re-initialize!
+            if (Client != null || Server != null) return;
+
+            Client = new Client();
+            Client.Connect(ip, port);
 
             tickTimer.Start();
         }
-    }
 
-    internal static class ConsoleApp
-    {
-        private static void Main(string[] args)
+        public static void RunAsServer(int port)
         {
-            int selection = ConsoleDisplay.Menu("Welcome to a generic live chat application", "Start Client", "Start Server");
-            switch (selection)
-            {
-                case 0:
-                    CoreApp<Client>.Run();
+            // If a client or server has already been initialized, we can't re-initialize!
+            if (Client != null || Server != null) return;
 
-                    Console.Clear();
-                    string ip = ConsoleDisplay.InputField("Please enter the IP address of the server you would like to connect to");
-                    string port = ConsoleDisplay.InputField($"{Environment.NewLine}Please enter the port");
+            Server = new Server(port);
+            Server.Start();
 
-                    CoreApp<Client>.AppProvider.Connect(ip, int.Parse(port));
-                    Console.Clear();
+            tickTimer.Start();
+        }
 
-                    break;
-                case 1:
-                    Console.WriteLine("Starting server...");
-                    CoreApp<Server>.Run();
-                    CoreApp<Server>.AppProvider.Start();
-                    break;
-            }
-
-            Console.ReadKey();
+        private static void Tick()
+        {
+            Server?.Tick();
+            Client?.Tick();
         }
     }
 }

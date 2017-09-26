@@ -3,17 +3,21 @@ using NetworkCryptography.Core.Networking;
 
 namespace NetworkCryptography.App
 {
-    public class Client : Peer<NetClient>, IAppProvider
+    public class Client : Peer<NetClient>
     {
-        public override NetPeerConfiguration NetConfiguration { get; } = new NetPeerConfiguration("chat-app");
-
         protected override NetClient ConstructPeer()
         {
             return new NetClient(NetConfiguration);
         }
 
+        protected override NetPeerConfiguration ConstructNetPeerConfiguration()
+        {
+            return new NetPeerConfiguration("chat-app");
+        }
+
         public void Connect(string ip, int port)
         {
+            Validate();
             NetPeer.Start();
             NetPeer.Connect(ip, port);
         }
@@ -31,7 +35,6 @@ namespace NetworkCryptography.App
 
         public void Initialize()
         {
-            Validate();
         }
 
         public void Tick()

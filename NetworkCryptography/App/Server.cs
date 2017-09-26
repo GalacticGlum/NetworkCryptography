@@ -4,18 +4,18 @@ using NetworkCryptography.Core.Networking;
 
 namespace NetworkCryptography.App
 {
-    public class Server : Peer<NetServer>, IAppProvider
+    public class Server : Peer<NetServer>
     {
+        public int ServerPort { get; }
+        public int MaximumConnections { get; }
+
         public bool IsRunning { get; private set; }
 
-        private const int ServerPort = 7777;
-        private const int MaximumConnections = 100;
-
-        public override NetPeerConfiguration NetConfiguration { get; } = new NetPeerConfiguration("chat-app")
+        public Server(int port, int maximumConnections = 100)
         {
-            Port = ServerPort,
-            MaximumConnections = MaximumConnections
-        };
+            ServerPort = port;
+            MaximumConnections = maximumConnections;
+        }
 
         protected override NetServer ConstructPeer()
         {
@@ -23,8 +23,23 @@ namespace NetworkCryptography.App
             return new NetServer(NetConfiguration);
         }
 
+        protected override NetPeerConfiguration ConstructNetPeerConfiguration()
+        {
+            return new NetPeerConfiguration("chat-app")
+            {
+                Port = ServerPort,
+                MaximumConnections = MaximumConnections
+            };
+        }
+
         public void Start()
         {
+            Validate();
+            HandleMessageType(NetIncomingMessageType.ConnectionApproval, (sender, args) =>
+            {
+                args.Message.SenderConnection.Approve();
+            });
+
             NetPeer.Start();
             IsRunning = true;
         }
@@ -64,15 +79,6 @@ namespace NetworkCryptography.App
         public void SendToAll(NetBuffer packet, NetDeliveryMethod deliveryMethod = NetDeliveryMethod.Unreliable)
         {
             NetPeer.SendToAll((NetOutgoingMessage)packet, deliveryMethod);
-        }
-
-        public void Initialize()
-        {
-            Validate();
-            HandleMessageType(NetIncomingMessageType.ConnectionApproval, (sender, args) =>
-            {
-                args.Message.SenderConnection.Approve();
-            });
         }
 
         public void Tick()

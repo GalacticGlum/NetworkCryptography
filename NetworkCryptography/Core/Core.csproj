@@ -57,6 +57,7 @@
     <Compile Include="Helpers\ArrayHelper.cs" />
     <Compile Include="Helpers\BitHelper.cs" />
     <Compile Include="Helpers\ConversionHelper.cs" />
+    <Compile Include="Helpers\EnumHelper.cs" />
     <Compile Include="Helpers\NetworkHelper.cs" />
     <Compile Include="Helpers\StringHelper.cs" />
     <Compile Include="ICryptographicMethod.cs" />

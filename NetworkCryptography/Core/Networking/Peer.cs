@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Net;
+using System.Web;
 using NetworkCryptography.Core.Logging;
 using Lidgren.Network;
 
@@ -55,7 +57,7 @@ namespace NetworkCryptography.Core.Networking
             PeerDisconnected?.Invoke(this, args);
         }
 
-        public abstract NetPeerConfiguration NetConfiguration { get; }
+        public NetPeerConfiguration NetConfiguration { get; private set; }
         public PacketHandlerCollection Packets { get; }
 
         public IPAddress LocalIpAddress => NetPeer.Configuration.LocalAddress;
@@ -122,6 +124,8 @@ namespace NetworkCryptography.Core.Networking
 
 
         protected abstract T ConstructPeer();
+        protected abstract NetPeerConfiguration ConstructNetPeerConfiguration();
+
         protected void HandleMessageType(NetIncomingMessageType type, IncomingMessageEventHandler handler)
         {
             // NetIncomingMessageType.Data is reserved
@@ -144,8 +148,15 @@ namespace NetworkCryptography.Core.Networking
         /// </summary>
         protected void Validate()
         {
-            if (NetPeer != null) return;
-            NetPeer = ConstructPeer();
+            if (NetConfiguration == null)
+            {
+                NetConfiguration = ConstructNetPeerConfiguration();
+            }
+
+            if (NetPeer == null)
+            {
+                NetPeer = ConstructPeer();
+            }
         }
     }
 }

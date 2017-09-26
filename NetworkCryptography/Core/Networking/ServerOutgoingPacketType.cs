@@ -5,6 +5,7 @@
     /// </summary>
     public enum ServerOutgoingPacketType
     {
-        SendNewUser
+        SendNewUser,
+        RelayMessage
     }
 }
