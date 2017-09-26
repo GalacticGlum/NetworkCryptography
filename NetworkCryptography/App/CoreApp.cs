@@ -1,26 +1,25 @@
 ﻿using System;
 using System.Timers;
-using NetworkCryptography.Core.Helpers;
 
 namespace NetworkCryptography.App
 {
     internal static class CoreApp<T> where T : IAppProvider, new()
     {
-        private const double TickInterval = 0.0166666667;
+        public static T AppProvider { get; private set; }
 
-        private static T appProvider;
+        private const double TickInterval = 0.0166666667;
         private static readonly Timer tickTimer;
 
         static CoreApp()
         {
             tickTimer = new Timer(TickInterval);
-            tickTimer.Elapsed += (sender, args) => appProvider.Tick();
+            tickTimer.Elapsed += (sender, args) => AppProvider.Tick();
         }
 
-        private static void Run()
+        public static void Run()
         {
-            appProvider = new T();
-            appProvider.Initialize();
+            AppProvider = new T();
+            AppProvider.Initialize();
 
             tickTimer.Start();
         }
@@ -34,10 +33,20 @@ namespace NetworkCryptography.App
             switch (selection)
             {
                 case 0:
-                    Console.WriteLine("Starting client...");
+                    CoreApp<Client>.Run();
+
+                    Console.Clear();
+                    string ip = ConsoleDisplay.InputField("Please enter the IP address of the server you would like to connect to");
+                    string port = ConsoleDisplay.InputField($"{Environment.NewLine}Please enter the port");
+
+                    CoreApp<Client>.AppProvider.Connect(ip, int.Parse(port));
+                    Console.Clear();
+
                     break;
                 case 1:
                     Console.WriteLine("Starting server...");
+                    CoreApp<Server>.Run();
+                    CoreApp<Server>.AppProvider.Start();
                     break;
             }
 

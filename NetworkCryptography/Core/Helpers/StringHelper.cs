@@ -6,6 +6,7 @@ namespace NetworkCryptography.Core.Helpers
     {
         public const string Space = " ";
         public const string Overline = "‾";
+        public const string Underscore = "_";
 
         public static string Multiply(this string a, int length)
         {

@@ -11,7 +11,7 @@ namespace NetworkCryptography.App
         private const int ServerPort = 7777;
         private const int MaximumConnections = 100;
 
-        public override NetPeerConfiguration NetConfiguration { get; } = new NetPeerConfiguration("game")
+        public override NetPeerConfiguration NetConfiguration { get; } = new NetPeerConfiguration("chat-app")
         {
             Port = ServerPort,
             MaximumConnections = MaximumConnections
@@ -69,7 +69,10 @@ namespace NetworkCryptography.App
         public void Initialize()
         {
             Validate();
-            HandleMessageType(NetIncomingMessageType.ConnectionApproval, (sender, args) => args.Message.SenderConnection.Approve());
+            HandleMessageType(NetIncomingMessageType.ConnectionApproval, (sender, args) =>
+            {
+                args.Message.SenderConnection.Approve();
+            });
         }
 
         public void Tick()

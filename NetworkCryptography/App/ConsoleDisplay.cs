@@ -70,5 +70,11 @@ namespace NetworkCryptography.App
 
             return selectedIndex;
         }
+
+        public static string InputField(string prompt)
+        {
+            Console.WriteLine(prompt);
+            return Console.ReadLine();
+        }
     }
 }

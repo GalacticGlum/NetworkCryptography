@@ -84,7 +84,7 @@ namespace NetworkCryptography.Core.Logging
             if ((LogDestination & LoggerDestination.Output) == 0) return;
 
             Console.WriteLine(format);
-            Console.WriteLine(StringHelper.Overline.Multiply(format.Length));
+            Console.WriteLine(StringHelper.Underscore.Multiply(format.Length));
         }
 
         public static void Log(string category, object message, LoggerVerbosity messageVerbosity = LoggerVerbosity.Info, bool seperateLineHere = false)
