@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using NetworkCryptography.Core.Helpers;
 
 namespace NetworkCryptography.App
@@ -53,51 +52,34 @@ namespace NetworkCryptography.App
             }
 
             bool isRunning = true;
-            string message = string.Empty;
             int top = Console.CursorTop;
 
             while (isRunning)
             {
-                ConsoleKeyInfo key = Console.ReadKey(true);
-                int clearLength = 0;
-
-                if (key.Key == ConsoleKey.Enter)
+                int messageInputTop = Console.WindowHeight - 1;
+                if (top > messageInputTop - 1)
                 {
-                    clearLength = message.Length;
-
-                    Console.SetCursorPosition(0, top);
-
-                    Console.WriteLine($"{username}: {message}");
-                    top = Console.CursorTop;
-
-                    isRunning = message != "/quit";
-                    message = string.Empty;
-                }
-                else if (key.Key == ConsoleKey.Backspace)
-                {
-                    if (message.Length > 0)
-                    {
-                        message = message.Substring(0, message.Length - 1);
-                    }
-                }
-                else
-                {
-                    message += key.KeyChar;
+                    messageInputTop = top + 1;
                 }
 
-                int messageInputTop = Console.WindowHeight;
-                if (top > Console.WindowHeight)
-                {
-                    messageInputTop += top - Console.WindowHeight;
-                }
+                int dividerLineTop = messageInputTop - 1;
+                Console.SetCursorPosition(0, dividerLineTop);
+                Console.Write(new string('-', Console.WindowWidth));
 
                 Console.SetCursorPosition(0, messageInputTop);
-                if (clearLength > 0)
-                {
-                    Console.Write(new string(' ', clearLength));
-                }
+                string message = $"{username}: {ReadLine.Read(string.Empty, string.Empty, false)}";
 
-                Console.Write(message);
+                Console.SetCursorPosition(0, messageInputTop);
+                Console.Write(new string(' ', message.Length));
+
+                Console.SetCursorPosition(0, top);
+                Console.WriteLine(message);
+                top = Console.CursorTop;
+
+                Console.SetCursorPosition(0, dividerLineTop);
+                Console.Write(message + new string(' ', Console.WindowWidth - message.Length));
+                
+                Console.WindowTop = messageInputTop - (Console.WindowHeight - 1);
             }
         }
 
