@@ -25,8 +25,8 @@ namespace NetworkCryptography.App
                     string ip = ConsoleDisplay.InputField("Please enter the IP address of the server you would like to connect to");
                     string port = ConsoleDisplay.InputField($"{Environment.NewLine}Please enter the port");
 
-                    CoreApp.RunAsClient(ip, int.Parse(port));
                     Console.Clear();
+                    CoreApp.RunAsClient(ip, int.Parse(port));
 
                     break;
                 case 1:
@@ -39,8 +39,6 @@ namespace NetworkCryptography.App
 
                     Console.Clear();
 
-                    CoreApp.RunAsServer(int.Parse(port));
-
                     // Print server stats
                     Console.WriteLine($"Server started{Environment.NewLine}");
                     Console.WriteLine($"IP Address: {NetworkHelper.GetLocalIpAddress()}");
@@ -48,39 +46,13 @@ namespace NetworkCryptography.App
                     Console.WriteLine($"Cryptography method: {GetCryptographyMethodName(selectedMethod)}");
 
                     Console.WriteLine(StringHelper.Underscore.Multiply(25));
+
+                    CoreApp.RunAsServer(int.Parse(port));
+
                     break;
             }
 
-            bool isRunning = true;
-            int top = Console.CursorTop;
-
-            while (isRunning)
-            {
-                int messageInputTop = Console.WindowHeight - 1;
-                if (top > messageInputTop - 1)
-                {
-                    messageInputTop = top + 1;
-                }
-
-                int dividerLineTop = messageInputTop - 1;
-                Console.SetCursorPosition(0, dividerLineTop);
-                Console.Write(new string('-', Console.WindowWidth));
-
-                Console.SetCursorPosition(0, messageInputTop);
-                string message = $"{username}: {ReadLine.Read(string.Empty, string.Empty, false)}";
-
-                Console.SetCursorPosition(0, messageInputTop);
-                Console.Write(new string(' ', message.Length));
-
-                Console.SetCursorPosition(0, top);
-                Console.WriteLine(message);
-                top = Console.CursorTop;
-
-                Console.SetCursorPosition(0, dividerLineTop);
-                Console.Write(message + new string(' ', Console.WindowWidth - message.Length));
-                
-                Console.WindowTop = messageInputTop - (Console.WindowHeight - 1);
-            }
+            Console.ReadKey();
         }
 
         private static string GetCryptographyMethodName(CryptographyMethodType type) => cryptographyTypeNames[(int)type];

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Lidgren.Network;
 using NetworkCryptography.Core.Networking;
 
@@ -15,6 +16,8 @@ namespace NetworkCryptography.App
         {
             ServerPort = port;
             MaximumConnections = maximumConnections;
+
+            PeerConnected += (sender, args) => CoreApp.PrintToScreen("test");
         }
 
         protected override NetServer ConstructPeer()
