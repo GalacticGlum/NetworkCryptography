@@ -1,7 +1,7 @@
 ﻿using Lidgren.Network;
 using NetworkCryptography.Core.Networking;
 
-namespace NetworkCryptography.App
+namespace NetworkCryptography.Client
 {
     public class Client : Peer<NetClient>
     {
@@ -12,7 +12,7 @@ namespace NetworkCryptography.App
 
         protected override NetPeerConfiguration ConstructNetPeerConfiguration()
         {
-            return new NetPeerConfiguration("chat-app");
+            return new NetPeerConfiguration("airballoon");
         }
 
         public void Connect(string ip, int port)
@@ -32,10 +32,6 @@ namespace NetworkCryptography.App
 
         public void Send(ClientOutgoingPacketType packetHeader, NetDeliveryMethod deliveryMethod = NetDeliveryMethod.Unreliable) =>
             NetPeer.SendMessage(CreateMessageWithHeader((int)packetHeader), deliveryMethod);
-
-        public void Initialize()
-        {
-        }
 
         public void Tick()
         {

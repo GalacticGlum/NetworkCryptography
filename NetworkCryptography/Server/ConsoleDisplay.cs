@@ -1,7 +1,7 @@
 ﻿using System;
 using NetworkCryptography.Core.Helpers;
 
-namespace NetworkCryptography.App
+namespace NetworkCryptography.Server
 {
     public static class ConsoleDisplay
     {

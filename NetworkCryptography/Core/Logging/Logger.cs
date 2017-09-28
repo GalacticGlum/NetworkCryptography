@@ -16,7 +16,7 @@ namespace NetworkCryptography.Core.Logging
         public const string AllowAnyCategoryVerbosities = "__ALLOW_ANY_CATEGORY_VERBOSITIES__";
 
         public static LoggerVerbosity Verbosity { get; set; }
-        public static LoggerDestination LogDestination { get; set; } = LoggerDestination.File;
+        public static LoggerDestination Destination { get; set; } = LoggerDestination.File;
 
         public static string LineSeperator { get; set; } = string.Empty;
         public static int LineSeperatorMessageInterval { get; set; } = -1;
@@ -36,7 +36,7 @@ namespace NetworkCryptography.Core.Logging
         /// <summary>
         /// The category verbosity filter. If set to null, then the filter will allow all categories.
         /// </summary>
-        public static Dictionary<string, LoggerVerbosity> CategoryVerbosities { get; }
+        public static Dictionary<string, LoggerVerbosity> CategoryVerbosities { get; set; }
         public static int MessageCount { get; private set; }
 
         private static readonly StringBuilder messageBuffer = new StringBuilder();
@@ -56,13 +56,13 @@ namespace NetworkCryptography.Core.Logging
                 }
             };
 
+            logFilePath = GetLogFilePath();
+
             // Initialize message buffer flush timer
             messageBufferFlushTimer = new Timer(FlushFrequency * 1000)
             {
                 AutoReset = true
             };
-
-            logFilePath = GetLogFilePath();
 
             messageBufferFlushTimer.Elapsed += (sender, args) => FlushMessageBuffer();
             messageBufferFlushTimer.Start();
@@ -75,16 +75,16 @@ namespace NetworkCryptography.Core.Logging
 
             // Print format
             const string format = "[yyyy-MM-dd HH:mm:ss.fff][verbosity] category: message";
-            if ((LogDestination & LoggerDestination.File) != 0)
+            if ((Destination & LoggerDestination.File) != 0)
             {
                 messageBuffer.AppendLine(format);
                 messageBuffer.AppendLine(StringHelper.Overline.Multiply(format.Length));
             }
 
-            if ((LogDestination & LoggerDestination.Output) == 0) return;
+            if ((Destination & LoggerDestination.Output) == 0) return;
 
             Console.WriteLine(format);
-            Console.WriteLine(StringHelper.Underscore.Multiply(format.Length));
+            Console.WriteLine(StringHelper.Overline.Multiply(format.Length));
         }
 
         public static void Log(string category, object message, LoggerVerbosity messageVerbosity = LoggerVerbosity.Info, bool seperateLineHere = false)
@@ -112,7 +112,7 @@ namespace NetworkCryptography.Core.Logging
                     messageSeperator = LineSeperator.Multiply(output.Length);
                 }
 
-                if ((LogDestination & LoggerDestination.File) != 0)
+                if ((Destination & LoggerDestination.File) != 0)
                 {
                     messageBuffer.AppendLine(output);
                     if (!string.IsNullOrEmpty(messageSeperator))
@@ -121,12 +121,20 @@ namespace NetworkCryptography.Core.Logging
                     }
                 }
 
-                if ((LogDestination & LoggerDestination.Output) != 0)
+                if ((Destination & LoggerDestination.Output) != 0)
                 {
                     ConsoleColor oldConsoleColor = Console.ForegroundColor;
                     Console.ForegroundColor = GetConsoleColour(messageVerbosity);
 
-                    Console.WriteLine(output);
+                    if (messageVerbosity == LoggerVerbosity.Plain)
+                    {
+                        Console.WriteLine(message);
+                    }
+                    else
+                    {
+                        Console.WriteLine(output);
+                    }
+
                     if (!string.IsNullOrEmpty(messageSeperator))
                     {
                         Console.WriteLine(messageSeperator);
@@ -196,7 +204,6 @@ namespace NetworkCryptography.Core.Logging
 
             string header = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}]{verbosityHeader}";
             string categoryHeader = !string.IsNullOrEmpty(category) ? $" {category}: " : ": ";
-
             return string.Concat(header, categoryHeader);
         }
 
@@ -223,7 +230,7 @@ namespace NetworkCryptography.Core.Logging
         public static void FlushMessageBuffer(int tries = 0)
         {
             if (tries > 2) return;
-            if ((LogDestination & LoggerDestination.File) == 0) return;
+            if ((Destination & LoggerDestination.File) == 0) return;
 
             string flushContents = messageBuffer.ToString();
             if (messageCountSinceLastFlush == 0 || string.IsNullOrEmpty(flushContents)) return;

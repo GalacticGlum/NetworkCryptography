@@ -1,4 +1,4 @@
-﻿namespace NetworkCryptography.App
+﻿namespace NetworkCryptography.Core
 {
     public enum CryptographyMethodType
     {

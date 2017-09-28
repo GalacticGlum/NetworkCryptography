@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Lidgren.Network;
+using NetworkCryptography.Core.Logging;
 using NetworkCryptography.Core.Networking;
 
-namespace NetworkCryptography.App
+namespace NetworkCryptography.Server
 {
     public class Server : Peer<NetServer>
     {
@@ -17,7 +17,7 @@ namespace NetworkCryptography.App
             ServerPort = port;
             MaximumConnections = maximumConnections;
 
-            PeerConnected += (sender, args) => CoreApp.PrintToScreen("test");
+            PeerConnected += (sender, args) => Logger.Log("Peer connected");
         }
 
         protected override NetServer ConstructPeer()
@@ -28,7 +28,7 @@ namespace NetworkCryptography.App
 
         protected override NetPeerConfiguration ConstructNetPeerConfiguration()
         {
-            return new NetPeerConfiguration("chat-app")
+            return new NetPeerConfiguration("airballoon")
             {
                 Port = ServerPort,
                 MaximumConnections = MaximumConnections
@@ -38,10 +38,7 @@ namespace NetworkCryptography.App
         public void Start()
         {
             Validate();
-            HandleMessageType(NetIncomingMessageType.ConnectionApproval, (sender, args) =>
-            {
-                args.Message.SenderConnection.Approve();
-            });
+            HandleMessageType(NetIncomingMessageType.ConnectionApproval, (sender, args) => args.Message.SenderConnection.Approve());
 
             NetPeer.Start();
             IsRunning = true;

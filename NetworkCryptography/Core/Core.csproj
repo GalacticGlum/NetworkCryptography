@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CaeserCryptographicMethod.cs" />
+    <Compile Include="CryptographyMethodType.cs" />
     <Compile Include="DesCryptographicMethod.cs" />
     <Compile Include="FiestelCryptographicMethod.cs" />
     <Compile Include="Helpers\ArrayHelper.cs" />
@@ -71,6 +72,7 @@
     <Compile Include="Networking\ServerOutgoingPacketType.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TickLoop.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

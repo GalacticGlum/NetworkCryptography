@@ -5,21 +5,26 @@
         /// <summary>
         /// None verbosity will not log anything if used.
         /// </summary>
-        None = 0, // Not really a verbosity rather a way of internally defining: "print any verbosity".
+        None, // Not really a verbosity rather a way of internally defining: "print any verbosity".
+
+        /// <summary>
+        /// Plain verbosity, this will log text without any timestamp, category, etc...
+        /// </summary>
+        Plain,
 
         /// <summary>
         /// Regular message.
         /// </summary>
-        Info = 1,
+        Info,
 
         /// <summary>
         /// Warning message. 
         /// </summary>
-        Warning = 2,
+        Warning,
 
         /// <summary>
         /// Error message.
         /// </summary>
-        Error = 3
+        Error
     }
 }
