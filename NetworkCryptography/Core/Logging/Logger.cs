@@ -1,4 +1,13 @@
-﻿using System;
+﻿/*
+ * Author: Shon Verch
+ * File Name: Logger.cs
+ * Project: NetworkCryptography
+ * Creation Date: 9/22/2017
+ * Modified Date: 9/27/2017
+ * Description: Console logger with extra functionality.
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -7,36 +16,64 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Timers;
+
 using NetworkCryptography.Core.Helpers;
 
 namespace NetworkCryptography.Core.Logging
 {
+    /// <summary>
+    /// Console logger with extra functionality.
+    /// </summary>
     public static class Logger
     {
+        /// <summary>
+        /// Constant identifier filter for allowing any category verbosity.
+        /// </summary>
         public const string AllowAnyCategoryVerbosities = "__ALLOW_ANY_CATEGORY_VERBOSITIES__";
 
+        /// <summary>
+        /// The verbosity of the logger. Only a message with this verbosity (or higher) will be logged.
+        /// </summary>
         public static LoggerVerbosity Verbosity { get; set; }
+
+        /// <summary>
+        /// The destination of log messages.
+        /// </summary>
         public static LoggerDestination Destination { get; set; } = LoggerDestination.File;
 
+        /// <summary>
+        /// Line seperator between messages.
+        /// </summary>
         public static string LineSeperator { get; set; } = string.Empty;
+
+        /// <summary>
+        /// The frequency at which lines should be seperated. 
+        /// </summary>
         public static int LineSeperatorMessageInterval { get; set; } = -1;
 
         /// <summary>
         /// When a message with this verbosity (or higher) is logged, the whole message buffer is flushed.
         /// </summary>
         public static LoggerVerbosity FlushVerbosity { get; set; } = LoggerVerbosity.Error;
+
         /// <summary>
         /// This is the time (in seconds) after which we flush our log to the file.
         /// </summary>
         public static int FlushFrequency { get; set; } = 5;
+
         /// <summary>
         /// This is the amount of messages the message buffer can store until it must flush itself.
         /// </summary>
         public static int FlushBufferMessageCapacity { get; set; } = 100;
+
         /// <summary>
         /// The category verbosity filter. If set to null, then the filter will allow all categories.
         /// </summary>
         public static Dictionary<string, LoggerVerbosity> CategoryVerbosities { get; set; }
+
+        /// <summary>
+        /// The amount of messages logged since startup.
+        /// </summary>
         public static int MessageCount { get; private set; }
 
         private static readonly StringBuilder messageBuffer = new StringBuilder();
@@ -46,6 +83,10 @@ namespace NetworkCryptography.Core.Logging
         private static bool isFirstLog = true;
         private static int messageCountSinceLastFlush;
 
+        /// <summary>
+        /// Logger constructor. 
+        /// This will be called when the first reference to the Logger is made.
+        /// </summary>
         static Logger()
         {
             CategoryVerbosities = new Dictionary<string, LoggerVerbosity>
@@ -56,7 +97,7 @@ namespace NetworkCryptography.Core.Logging
                 }
             };
 
-            logFilePath = GetLogFilePath();
+            logFilePath = GetLogFileName();
 
             // Initialize message buffer flush timer
             messageBufferFlushTimer = new Timer(FlushFrequency * 1000)
@@ -87,15 +128,29 @@ namespace NetworkCryptography.Core.Logging
             Console.WriteLine(StringHelper.Overline.Multiply(format.Length));
         }
 
+        /// <summary>
+        /// Log a message in a category with a specified verbosity.
+        /// </summary>
+        /// <param name="category">The category to log in.</param>
+        /// <param name="message">The message to log.</param>
+        /// <param name="messageVerbosity">The verbosity to log with.</param>
+        /// <param name="seperateLineHere">Should this message be seperated by a line?</param>
         public static void Log(string category, object message, LoggerVerbosity messageVerbosity = LoggerVerbosity.Info, bool seperateLineHere = false)
         {
+            // The none verbosity turns off logging.
             if (messageVerbosity == LoggerVerbosity.None) return;
+
+            // Lock the output stream of the console for operation.
             lock (Console.Out)
             {
                 if (Verbosity > messageVerbosity) return;
+
+                // Check if the category we are trying to log into allows the specified verbosity.
                 if (CategoryVerbosities != null)
                 {
-                    if (!CategoryVerbosities.ContainsKey(category) && !CategoryVerbosities.ContainsKey(AllowAnyCategoryVerbosities)) return;
+                    bool allowAnyCategoryVerbosities = CategoryVerbosities.ContainsKey(AllowAnyCategoryVerbosities);
+                    if (!CategoryVerbosities.ContainsKey(category) && !allowAnyCategoryVerbosities) return;
+
                     if (CategoryVerbosities.ContainsKey(category))
                     {
                         if (CategoryVerbosities[category] > messageVerbosity) return;
@@ -106,12 +161,16 @@ namespace NetworkCryptography.Core.Logging
 
                 string output = string.Concat(GetMessageHeader(messageVerbosity, category), message);
                 string messageSeperator = string.Empty;
-                if (!string.IsNullOrEmpty(LineSeperator) && (seperateLineHere || LineSeperatorMessageInterval > 0 &&
-                                                             MessageCount % LineSeperatorMessageInterval == 0))
+
+                bool shouldSeperateLine = seperateLineHere || LineSeperatorMessageInterval > 0 && 
+                        MessageCount % LineSeperatorMessageInterval == 0;
+
+                if (!string.IsNullOrEmpty(LineSeperator) && shouldSeperateLine)
                 {
                     messageSeperator = LineSeperator.Multiply(output.Length);
                 }
 
+                // Log to the file.
                 if ((Destination & LoggerDestination.File) != 0)
                 {
                     messageBuffer.AppendLine(output);
@@ -121,10 +180,11 @@ namespace NetworkCryptography.Core.Logging
                     }
                 }
 
+                // Log to the console.
                 if ((Destination & LoggerDestination.Output) != 0)
                 {
                     ConsoleColor oldConsoleColor = Console.ForegroundColor;
-                    Console.ForegroundColor = GetConsoleColour(messageVerbosity);
+                    Console.ForegroundColor = GetVerbosityConsoleColour(messageVerbosity);
 
                     if (messageVerbosity == LoggerVerbosity.Plain)
                     {
@@ -143,6 +203,7 @@ namespace NetworkCryptography.Core.Logging
                     Console.ForegroundColor = oldConsoleColor;
                 }
 
+                // Flush the message buffer if it is time.
                 messageCountSinceLastFlush++;
                 if (messageVerbosity >= FlushVerbosity || messageCountSinceLastFlush == FlushBufferMessageCapacity)
                 {
@@ -151,20 +212,40 @@ namespace NetworkCryptography.Core.Logging
             }
 
             if (!isFirstLog) return;
+
+            // It is our first log so we need to startup the flush timer.
+            // The flush timer flushes the message buffer every X seconds.
             messageBufferFlushTimer.Start();
             isFirstLog = false;
         }
 
+        /// <summary>
+        /// Log a message with a specified verbosity in no category.
+        /// </summary>
+        /// <param name="message">The message to log.</param>
+        /// <param name="messageVerbosity">The verbosity of the message.</param>
         public static void Log(object message, LoggerVerbosity messageVerbosity = LoggerVerbosity.Info)
         {
             Log(string.Empty, message, messageVerbosity);
         }
 
+        /// <summary>
+        /// Log the function this method is called from. 
+        /// This is useful for debugging purposes.
+        /// </summary>
+        /// <param name="category">The category to log into.</param>
+        /// <param name="message">The message to log.</param>
+        /// <param name="messageVerbosity">The verbosity of the message.</param>
+        /// <param name="seperateLineHere">Should this message be seperated by a line?</param>
         public static void LogFunctionEntry(string category = "", string message = "", LoggerVerbosity messageVerbosity = LoggerVerbosity.Info, bool seperateLineHere = false)
         {
+            // Get the last stack frame and find the calling method name.
             MethodBase methodFrame = new StackTrace().GetFrame(1).GetMethod();
             string functionName = methodFrame.Name;
             string className = "NotAvailable";
+
+            // Attempt to retrieve the class name of the calling method.
+            // If we cannot reetrieve the class name, it will show up as: NotAvailable
             if (methodFrame.DeclaringType != null)
             {
                 className = methodFrame.DeclaringType.FullName;
@@ -176,16 +257,38 @@ namespace NetworkCryptography.Core.Logging
             Log(category, actualMessage, messageVerbosity, seperateLineHere);
         }
 
+        /// <summary>
+        /// Log a message with formatting options.
+        /// </summary>
+        /// <param name="category">The category to log into.</param>
+        /// <param name="message">The message to log.</param>
+        /// <param name="messageVerbosity">The verbosity of the message.</param>
+        /// <param name="seperateLineHere">Should this message be seperated by a line?</param>
+        /// <param name="args">The formatting arguments.</param>
         public static void LogFormat(string category, string message, LoggerVerbosity messageVerbosity = LoggerVerbosity.Info, bool seperateLineHere = false, params object[] args)
         {
             Log(category, string.Format(message, args), messageVerbosity, seperateLineHere);
         }
 
+        /// <summary>
+        /// Log a message with formatting options.
+        /// </summary>
+        /// <param name="message">The message to log.</param>
+        /// <param name="messageVerbosity">The verbosity of the message.</param>
+        /// <param name="seperateLineHere">Should this message be seperated by a line?</param>
+        /// <param name="args">The formatting arguments.</param>
         public static void LogFormat(string message, LoggerVerbosity messageVerbosity = LoggerVerbosity.Info, bool seperateLineHere = false, params object[] args)
         {
             Log(string.Empty, string.Format(message, args), messageVerbosity, seperateLineHere);
         }
 
+        /// <summary>
+        /// Assert a condition.
+        /// </summary>
+        /// <param name="condition">The condition to assert.</param>
+        /// <param name="message">The assert message.</param>
+        /// <param name="sourceFilePath">The file path from where the call was made.</param>
+        /// <param name="sourceLineNumber">The line number from where the call was made.</param>
         public static void Assert(bool condition, string message = null, [CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0)
         {
             if (condition) return;
@@ -197,6 +300,12 @@ namespace NetworkCryptography.Core.Logging
             Environment.Exit(-1);
         }
 
+        /// <summary>
+        /// Get the header of the message.
+        /// </summary>
+        /// <param name="verbosity">The verbosity of the message.</param>
+        /// <param name="category">The category of the message.</param>
+        /// <returns>The resulted header.</returns>
         private static string GetMessageHeader(LoggerVerbosity verbosity, string category)
         {
             string padding = StringHelper.Space.Multiply(GetLongestVerbosityLength() - GetVerbosityName(verbosity).Length);
@@ -207,7 +316,12 @@ namespace NetworkCryptography.Core.Logging
             return string.Concat(header, categoryHeader);
         }
 
-        private static ConsoleColor GetConsoleColour(LoggerVerbosity verbosity)
+        /// <summary>
+        /// Get the ConsoleColour of a verbosity.
+        /// </summary>
+        /// <param name="verbosity"></param>
+        /// <returns></returns>
+        private static ConsoleColor GetVerbosityConsoleColour(LoggerVerbosity verbosity)
         {
             switch (verbosity)
             {
@@ -222,11 +336,20 @@ namespace NetworkCryptography.Core.Logging
             return ConsoleColor.Gray;
         }
 
+        /// <summary>
+        /// Get the name of a verbosity.
+        /// </summary>
+        /// <param name="verbosity"></param>
+        /// <returns></returns>
         private static string GetVerbosityName(LoggerVerbosity verbosity)
         {
             return Enum.GetName(typeof(LoggerVerbosity), verbosity);
         }
 
+        /// <summary>
+        /// Flush the message buffer.
+        /// </summary>
+        /// <param name="tries"></param>
         public static void FlushMessageBuffer(int tries = 0)
         {
             if (tries > 2) return;
@@ -242,7 +365,7 @@ namespace NetworkCryptography.Core.Logging
             catch (IOException)
             {
                 // The file is already being used (presumably), let's change the logFilePath and try again
-                logFilePath = GetLogFilePath("2");
+                logFilePath = GetLogFileName("2");
                 FlushMessageBuffer(tries + 1);
             }
 
@@ -250,13 +373,23 @@ namespace NetworkCryptography.Core.Logging
             messageBuffer.Clear();
         }
 
+        /// <summary>
+        /// Get the length of the longest verbosity name.
+        /// </summary>
+        /// <returns></returns>
         private static int GetLongestVerbosityLength()
         {
             string[] verbosityNames = Enum.GetNames(typeof(LoggerVerbosity));
             return verbosityNames.OrderByDescending(str => str.Length).First().Length;
         }
 
-        private static string GetLogFilePath(string suffix = null)
+        /// <summary>
+        /// Get the name of a log file.
+        /// The name of the log file is the name of the executing assembly.
+        /// </summary>
+        /// <param name="suffix">An optional suffix.</param>
+        /// <returns></returns>
+        private static string GetLogFileName(string suffix = null)
         {
             return $"{Assembly.GetEntryAssembly().GetName().Name}{suffix}.log";
         }

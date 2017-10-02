@@ -8,10 +8,12 @@
  */
 
 using System.Collections;
-using System.Security.Cryptography;
 
 namespace NetworkCryptography.Core
 {
+    /// <summary>
+    /// Data Encryption Standard cryptography method.
+    /// </summary>
     public class DesCryptographicMethod : FiestelCryptographicMethod
     {
         /// <summary>
