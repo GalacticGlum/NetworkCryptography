@@ -1,9 +1,9 @@
 ﻿/*
  * Author: Shon Verch
- * File Name: CoreApp.cs
+ * File Name: CoreServerApp.cs
  * Project: NetworkCryptography
  * Creation Date: 9/27/2017
- * Modified Date: 9/27/2017
+ * Modified Date: 10/14/2017
  * Description: The main application context; manages all logic.
  */
 
@@ -18,7 +18,7 @@ namespace NetworkCryptography.Server
     /// <summary>
     /// The main application context; manages all logic.
     /// </summary>
-    internal static class CoreApp
+    internal static class CoreServerApp
     {
         /// <summary>
         /// Indicates whether the application context is running.
@@ -29,6 +29,11 @@ namespace NetworkCryptography.Server
         /// Networked server peer.
         /// </summary>
         public static Server Server { get; private set; }
+
+        /// <summary>
+        /// Server settings file.
+        /// </summary>
+        public static Settings Settings { get; private set; }
 
         /// <summary>
         /// The logic loop ticker.
@@ -45,8 +50,9 @@ namespace NetworkCryptography.Server
             "Rivest–Shamir–Adleman (RSA) Scheme"
         };
 
-        static CoreApp()
+        static CoreServerApp()
         {
+            Settings = Settings.Load();
             tickLoop = new TickLoop(Tick);
         }
 
@@ -122,7 +128,16 @@ namespace NetworkCryptography.Server
         /// <param name="args"></param>
         private static void Main(string[] args)
         {
-            int port = int.Parse(ConsoleDisplay.InputField("Please enter the port you would like to run the server on."));
+            int port;
+            if (Settings == null || Settings.Port <= 0)
+            {
+               port = int.Parse(ConsoleDisplay.InputField("Please enter the port you would like to run the server on."));
+            }
+            else
+            {
+                port = Settings.Port;
+            }
+
             Console.Clear();
 
             CryptographyMethodType selectedMethod = EnumHelper.GetValue<CryptographyMethodType>(ConsoleDisplay.Menu(

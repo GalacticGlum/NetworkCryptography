@@ -3,10 +3,11 @@
  * File Name: Server.cs
  * Project: NetworkCryptography
  * Creation Date: 9/25/2017
- * Modified Date: 9/27/2017
+ * Modified Date: 10/14/2017
  * Description: The server peer; handles all server-side networking.
  */
 
+using System;
 using System.Collections.Generic;
 using Lidgren.Network;
 using NetworkCryptography.Core.Logging;
@@ -43,8 +44,6 @@ namespace NetworkCryptography.Server
         {
             ServerPort = port;
             MaximumConnections = maximumConnections;
-
-            PeerConnected += (sender, args) => Logger.Log("Peer connected");
         }
 
         /// <summary>
@@ -76,10 +75,23 @@ namespace NetworkCryptography.Server
         public void Start()
         {
             Validate();
-            HandleMessageType(NetIncomingMessageType.ConnectionApproval, (sender, args) => args.Message.SenderConnection.Approve());
+            HandleMessageType(NetIncomingMessageType.ConnectionApproval, HandleConnectionApproval);
 
             NetPeer.Start();
             IsRunning = true;
+        }
+
+        /// <summary>
+        /// Handle connection approval.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private static void HandleConnectionApproval(object sender, IncomingMessageEventArgs args)
+        {
+            string username = args.Message.ReadString();
+            Logger.Log($"{username} connected @ {args.Message.SenderConnection.RemoteEndPoint.Address}");
+
+            args.Message.SenderConnection.Approve();
         }
 
         /// <summary>

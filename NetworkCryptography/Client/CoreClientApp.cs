@@ -1,9 +1,9 @@
 ﻿/*
  * Author: Shon Verch
- * File Name: CoreApp.cs
+ * File Name: CoreClientApp.cs
  * Project: NetworkCryptography
  * Creation Date: 9/27/2017
- * Modified Date: 9/27/2017
+ * Modified Date: 10/14/2017
  * Description: The main application context; manages all logic.
  */
 
@@ -15,7 +15,7 @@ namespace NetworkCryptography.Client
     /// <summary>
     /// Main application context; manages all logic.
     /// </summary>
-    public static class CoreApp
+    public static class CoreClientApp
     {
         /// <summary>
         /// Is the application still running.
@@ -32,7 +32,7 @@ namespace NetworkCryptography.Client
         /// </summary>
         private static readonly TickLoop tickLoop;
 
-        static CoreApp()
+        static CoreClientApp()
         {
             tickLoop = new TickLoop(Tick);
         }
@@ -46,7 +46,7 @@ namespace NetworkCryptography.Client
         public static void Run(string username, string ip, int port)
         {
             Client = new Client();
-            Client.Connect(ip, port);
+            Client.Connect(username, ip, port);
         }
 
         /// <summary>

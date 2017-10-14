@@ -3,7 +3,7 @@
  * File Name: Peer.cs
  * Project: NetworkCryptography
  * Creation Date: 9/25/2017
- * Modified Date: 9/25/2017
+ * Modified Date: 10/14/2017
  * Description: Base class for all network peers.
  */
 
@@ -244,6 +244,8 @@ namespace NetworkCryptography.Core.Networking
         /// <returns>The outgoing message with the header written into it.</returns>
         protected NetOutgoingMessage CreateMessageWithHeader(int packetType)
         {
+            Validate();
+
             NetOutgoingMessage message = NetPeer.CreateMessage();
             message.Write(packetType);
 

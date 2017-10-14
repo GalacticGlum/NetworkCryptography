@@ -44,7 +44,7 @@ namespace NetworkCryptography.Client.Pages
             mainWindow?.SwitchToChatPage();
 
             LoginPageDataContext loginPageDataContext = (LoginPageDataContext) DataContext;
-            CoreApp.Run(loginPageDataContext.Username, loginPageDataContext.IpAddress, 
+            CoreClientApp.Run(loginPageDataContext.Username, loginPageDataContext.IpAddress, 
                 int.Parse(loginPageDataContext.Port));
         }
     }

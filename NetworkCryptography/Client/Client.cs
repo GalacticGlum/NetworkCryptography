@@ -3,7 +3,7 @@
  * File Name: Client.cs
  * Project: NetworkCryptography
  * Creation Date: 9/25/2017
- * Modified Date: 9/27/2017
+ * Modified Date: 10/14/2017
  * Description: The client peer; handles all client-side networking.
  */
 
@@ -38,14 +38,18 @@ namespace NetworkCryptography.Client
         /// <summary>
         /// Connect to an <value>ip address</value> on a specified <value>port</value>.
         /// </summary>
+        /// <param name="username"></param>
         /// <param name="ip"></param>
         /// <param name="port"></param>
-        public void Connect(string ip, int port)
+        public void Connect(string username, string ip, int port)
         {
             Validate();
-
             NetPeer.Start();
-            NetPeer.Connect(ip, port);
+
+            NetOutgoingMessage packet = NetPeer.CreateMessage();
+            packet.Write(username);
+
+            NetPeer.Connect(ip, port, packet);
         }
 
         /// <summary>
@@ -57,7 +61,7 @@ namespace NetworkCryptography.Client
         }
 
         /// <summary>
-        /// Send a NetBuffer of data with a specified delivery method.
+        /// Send a NetBuffer of dataBuffer with a specified delivery method.
         /// </summary>
         /// <param name="packet"></param>
         /// <param name="deliveryMethod"></param>

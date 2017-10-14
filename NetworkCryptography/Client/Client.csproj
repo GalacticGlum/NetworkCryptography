@@ -78,7 +78,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Client.cs" />
-    <Compile Include="CoreApp.cs" />
+    <Compile Include="CoreClientApp.cs" />
     <Compile Include="LoginPageDataContext.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
