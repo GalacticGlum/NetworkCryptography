@@ -7,7 +7,6 @@
  * Description: The server peer; handles all server-side networking.
  */
 
-using System;
 using System.Collections.Generic;
 using Lidgren.Network;
 using NetworkCryptography.Core.Logging;
@@ -44,6 +43,18 @@ namespace NetworkCryptography.Server
         {
             ServerPort = port;
             MaximumConnections = maximumConnections;
+
+            PeerDisconnected += OnUserDisconnected;
+        }
+
+        /// <summary>
+        /// Handle user disconnected.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private static void OnUserDisconnected(object sender, ConnectionEventArgs args)
+        {
+            Logger.Log("User Disconnected -- but we don't know who!");
         }
 
         /// <summary>

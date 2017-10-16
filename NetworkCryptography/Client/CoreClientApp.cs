@@ -49,6 +49,11 @@ namespace NetworkCryptography.Client
             Client.Connect(username, ip, port);
         }
 
+        public static void Quit()
+        {
+            Client.Disconnect();
+        }
+
         /// <summary>
         /// Runs continuous logic for the application.
         /// </summary>

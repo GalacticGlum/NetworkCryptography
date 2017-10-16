@@ -2,10 +2,11 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
-                      Background="{DynamicResource MaterialDesignDarkBackground}"
+        Background="{DynamicResource MaterialDesignDarkBackground}"
         Title="Airballoon" Height="450" Width="650" TitleCharacterCasing="Normal" 
         ShowTitleBar="True" BorderBrush="{DynamicResource PrimaryHueDarkBrush}" 
-                      ResizeMode="NoResize">
+        ResizeMode="NoResize"
+        Closing="OnWindowClose">
 
 </controls:MetroWindow>
 
