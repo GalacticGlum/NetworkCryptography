@@ -61,6 +61,7 @@
     <Compile Include="Helpers\NetworkHelper.cs" />
     <Compile Include="Helpers\StringHelper.cs" />
     <Compile Include="ICryptographicMethod.cs" />
+    <Compile Include="Logging\BackendConsole.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Logging\LoggerDestination.cs" />
     <Compile Include="Logging\LoggerVerbosity.cs" />
@@ -71,6 +72,8 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TickLoop.cs" />
+    <Compile Include="User.cs" />
+    <Compile Include="UserManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

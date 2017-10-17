@@ -182,7 +182,7 @@ namespace NetworkCryptography.Core.Logging
 
                 // Log to the console.
                 if ((Destination & LoggerDestination.Output) != 0)
-                {
+                { 
                     ConsoleColor oldConsoleColor = Console.ForegroundColor;
                     Console.ForegroundColor = GetVerbosityConsoleColour(messageVerbosity);
 
@@ -201,6 +201,7 @@ namespace NetworkCryptography.Core.Logging
                     }
 
                     Console.ForegroundColor = oldConsoleColor;
+
                 }
 
                 // Flush the message buffer if it is time.

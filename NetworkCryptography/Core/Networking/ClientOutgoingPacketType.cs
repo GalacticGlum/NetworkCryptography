@@ -14,7 +14,7 @@ namespace NetworkCryptography.Core.Networking
     /// </summary>
     public enum ClientOutgoingPacketType
     {
-        SendLogin,
-        SendMessage
+        SendMessage,
+        Ping
     }
 }

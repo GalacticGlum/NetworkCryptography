@@ -7,8 +7,11 @@
  * Description: The main application context; manages all logic.
  */
 
+using System;
 using System.Timers;
 using NetworkCryptography.Core;
+using NetworkCryptography.Core.Logging;
+using NetworkCryptography.Core.Networking;
 
 namespace NetworkCryptography.Client
 {
@@ -47,11 +50,17 @@ namespace NetworkCryptography.Client
         {
             Client = new Client();
             Client.Connect(username, ip, port);
+            
+            tickLoop.Start();
+            Logger.Destination = LoggerDestination.All;
         }
 
         public static void Quit()
         {
+            Logger.FlushMessageBuffer();
             Client.Disconnect();
+
+            tickLoop.Stop();
         }
 
         /// <summary>

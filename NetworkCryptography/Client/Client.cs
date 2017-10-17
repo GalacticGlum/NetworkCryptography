@@ -7,7 +7,9 @@
  * Description: The client peer; handles all client-side networking.
  */
 
+using System;
 using Lidgren.Network;
+using NetworkCryptography.Core.Logging;
 using NetworkCryptography.Core.Networking;
 
 namespace NetworkCryptography.Client
@@ -17,6 +19,35 @@ namespace NetworkCryptography.Client
     /// </summary>
     public class Client : Peer<NetClient>
     {
+        private readonly ClientUserManager userManager;
+
+        public Client()
+        {
+            userManager = new ClientUserManager();
+
+            Packets[ServerOutgoingPacketType.SendUserList] += userManager.HandleUserListPacket;
+            Packets[ServerOutgoingPacketType.Pong] += HandlePong;
+        }
+
+        /// <summary>
+        /// Handle a ping response by logging pong.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private static void HandlePong(object sender, PacketRecievedEventArgs args)
+        {
+            Logger.Log("Pong");
+        }
+
+
+        /// <summary>
+        /// Send a ping request to the server.
+        /// </summary>
+        public void Ping()
+        {
+            Send(ClientOutgoingPacketType.Ping, NetDeliveryMethod.ReliableOrdered);
+        }
+
         /// <summary>
         /// Creates the appropriate NetPeer for the client.
         /// </summary>
@@ -45,10 +76,10 @@ namespace NetworkCryptography.Client
         {
             Validate();
             NetPeer.Start();
+            userManager.Clear();
 
             NetOutgoingMessage packet = NetPeer.CreateMessage();
             packet.Write(username);
-
             NetPeer.Connect(ip, port, packet);
         }
 

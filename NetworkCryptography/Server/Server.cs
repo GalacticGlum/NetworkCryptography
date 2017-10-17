@@ -34,6 +34,8 @@ namespace NetworkCryptography.Server
         /// </summary>
         public bool IsRunning { get; private set; }
 
+        private readonly ServerUserManager userManager;
+
         /// <summary>
         /// Creates the server with a specified port and maximum connections.
         /// </summary>
@@ -44,17 +46,8 @@ namespace NetworkCryptography.Server
             ServerPort = port;
             MaximumConnections = maximumConnections;
 
-            PeerDisconnected += OnUserDisconnected;
-        }
-
-        /// <summary>
-        /// Handle user disconnected.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
-        private static void OnUserDisconnected(object sender, ConnectionEventArgs args)
-        {
-            Logger.Log("User Disconnected -- but we don't know who!");
+            userManager = new ServerUserManager();
+            Packets[ClientOutgoingPacketType.Ping] += HandlePingRequest;
         }
 
         /// <summary>
@@ -88,8 +81,31 @@ namespace NetworkCryptography.Server
             Validate();
             HandleMessageType(NetIncomingMessageType.ConnectionApproval, HandleConnectionApproval);
 
+            PeerConnected += OnUserConnected;
+            PeerDisconnected += OnUserDisconnected;
+
             NetPeer.Start();
             IsRunning = true;
+        }
+
+        /// <summary>
+        /// Handles a ping request.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void HandlePingRequest(object sender, PacketRecievedEventArgs args)
+        {
+            Send(ServerOutgoingPacketType.Pong, args.SenderConnection, NetDeliveryMethod.ReliableOrdered);
+        }
+
+        /// <summary>
+        /// Handle a user connection.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void OnUserConnected(object sender, ConnectionEventArgs args)
+        {
+            userManager.SendUserList(args.Connection);
         }
 
         /// <summary>
@@ -97,12 +113,23 @@ namespace NetworkCryptography.Server
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        private static void HandleConnectionApproval(object sender, IncomingMessageEventArgs args)
+        private void HandleConnectionApproval(object sender, IncomingMessageEventArgs args)
         {
             string username = args.Message.ReadString();
-            Logger.Log($"{username} connected @ {args.Message.SenderConnection.RemoteEndPoint.Address}");
+            Logger.Log($"{username} connected from remote endpoint: {args.Message.SenderConnection.RemoteEndPoint.Address}");
 
+            userManager.Add(userManager.Count, username);
             args.Message.SenderConnection.Approve();
+        }
+
+        /// <summary>
+        /// Handle user disconnected.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private static void OnUserDisconnected(object sender, ConnectionEventArgs args)
+        {
+            Logger.Log("User Disconnected -- but we don't know who!");
         }
 
         /// <summary>
@@ -173,6 +200,17 @@ namespace NetworkCryptography.Server
         {
             NetPeer.SendToAll((NetOutgoingMessage)packet, deliveryMethod);
         }
+
+        /// <summary>
+        /// Send a buffer of data to all clients connected to the server.
+        /// </summary>
+        /// <param name="header">The header to send.</param>
+        /// <param name="deliveryMethod">How should the data be delivered.</param>
+        public void SendToAll(ServerOutgoingPacketType header, NetDeliveryMethod deliveryMethod = NetDeliveryMethod.Unreliable)
+        {
+            NetPeer.SendToAll(CreateMessageWithHeader((int)header), deliveryMethod);
+        }
+
 
         /// <summary>
         /// Run update logic for the server.

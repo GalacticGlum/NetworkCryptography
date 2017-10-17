@@ -279,7 +279,7 @@ namespace NetworkCryptography.Core
         /// <param name="targetSize">The target size of the whole buffer.</param>
         private static void Pad(byte[] buffer, int dataSize, int targetSize)
         {
-            // The pad value is the delta size of our CURRENT data and our target data.
+            // The pad value is the delta size of our CURRENT data and our TARGET data.
             byte padValue = (byte)(targetSize - dataSize);
             for (int i = dataSize; i < targetSize; i++)
             {
