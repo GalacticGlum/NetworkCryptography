@@ -74,6 +74,7 @@ namespace NetworkCryptography.Server
 
                 switch (keyInfo.Key)
                 {
+                    // If we press the up arrow, we select the option above our current selected (or wrap to the bottom).
                     case ConsoleKey.UpArrow:
                         if (selectedIndex > 0)
                         {
@@ -84,6 +85,7 @@ namespace NetworkCryptography.Server
                             selectedIndex = options.Length - 1;
                         }
                         break;
+                    // If we press the down arrow, we select the option below our current selected (or wrap to the bottom).
                     case ConsoleKey.DownArrow:
                         if (selectedIndex < options.Length - 1)
                         {
@@ -94,6 +96,7 @@ namespace NetworkCryptography.Server
                             selectedIndex = 0;
                         }
                         break;
+                    // If we press the enter key, we exit selection mode and register the selection.
                     case ConsoleKey.Enter:
                         hasSelected = true;
                         break;
