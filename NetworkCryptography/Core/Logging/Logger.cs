@@ -3,7 +3,7 @@
  * File Name: Logger.cs
  * Project: NetworkCryptography
  * Creation Date: 9/22/2017
- * Modified Date: 9/27/2017
+ * Modified Date: 10/17/2017
  * Description: Console logger with extra functionality.
  */
 
@@ -21,6 +21,34 @@ using NetworkCryptography.Core.Helpers;
 
 namespace NetworkCryptography.Core.Logging
 {
+    /// <summary>
+    /// Event for when a message is logged using the logger.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
+    public delegate void MessageLoggedEventHandler(MessagedLoggerEventArgs args);
+
+    /// <summary>
+    /// Event args for the MessageLogged event.
+    /// </summary>
+    public class MessagedLoggerEventArgs : EventArgs
+    {
+        /// <summary>
+        /// The message which was logged.
+        /// </summary>
+        public string Message { get; set; }
+
+        /// <summary>
+        /// Creates a new event args with a specified message.
+        /// </summary>
+        /// <param name="message"></param>
+        public MessagedLoggerEventArgs(string message)
+        {
+            Message = message;
+        }
+    }
+
+
     /// <summary>
     /// Console logger with extra functionality.
     /// </summary>
@@ -45,6 +73,12 @@ namespace NetworkCryptography.Core.Logging
         /// Line seperator between messages.
         /// </summary>
         public static string LineSeperator { get; set; } = string.Empty;
+
+        /// <summary>
+        /// A global suffix for every message logged. 
+        /// This is appended to the end of every message.
+        /// </summary>
+        public static string MessageSuffix { get; set; } = string.Empty;
 
         /// <summary>
         /// The frequency at which lines should be seperated. 
@@ -75,6 +109,18 @@ namespace NetworkCryptography.Core.Logging
         /// The amount of messages logged since startup.
         /// </summary>
         public static int MessageCount { get; private set; }
+
+        /// <summary>
+        /// MessageLogged event. 
+        /// This event is raised whenever a message is logged to any destination.
+        /// </summary>
+        public static event MessageLoggedEventHandler MessageLogged;
+
+        /// <summary>
+        /// Raises the MessageLogged event.
+        /// </summary>
+        /// <param name="args"></param>
+        private static void OnMessageLogged(MessagedLoggerEventArgs args) => MessageLogged?.Invoke(args);
 
         private static readonly StringBuilder messageBuffer = new StringBuilder();
         private static readonly Timer messageBufferFlushTimer;
@@ -159,7 +205,7 @@ namespace NetworkCryptography.Core.Logging
 
                 MessageCount++;
 
-                string output = string.Concat(GetMessageHeader(messageVerbosity, category), message);
+                string output = string.Concat(GetMessageHeader(messageVerbosity, category), message, MessageSuffix);
                 string messageSeperator = string.Empty;
 
                 bool shouldSeperateLine = seperateLineHere || LineSeperatorMessageInterval > 0 && 
@@ -182,7 +228,7 @@ namespace NetworkCryptography.Core.Logging
 
                 // Log to the console.
                 if ((Destination & LoggerDestination.Output) != 0)
-                { 
+                {
                     ConsoleColor oldConsoleColor = Console.ForegroundColor;
                     Console.ForegroundColor = GetVerbosityConsoleColour(messageVerbosity);
 
@@ -201,7 +247,11 @@ namespace NetworkCryptography.Core.Logging
                     }
 
                     Console.ForegroundColor = oldConsoleColor;
+                }
 
+                if (Destination != LoggerDestination.None)
+                {
+                    OnMessageLogged(new MessagedLoggerEventArgs(message.ToString()));
                 }
 
                 // Flush the message buffer if it is time.

@@ -23,9 +23,8 @@ namespace NetworkCryptography.Core.Helpers
 
         /// <summary>
         /// Overline character constant. 
-        /// Note: This is unicode, therefore it will not print in the console.s
         /// </summary>
-        public const string Overline = "‾";
+        public const string Overline = "\u0305";
 
         /// <summary>
         /// Underscore character constant.

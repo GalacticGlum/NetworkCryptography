@@ -14,8 +14,10 @@ namespace NetworkCryptography.Core.Networking
     /// </summary>
     public enum ServerOutgoingPacketType
     {
+        SendBelongingUserToClient,
         SendUserList,
-        SendNewUser,
+        SendUserJoined,
+        SendUserLeft,
         RelayMessage,
         Pong
     }

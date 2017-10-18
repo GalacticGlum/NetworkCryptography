@@ -8,6 +8,7 @@
  */
 
 using System;
+using System.Text;
 using NetworkCryptography.Core.Helpers;
 
 namespace NetworkCryptography.Server
@@ -17,6 +18,11 @@ namespace NetworkCryptography.Server
     /// </summary>
     public static class ConsoleDisplay
     {
+        static ConsoleDisplay()
+        {
+            Console.OutputEncoding = Encoding.Unicode;
+        }
+
         /// <summary>
         /// Display a menu with a specified options and dialog prompt.
         /// </summary>
@@ -48,7 +54,7 @@ namespace NetworkCryptography.Server
                     Console.ResetColor();
                 }
 
-                Console.WriteLine("_".Multiply(25));
+                Console.WriteLine(StringHelper.Overline.Multiply(25));
 
                 bottomOffset = Console.CursorTop;
                 ConsoleKeyInfo keyInfo = Console.ReadKey(true);

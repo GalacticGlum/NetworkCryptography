@@ -35,17 +35,17 @@ namespace NetworkCryptography.Core.Networking
         /// <summary>
         /// NetBuffer containing any data sent on connection.
         /// </summary>
-        public NetBuffer Buffer { get; }
+        public NetBuffer Message { get; }
 
         /// <summary>
-        /// Creates a ConnectionEventArgs with a specified connection and data buffer.
+        /// Creates a ConnectionEventArgs with a specified connection and data message.
         /// </summary>
         /// <param name="connection">The connection.</param>
-        /// <param name="buffer">The data buffer.</param>
-        public ConnectionEventArgs(NetConnection connection, NetBuffer buffer)
+        /// <param name="message">The data message.</param>
+        public ConnectionEventArgs(NetConnection connection, NetBuffer message)
         {
             Connection = connection;
-            Buffer = buffer;
+            Message = message;
         }
     }
 
@@ -67,19 +67,19 @@ namespace NetworkCryptography.Core.Networking
         public NetConnection SenderConnection { get; }
 
         /// <summary>
-        /// The packet data buffer.
+        /// The packet data message.
         /// </summary>
-        public NetBuffer Buffer { get; }
+        public NetBuffer Message { get; }
 
         /// <summary>
-        /// Creates a PacketReceivedEventArgs with a specified sender connection and data buffer.
+        /// Creates a PacketReceivedEventArgs with a specified sender connection and data message.
         /// </summary>
         /// <param name="senderConnection">The sender connection.</param>
-        /// <param name="buffer">The packet data buffer.</param>
-        public PacketRecievedEventArgs(NetConnection senderConnection, NetBuffer buffer)
+        /// <param name="message">The packet data message.</param>
+        public PacketRecievedEventArgs(NetConnection senderConnection, NetBuffer message)
         {
             SenderConnection = senderConnection;
-            Buffer = buffer;
+            Message = message;
         }
     }
 
@@ -195,9 +195,15 @@ namespace NetworkCryptography.Core.Networking
                     switch (message.SenderConnection.Status)
                     {
                         case NetConnectionStatus.Connected:
+                            // First byte indicates the NetConnectionStatus, so let's skip it.
+                            message.SkipPadBits(8);
+
                             OnConnected(new ConnectionEventArgs(message.SenderConnection, message));
                             break;
                         case NetConnectionStatus.Disconnected:
+                            // First byte indicates the NetConnectionStatus, so let's skip it.
+                            message.SkipPadBits(8);
+
                             OnDisconnected(new ConnectionEventArgs(message.SenderConnection, message));
                             break;
                     }
@@ -218,7 +224,7 @@ namespace NetworkCryptography.Core.Networking
         /// Create a packet with a specified header type.
         /// </summary>
         /// <param name="packetType">The packet type.</param>
-        /// <returns>The packet buffer.</returns>
+        /// <returns>The packet message.</returns>
         public NetBuffer CreatePacket(ClientOutgoingPacketType packetType) => CreatePacket((int)packetType);
 
 
@@ -226,7 +232,7 @@ namespace NetworkCryptography.Core.Networking
         /// Create a packet with a specified header type.
         /// </summary>
         /// <param name="packetType">The packet type.</param>
-        /// <returns>The packet buffer.</returns>
+        /// <returns>The packet message.</returns>
         public NetBuffer CreatePacket(ServerOutgoingPacketType packetType) => CreatePacket((int)packetType);
 
 
@@ -234,7 +240,7 @@ namespace NetworkCryptography.Core.Networking
         /// Create a packet with a specified header type.
         /// </summary>
         /// <param name="packetType">The packet type.</param>
-        /// <returns>The packet buffer.</returns>
+        /// <returns>The packet message.</returns>
         public NetBuffer CreatePacket(int packetType) => CreateMessageWithHeader(packetType);
 
         /// <summary>

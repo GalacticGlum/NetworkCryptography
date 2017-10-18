@@ -7,6 +7,7 @@
  * Description: Manages all users connected to the server.
  */
 
+using System;
 using NetworkCryptography.Core;
 using NetworkCryptography.Core.Logging;
 using NetworkCryptography.Core.Networking;
@@ -18,6 +19,8 @@ namespace NetworkCryptography.Client
     /// </summary>
     public class ClientUserManager : UserManager
     {
+        public User BelongingUser { get; private set; }
+
         /// <summary>
         /// Reads the list of users sent from the server.
         /// </summary>
@@ -25,15 +28,53 @@ namespace NetworkCryptography.Client
         /// <param name="args"></param>
         public void HandleUserListPacket(object sender, PacketRecievedEventArgs args)
         {
-            int count = args.Buffer.ReadInt32();
+            int count = args.Message.ReadInt32();
             for (int i = 0; i < count; i++)
             {
-                int id = args.Buffer.ReadInt32();
-                string name = args.Buffer.ReadString();
+                int id = args.Message.ReadInt32();
+                string name = args.Message.ReadString();
 
-                Logger.Log(name);
                 Add(id, name);
             }
+        }
+
+        /// <summary>
+        /// Handles the SendBelongingUserToClient message.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        public void ReceiveBelongingUser(object sender, PacketRecievedEventArgs args)
+        {
+            int id = args.Message.ReadInt32();
+            BelongingUser = this[id];
+        }
+
+        /// <summary>
+        /// Handle a user joining.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        public void HandleNewUser(object sender, PacketRecievedEventArgs args)
+        {
+            int id = args.Message.ReadInt32();
+            string name = args.Message.ReadString();
+
+            Add(id, name);
+
+            Logger.Log($"{name} joined.");
+        }
+
+        /// <summary>
+        /// Handle a user leaving.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        public void HandleUserLeft(object sender, PacketRecievedEventArgs args)
+        {
+            int id = args.Message.ReadInt32();
+            User user = Remove(id);
+
+            Logger.Log($"{user.Name} left");
         }
 
         /// <summary>

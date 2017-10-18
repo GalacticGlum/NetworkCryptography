@@ -9,7 +9,6 @@
 
 using System.Collections;
 using System.Collections.Generic;
-using Microsoft.Win32;
 
 namespace NetworkCryptography.Core
 {
@@ -56,6 +55,8 @@ namespace NetworkCryptography.Core
         /// <param name="name">The name of the user.</param>
         public void Add(int id, string name)
         {
+            if (users.ContainsKey(id)) return;
+
             User user = new User(id, name);
             users.Add(id, user);
         }
@@ -64,10 +65,14 @@ namespace NetworkCryptography.Core
         /// Removes a user with a specified id.
         /// </summary>
         /// <param name="id">The id of the user.</param>
-        public void Remove(int id)
+        /// <returns>The user removed from the database.</returns>
+        public User Remove(int id)
         {
-            if (!users.ContainsKey(id)) return;
+            if (!users.ContainsKey(id)) return null;
+            User user = Get(id);
             users.Remove(id);
+
+            return user;
         }
 
         /// <summary>

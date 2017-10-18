@@ -9,7 +9,6 @@
 
 using Lidgren.Network;
 using NetworkCryptography.Core;
-using NetworkCryptography.Core.Logging;
 using NetworkCryptography.Core.Networking;
 
 namespace NetworkCryptography.Server
@@ -20,7 +19,7 @@ namespace NetworkCryptography.Server
     public class ServerUserManager : UserManager
     {
         /// <summary>
-        /// Sends the user list to all clients.
+        /// Sends the user list to a target client.
         /// </summary>
         public void SendUserList(NetConnection target)
         {

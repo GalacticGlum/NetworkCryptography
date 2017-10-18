@@ -3,7 +3,7 @@
  * File Name: Client.cs
  * Project: NetworkCryptography
  * Creation Date: 9/25/2017
- * Modified Date: 10/14/2017
+ * Modified Date: 10/17/2017
  * Description: The client peer; handles all client-side networking.
  */
 
@@ -25,8 +25,12 @@ namespace NetworkCryptography.Client
         {
             userManager = new ClientUserManager();
 
+            Packets[ServerOutgoingPacketType.SendBelongingUserToClient] += userManager.ReceiveBelongingUser;
             Packets[ServerOutgoingPacketType.SendUserList] += userManager.HandleUserListPacket;
-            Packets[ServerOutgoingPacketType.Pong] += HandlePong;
+            Packets[ServerOutgoingPacketType.SendUserJoined] += userManager.HandleNewUser;
+            Packets[ServerOutgoingPacketType.SendUserLeft] += userManager.HandleUserLeft;
+
+            Packets[ServerOutgoingPacketType.Pong] += HandlePongMessage;
         }
 
         /// <summary>
@@ -34,11 +38,10 @@ namespace NetworkCryptography.Client
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        private static void HandlePong(object sender, PacketRecievedEventArgs args)
+        private static void HandlePongMessage(object sender, PacketRecievedEventArgs args)
         {
             Logger.Log("Pong");
         }
-
 
         /// <summary>
         /// Send a ping request to the server.
@@ -78,17 +81,16 @@ namespace NetworkCryptography.Client
             NetPeer.Start();
             userManager.Clear();
 
-            NetOutgoingMessage packet = NetPeer.CreateMessage();
-            packet.Write(username);
-            NetPeer.Connect(ip, port, packet);
+            NetPeer.Connect(ip, port, NetPeer.CreateMessage(username));
         }
 
         /// <summary>
         /// Disconnect from the server which the client is connected to.
         /// </summary>
-        public void Disconnect(string hailMessage = "")
+        public void Disconnect()
         {
-            NetPeer.Disconnect(hailMessage);
+            // Send id with disconnection so we can identify who disconnected.
+            NetPeer.Disconnect(userManager.BelongingUser.Id.ToString());
         }
 
         /// <summary>

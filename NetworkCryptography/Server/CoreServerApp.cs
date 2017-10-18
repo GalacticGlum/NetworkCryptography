@@ -3,7 +3,7 @@
  * File Name: CoreServerApp.cs
  * Project: NetworkCryptography
  * Creation Date: 9/27/2017
- * Modified Date: 10/14/2017
+ * Modified Date: 10/17/2017
  * Description: The main application context; manages all logic.
  */
 
@@ -33,7 +33,7 @@ namespace NetworkCryptography.Server
         /// <summary>
         /// Server settings file.
         /// </summary>
-        public static Settings Settings { get; private set; }
+        public static Settings Settings { get; }
 
         /// <summary>
         /// The logic loop ticker.
@@ -95,6 +95,8 @@ namespace NetworkCryptography.Server
         /// </summary>
         private static void ProcessConsoleCommands()
         {
+            Logger.MessageLogged += args => Console.Write(">>> ");
+
             while (IsRunning)
             {
                 Console.Write(">>> ");
@@ -105,6 +107,12 @@ namespace NetworkCryptography.Server
                 {
                     case "quit":
                         Exit();
+                        break;
+                    case "clear":
+                        Console.Clear();
+                        break;
+                    case "users":
+                        Server.PrintConnectedUsers();
                         break;
                     default:
                         Console.WriteLine($"'{line}' is not recognized as a command.{Environment.NewLine}");

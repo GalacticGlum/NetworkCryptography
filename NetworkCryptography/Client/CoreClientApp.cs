@@ -3,15 +3,13 @@
  * File Name: CoreClientApp.cs
  * Project: NetworkCryptography
  * Creation Date: 9/27/2017
- * Modified Date: 10/14/2017
+ * Modified Date: 10/17/2017
  * Description: The main application context; manages all logic.
  */
 
-using System;
 using System.Timers;
 using NetworkCryptography.Core;
 using NetworkCryptography.Core.Logging;
-using NetworkCryptography.Core.Networking;
 
 namespace NetworkCryptography.Client
 {
