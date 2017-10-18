@@ -36,6 +36,11 @@ namespace NetworkCryptography.Server
         public static Settings Settings { get; }
 
         /// <summary>
+        /// The title of the server console window.
+        /// </summary>
+        private const string WindowTitle = "Airballoon Server";
+
+        /// <summary>
         /// The logic loop ticker.
         /// </summary>
         private static readonly TickLoop tickLoop;
@@ -52,6 +57,8 @@ namespace NetworkCryptography.Server
 
         static CoreServerApp()
         {
+            Console.Title = WindowTitle;
+
             Settings = Settings.Load();
             tickLoop = new TickLoop(Tick);
         }
@@ -69,7 +76,10 @@ namespace NetworkCryptography.Server
             Initialize();
 
             Logger.Destination = LoggerDestination.All;
-            Logger.Log($"Started server on <{NetworkHelper.GetLocalIpAddress()}:{port}>", LoggerVerbosity.Plain);
+
+            string address = $"<{NetworkHelper.GetLocalIpAddress()}:{port}>";
+            Logger.Log($"Started server on {address}", LoggerVerbosity.Plain);
+            Console.Title = $"{WindowTitle} | {address}";
         }
 
         /// <summary>
