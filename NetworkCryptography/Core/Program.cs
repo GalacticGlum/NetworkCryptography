@@ -1,5 +1,4 @@
 ﻿using System;
-using NetworkCryptography.Core.Helpers;
 
 namespace NetworkCryptography.Core
 {
