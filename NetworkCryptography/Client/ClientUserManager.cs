@@ -7,7 +7,6 @@
  * Description: Manages all users connected to the server.
  */
 
-using System;
 using NetworkCryptography.Core;
 using NetworkCryptography.Core.Logging;
 using NetworkCryptography.Core.Networking;

@@ -3,7 +3,7 @@
  * File Name: CoreServerApp.cs
  * Project: NetworkCryptography
  * Creation Date: 9/27/2017
- * Modified Date: 10/17/2017
+ * Modified Date: 10/18/2017
  * Description: The main application context; manages all logic.
  */
 
@@ -34,6 +34,11 @@ namespace NetworkCryptography.Server
         /// Server settings file.
         /// </summary>
         public static Settings Settings { get; }
+
+        /// <summary>
+        /// Indicates whether a command is currently being executed.
+        /// </summary>
+        public static bool IsCommandRunning { get; private set; }
 
         /// <summary>
         /// The title of the server console window.
@@ -105,7 +110,11 @@ namespace NetworkCryptography.Server
         /// </summary>
         private static void ProcessConsoleCommands()
         {
-            Logger.MessageLogged += args => Console.Write(">>> ");
+            Logger.MessageLogged += args =>
+            {
+                if (IsCommandRunning) return;
+                Console.Write(">>> ");
+            };
 
             while (IsRunning)
             {
@@ -113,6 +122,7 @@ namespace NetworkCryptography.Server
                 string line = Console.ReadLine();
                 if (string.IsNullOrEmpty(line)) continue;
 
+                IsCommandRunning = true;
                 switch (line)
                 {
                     case "quit":
@@ -125,9 +135,12 @@ namespace NetworkCryptography.Server
                         Server.PrintConnectedUsers();
                         break;
                     default:
+                        IsCommandRunning = false;
                         Console.WriteLine($"'{line}' is not recognized as a command.{Environment.NewLine}");
                         break;
                 }
+
+                IsCommandRunning = false;
             }
         }
 

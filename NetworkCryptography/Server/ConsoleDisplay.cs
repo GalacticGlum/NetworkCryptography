@@ -3,7 +3,7 @@
  * File Name: ConsoleDisplay.cs
  * Project: NetworkCryptography
  * Creation Date: 9/23/2017
- * Modified Date: 9/25/2017
+ * Modified Date: 10/18/2017
  * Description: Collection of useful console interface funtionality.
  */
 
@@ -20,7 +20,9 @@ namespace NetworkCryptography.Server
     {
         static ConsoleDisplay()
         {
+            // Setup Console globals
             Console.OutputEncoding = Encoding.Unicode;
+            Console.ForegroundColor = ConsoleColor.Gray;
         }
 
         /// <summary>
@@ -44,6 +46,8 @@ namespace NetworkCryptography.Server
             {
                 for (int i = 0; i < options.Length; i++)
                 {
+                    Console.ForegroundColor = ConsoleColor.Gray;
+
                     if (i == selectedIndex)
                     {
                         Console.BackgroundColor = ConsoleColor.Gray;
@@ -54,6 +58,7 @@ namespace NetworkCryptography.Server
                     Console.ResetColor();
                 }
 
+                Console.ForegroundColor = ConsoleColor.Gray;
                 Console.WriteLine(StringHelper.Overline.Multiply(25));
 
                 bottomOffset = Console.CursorTop;

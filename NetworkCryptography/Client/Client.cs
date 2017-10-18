@@ -7,7 +7,6 @@
  * Description: The client peer; handles all client-side networking.
  */
 
-using System;
 using Lidgren.Network;
 using NetworkCryptography.Core.Logging;
 using NetworkCryptography.Core.Networking;

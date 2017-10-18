@@ -3,11 +3,10 @@
  * File Name: Server.cs
  * Project: NetworkCryptography
  * Creation Date: 9/25/2017
- * Modified Date: 10/17/2017
+ * Modified Date: 10/18/2017
  * Description: The server peer; handles all server-side networking.
  */
 
-using System;
 using System.Collections.Generic;
 using Lidgren.Network;
 using NetworkCryptography.Core;
@@ -41,7 +40,6 @@ namespace NetworkCryptography.Server
         /// Indicates whether the server is running.
         /// </summary>
         public bool IsRunning { get; private set; }
-
 
         /// <summary>
         /// Creates the server with a specified port and maximum connections.
@@ -272,16 +270,16 @@ namespace NetworkCryptography.Server
             // Print header
             bool isOneUserConnected = UserManager.Count == 1;
             string usersConnectedMessage = $"There {(isOneUserConnected ? "is" : "are")} {UserManager.Count} {(isOneUserConnected ? "user" : "users")} connected.";
-            Console.WriteLine(usersConnectedMessage);
-            Console.WriteLine(StringHelper.Overline.Multiply(usersConnectedMessage.Length));
+            Logger.Log(usersConnectedMessage, LoggerVerbosity.Plain);
+            Logger.Log(StringHelper.Overline.Multiply(usersConnectedMessage.Length), LoggerVerbosity.Plain);
 
             // Print name of each user
             foreach (User user in UserManager)
             {
-                Console.WriteLine(user.Name);
+                Logger.Log(user.Name, LoggerVerbosity.Plain);
             }
 
-            Console.WriteLine();
+            Logger.Log(string.Empty, LoggerVerbosity.Plain);
         }
 
         /// <summary>
