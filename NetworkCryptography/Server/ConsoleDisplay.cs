@@ -42,6 +42,8 @@ namespace NetworkCryptography.Server
             int topOffset = Console.CursorTop;
             int bottomOffset = 0;
 
+            int longestOptionLength = 0;
+
             while (!hasSelected)
             {
                 for (int i = 0; i < options.Length; i++)
@@ -54,12 +56,18 @@ namespace NetworkCryptography.Server
                         Console.ForegroundColor = ConsoleColor.Black;
                     }
 
-                    Console.WriteLine($"{i + 1}. {options[i]}");
+                    string option = $"{i + 1}. {options[i]}";
+                    if (option.Length > longestOptionLength)
+                    {
+                        longestOptionLength = option.Length;
+                    }
+
+                    Console.WriteLine(option);
                     Console.ResetColor();
                 }
 
                 Console.ForegroundColor = ConsoleColor.Gray;
-                Console.WriteLine(StringHelper.Overline.Multiply(25));
+                Console.WriteLine(StringHelper.Overline.Multiply(longestOptionLength));
 
                 bottomOffset = Console.CursorTop;
                 ConsoleKeyInfo keyInfo = Console.ReadKey(true);
