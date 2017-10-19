@@ -3,7 +3,7 @@
  * File Name: ConsoleDisplay.cs
  * Project: NetworkCryptography
  * Creation Date: 9/23/2017
- * Modified Date: 9/25/2017
+ * Modified Date: 10/18/2017
  * Description: Collection of useful console interface funtionality.
  */
 
@@ -20,7 +20,9 @@ namespace NetworkCryptography.Server
     {
         static ConsoleDisplay()
         {
+            // Setup Console globals
             Console.OutputEncoding = Encoding.Unicode;
+            Console.ForegroundColor = ConsoleColor.Gray;
         }
 
         /// <summary>
@@ -40,27 +42,39 @@ namespace NetworkCryptography.Server
             int topOffset = Console.CursorTop;
             int bottomOffset = 0;
 
+            int longestOptionLength = 0;
+
             while (!hasSelected)
             {
                 for (int i = 0; i < options.Length; i++)
                 {
+                    Console.ForegroundColor = ConsoleColor.Gray;
+
                     if (i == selectedIndex)
                     {
                         Console.BackgroundColor = ConsoleColor.Gray;
                         Console.ForegroundColor = ConsoleColor.Black;
                     }
 
-                    Console.WriteLine($"{i + 1}. {options[i]}");
+                    string option = $"{i + 1}. {options[i]}";
+                    if (option.Length > longestOptionLength)
+                    {
+                        longestOptionLength = option.Length;
+                    }
+
+                    Console.WriteLine(option);
                     Console.ResetColor();
                 }
 
-                Console.WriteLine(StringHelper.Overline.Multiply(25));
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.WriteLine(StringHelper.Overline.Multiply(longestOptionLength));
 
                 bottomOffset = Console.CursorTop;
                 ConsoleKeyInfo keyInfo = Console.ReadKey(true);
 
                 switch (keyInfo.Key)
                 {
+                    // If we press the up arrow, we select the option above our current selected (or wrap to the bottom).
                     case ConsoleKey.UpArrow:
                         if (selectedIndex > 0)
                         {
@@ -71,6 +85,7 @@ namespace NetworkCryptography.Server
                             selectedIndex = options.Length - 1;
                         }
                         break;
+                    // If we press the down arrow, we select the option below our current selected (or wrap to the bottom).
                     case ConsoleKey.DownArrow:
                         if (selectedIndex < options.Length - 1)
                         {
@@ -81,6 +96,7 @@ namespace NetworkCryptography.Server
                             selectedIndex = 0;
                         }
                         break;
+                    // If we press the enter key, we exit selection mode and register the selection.
                     case ConsoleKey.Enter:
                         hasSelected = true;
                         break;

@@ -1,4 +1,4 @@
-﻿namespace NetworkCryptography.Client.Pages
+namespace NetworkCryptography.Client.Pages
 {
     /// <summary>
     /// Interaction logic for ChatroomPage.xaml
