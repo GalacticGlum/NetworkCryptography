@@ -5,9 +5,10 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       xmlns:client="clr-namespace:NetworkCryptography.Client"
+      xmlns:pages="clr-namespace:NetworkCryptography.Client.Pages"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="650"
-      d:DataContext="{d:DesignInstance client:LoginPageDataContext, d:IsDesignTimeCreatable=False}"
+      d:DataContext="{d:DesignInstance pages:LoginPageDataContext, d:IsDesignTimeCreatable=False}"
       Title="Airballoon">
     <Grid>
         <materialDesign:Card VerticalAlignment="Center" HorizontalAlignment="Center" Width="200" Height="280">

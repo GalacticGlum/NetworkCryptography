@@ -80,7 +80,8 @@
     <Compile Include="Client.cs" />
     <Compile Include="ClientUserManager.cs" />
     <Compile Include="CoreClientApp.cs" />
-    <Compile Include="LoginPageDataContext.cs" />
+    <Compile Include="Pages\ChatroomPageDataContext.cs" />
+    <Compile Include="Pages\LoginPageDataContext.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -134,6 +135,10 @@
       <Project>{ff2800e2-0201-4fad-906b-c02e6cb5b2c0}</Project>
       <Name>Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\account_circle.png">
+    </Resource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

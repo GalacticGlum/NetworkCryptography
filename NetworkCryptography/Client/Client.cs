@@ -89,6 +89,8 @@ namespace NetworkCryptography.Client
         /// </summary>
         public void Disconnect()
         {
+            if (NetPeer.ConnectionStatus != NetConnectionStatus.Connected) return;
+
             // Send id with disconnection so we can identify who disconnected.
             NetPeer.Disconnect(userManager.BelongingUser.Id.ToString());
         }

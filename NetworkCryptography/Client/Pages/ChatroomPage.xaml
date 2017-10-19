@@ -5,11 +5,200 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       xmlns:client="clr-namespace:NetworkCryptography.Client"
+      xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+      xmlns:pages="clr-namespace:NetworkCryptography.Client.Pages"
+      Background="#36393E"
       mc:Ignorable="d" 
+      d:DataContext="{d:DesignInstance pages:ChatroomPageDataContext, d:IsDesignTimeCreatable=False}"
       d:DesignHeight="450" d:DesignWidth="650"
       Title="Airballoon">
 
+    <Page.Resources>
+        <Style x:Key="SendButtonStyle" TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{DynamicResource PrimaryHueDarkBrush}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Grid Background="#00000000">
+                            <materialDesign:PackIcon Name="SendIcon" Kind="Send" SnapsToDevicePixels="True"
+                                                     Foreground="{TemplateBinding Foreground}"
+                                                     HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                     VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                     Margin="{TemplateBinding Padding}" Width="Auto" Height="Auto"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Foreground" TargetName="SendIcon" Value="{DynamicResource PrimaryHueMidBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter Property="Foreground" TargetName="SendIcon" Value="{DynamicResource PrimaryHueMidBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.23"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="UsersListBoxItemStyle" TargetType="{x:Type ListBoxItem}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="HorizontalContentAlignment" 
+                    Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+            <Setter Property="VerticalContentAlignment" 
+                    Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+            <Setter Property="Padding" Value="2,0,0,0"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                        <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" 
+                                Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <DataTemplate x:Key="UserDataTemplate">
+            <Border BorderThickness="0,0,0,1" BorderBrush="{DynamicResource MaterialDesignDivider}"
+                    Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}}"
+                    Height="50">
+                <Grid Margin="5,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="15"/>
+                        <ColumnDefinition Width="25"/>
+                    </Grid.ColumnDefinitions>
+                    <!--Pic-->
+                    <Grid Margin="6" SnapsToDevicePixels="True">
+                        <Image Source="{StaticResource DefaultUserAvatar}" Stretch="UniformToFill" SnapsToDevicePixels="True" Width="Auto" Height="Auto"
+                               HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                    </Grid>
+
+                    <!--Name-->
+                    <TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left"
+                               Margin="5,0" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
+                               Text="{Binding Name}" SnapsToDevicePixels="True" Foreground="#C0C1C2" FontSize="14"/>
+              
+                </Grid>
+            </Border>
+        </DataTemplate>
+
+        <DataTemplate x:Key="MessagesDataTemplate">
+            <Border Name="MessageBorder" MinHeight="40" BorderThickness="1" Background="#EFEBE9" 
+                    Margin="10,0,60,10" BorderBrush="#BCAAA4" CornerRadius="2" SnapsToDevicePixels="True">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="15"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="7,5,7,0"                                
+                               TextWrapping="Wrap" Text="{Binding Message}"/>
+                    <TextBlock Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Stretch"
+                               Margin="0,0,5,0" FontSize="10" Opacity="0.8"
+                               Text="{Binding Time, StringFormat={}{0:t}}"/>
+                </Grid>
+            </Border>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding IsOriginNative}" Value="True">
+                    <Setter TargetName="MessageBorder" Property="Margin" Value="60,0,10,10"/>
+                    <Setter TargetName="MessageBorder" Property="Background" Value="#BBDEFB"/>
+                    <Setter TargetName="MessageBorder" Property="BorderBrush" Value="#64B5F6"/>
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+    </Page.Resources>
+
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.RowSpan="2" BorderThickness="0,0,1,0" SnapsToDevicePixels="True"
+                BorderBrush="{DynamicResource MaterialDesignDivider}">
+            <ListBox ItemsSource="{Binding Users}"
+                     Background="#2F3136"
+                     ItemTemplate="{DynamicResource UserDataTemplate}"
+                     ItemContainerStyle="{DynamicResource UsersListBoxItemStyle}"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+        </Border>
+
+        <!--Messages-->
+        <ItemsControl x:Name="MessagesItemsCtrl" Grid.Row="0" Grid.Column="1" Margin="0,5,0,0" 
+                      ItemsSource="{Binding SelectedParticipant.Chatter}" 
+                      ItemTemplate="{DynamicResource MessagesDataTemplate}"
+                      ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <i:Interaction.Behaviors>
+                <!--<utils:BringNewItemIntoViewBehavior/>-->
+            </i:Interaction.Behaviors>
+            
+            <ItemsControl.Template>
+                <ControlTemplate TargetType="ItemsControl">
+                    <ScrollViewer>
+                        <ItemsPresenter/>
+                    </ScrollViewer>
+                </ControlTemplate>
+            </ItemsControl.Template>
+        </ItemsControl>
+
+        <Border Grid.Row="1" Grid.Column="1" SnapsToDevicePixels="True"
+                BorderBrush="{DynamicResource MaterialDesignDivider}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="50"/>
+                </Grid.ColumnDefinitions>
+                
+                <!--Message-->
+                <TextBox x:Name="MessageTxtBox" Margin="10,10,0,10" MaxHeight="80"                                         
+                         BorderThickness="0"
+                         materialDesign:HintAssist.Hint="Message"
+                         TextWrapping="Wrap" AcceptsReturn="True"  
+                         materialDesign:TextFieldAssist.DecorationVisibility="Hidden"
+                         VerticalScrollBarVisibility="Auto"
+                         Text="{Binding Message, UpdateSourceTrigger=PropertyChanged}"                 
+                         Background="#484B51"
+                         Foreground="#C0C1C2"
+                         Padding="2, 0, 2, 0"
+                         VerticalAlignment="Center">
+
+                    <TextBox.Resources>
+                        <Style TargetType="{x:Type Border}">
+                            <Setter Property="CornerRadius" Value="3"/>
+                        </Style>
+                    </TextBox.Resources>
+                    
+                    <TextBox.CaretBrush>
+                        <SolidColorBrush Color="#C0C1C2"/>
+                    </TextBox.CaretBrush>
+                </TextBox>
+                
+                <!--Send-->
+                <Button x:Name="SendButton" Grid.Column="1" Margin="10"
+                        Style="{DynamicResource SendButtonStyle}"
+                        Command="{Binding SendMessageCommand}"/>
+            </Grid>
+        </Border>
     </Grid>
 </Page>

@@ -8,8 +8,9 @@
  */
 
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
-namespace NetworkCryptography.Client
+namespace NetworkCryptography.Client.Pages
 {
     /// <summary>
     /// Stores all data in the login page. 
@@ -71,9 +72,12 @@ namespace NetworkCryptography.Client
         /// Raises the PropertyChanged event.
         /// </summary>
         /// <param name="name"></param>
-        private void OnPropertyChanged(string name)
+        private void OnPropertyChanged([CallerMemberName] string name = null)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+            if (name != null)
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+            }
         }
     }
 }
