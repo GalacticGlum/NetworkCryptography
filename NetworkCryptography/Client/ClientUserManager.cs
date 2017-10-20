@@ -8,7 +8,6 @@
  */
 
 using System;
-using System.Collections.Generic;
 using NetworkCryptography.Core;
 using NetworkCryptography.Core.Networking;
 
@@ -49,52 +48,14 @@ namespace NetworkCryptography.Client
     }
 
     /// <summary>
-    /// Event for whenever we receive a user list (when we first connect).
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="args"></param>
-    public delegate void UserListReceivedEventHandler(object sender, UserListEventArgs args);
-
-    /// <summary>
-    /// Event arguments for a collection of users.
-    /// </summary>
-    public class UserListEventArgs : EventArgs
-    {
-        /// <summary>
-        /// Collection of users joined.
-        /// </summary>
-        public IEnumerable<User> Users { get; }
-
-        /// <summary>
-        /// Creates an instance of UserListEventArgs with a specified collection of users.
-        /// </summary>
-        /// <param name="users"></param>
-        public UserListEventArgs(IEnumerable<User> users)
-        {
-            Users = users;
-        }
-    }
-
-    /// <summary>
     /// Manages all users connected to the server.
     /// </summary>
     public class ClientUserManager : UserManager
     {
+        /// <summary>
+        /// The user which belongs to this client.
+        /// </summary>
         public User BelongingUser { get; private set; }
-
-        /// <summary>
-        /// Event which is raised whenever we receive a user list.
-        /// </summary>
-        public event UserListReceivedEventHandler UserListReceived;
-
-        /// <summary>
-        /// Raises the UserListReceived event.
-        /// </summary>
-        /// <param name="userList"></param>
-        private void OnUserListReceived(IEnumerable<User> userList)
-        {
-            UserListReceived?.Invoke(this, new UserListEventArgs(userList));
-        }
 
         /// <summary>
         /// Event which is raised whenever a new user joins.
@@ -144,19 +105,16 @@ namespace NetworkCryptography.Client
         public void HandleUserListPacket(object sender, PacketRecievedEventArgs args)
         {
             int count = args.Message.ReadInt32();
-            User[] userList = new User[count];
-
             for (int i = 0; i < count; i++)
             {
                 int id = args.Message.ReadInt32();
                 string name = args.Message.ReadString();
+
                 User user = new User(id, name);
 
                 Add(user);
-                userList[i] = user;
+                OnNewUserJoined(user);
             }
-
-            OnUserListReceived(userList);
         }
 
         /// <summary>

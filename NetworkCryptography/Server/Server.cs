@@ -124,22 +124,11 @@ namespace NetworkCryptography.Server
             UserManager.Add(newUser);
 
             UserManager.SendUserList(args.Connection);
-            SendBelongingUserToClient(newUser, args.Connection);
+            ChatMessageManager.SendMessageHistory(args.Connection);
+
+            UserManager.SendBelongingUserToClient(newUser, args.Connection);
 
             SendUserJoined(newUser);
-        }
-
-        /// <summary>
-        /// Sends user information to the client which the user belongs to.
-        /// </summary>
-        /// <param name="user"></param>
-        /// <param name="clientConnection"></param>
-        private void SendBelongingUserToClient(User user, NetConnection clientConnection)
-        {
-            NetBuffer message = CreatePacket(ServerOutgoingPacketType.SendBelongingUserToClient);
-            message.Write(user.Id);
-
-            Send(message, clientConnection, NetDeliveryMethod.ReliableOrdered);
         }
 
         /// <summary>

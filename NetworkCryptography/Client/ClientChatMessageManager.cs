@@ -67,8 +67,13 @@ namespace NetworkCryptography.Client
         public ClientChatMessageManager(PacketHandlerCollection packetHandler)
         {
             packetHandler[ServerOutgoingPacketType.RelayMessage] += HandleRelayMessage;
+            packetHandler[ServerOutgoingPacketType.SendMessageHistory] += HandleMessageHistory;
         }
 
+        /// <summary>
+        /// Send a message to the server.
+        /// </summary>
+        /// <param name="message">The message to send.</param>
         public void SendMessage(string message)
         {
             ChatMessage chatMessage = new ChatMessage(CoreClientApp.Client.UserManager.BelongingUser, message, DateTime.Now);
@@ -87,6 +92,11 @@ namespace NetworkCryptography.Client
             OnChatMessageReceived(chatMessage);
         }
 
+        /// <summary>
+        /// Handles a message relay from the server.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private void HandleRelayMessage(object sender, PacketRecievedEventArgs args)
         {
             int userId = args.Message.ReadInt32();
@@ -99,6 +109,25 @@ namespace NetworkCryptography.Client
 
             if (!TryParseFromSimplified(new SimplifiedChatMessage(userId, message, time), out ChatMessage chatMessage)) return;
             OnChatMessageReceived(chatMessage);
+        }
+
+        /// <summary>
+        /// Handles the message history sent from the server.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void HandleMessageHistory(object sender, PacketRecievedEventArgs args)
+        {
+            int count = args.Message.ReadInt32();
+            for (int i = 0; i < count; i++)
+            {
+                int userId = args.Message.ReadInt32();
+                string message = args.Message.ReadString();
+                long time = args.Message.ReadInt64();
+
+                if(!TryParseFromSimplified(new SimplifiedChatMessage(userId, message, time), out ChatMessage chatMessage)) continue;
+                OnChatMessageReceived(chatMessage);
+            }
         }
 
         /// <summary>

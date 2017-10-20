@@ -49,6 +49,25 @@ namespace NetworkCryptography.Server
         }
 
         /// <summary>
+        /// Sends all message history to a target client.
+        /// </summary>
+        /// <param name="target"></param>
+        public void SendMessageHistory(NetConnection target)
+        {
+            NetBuffer messageBuffer = CoreServerApp.Server.CreatePacket(ServerOutgoingPacketType.SendMessageHistory);
+
+            messageBuffer.Write(Count);
+            foreach (SimplifiedChatMessage chatMessage in messages)
+            {
+                messageBuffer.Write(chatMessage.UserId);
+                messageBuffer.Write(chatMessage.Message);
+                messageBuffer.Write(chatMessage.TimeInBinary);
+            }
+
+            CoreServerApp.Server.Send(messageBuffer, target, NetDeliveryMethod.ReliableOrdered);
+        }
+
+        /// <summary>
         /// Handles a message sent from a client.
         /// </summary>
         /// <param name="sender"></param>

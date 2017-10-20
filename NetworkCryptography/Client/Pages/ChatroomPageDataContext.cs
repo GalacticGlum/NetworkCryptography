@@ -57,20 +57,12 @@ namespace NetworkCryptography.Client.Pages
             Messages = new ObservableCollection<ChatMessage>();
 
             // Initialize user events
-            CoreClientApp.Client.UserManager.UserListReceived += OnUserListReceived;
             CoreClientApp.Client.UserManager.NewUserJoined += OnNewUserJoined;
             CoreClientApp.Client.UserManager.UserLeft += OnUserLeft;
 
             // Initialize chat message events
             CoreClientApp.Client.ChatMessageManager.ChatMessageReceived += OnChatMessageReceived;
         }
-
-        /// <summary>
-        /// Handles the <see cref="UserListReceivedEventHandler"/>. Initializes the Users list with the specified users.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
-        private void OnUserListReceived(object sender, UserListEventArgs args) => RunSafely(() => Users = new ObservableCollection<User>(args.Users));
 
         /// <summary>
         /// Handles the <see cref="NewUserJoinedEventHandler"/>. Adds the <see cref="User"/> to the Users list. 

@@ -19,6 +19,7 @@ namespace NetworkCryptography.Core.Networking
         SendUserJoined,
         SendUserLeft,
         RelayMessage,
+        SendMessageHistory,
         Pong
     }
 }
