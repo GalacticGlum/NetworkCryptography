@@ -37,6 +37,11 @@ namespace NetworkCryptography.Server
         public ServerUserManager UserManager { get; }
 
         /// <summary>
+        /// Manages chat message on the server.
+        /// </summary>
+        public ServerChatMessageManager ChatMessageManager { get; }
+
+        /// <summary>
         /// Indicates whether the server is running.
         /// </summary>
         public bool IsRunning { get; private set; }
@@ -52,6 +57,8 @@ namespace NetworkCryptography.Server
             MaximumConnections = maximumConnections;
 
             UserManager = new ServerUserManager();
+            ChatMessageManager = new ServerChatMessageManager(Packets);
+
             Packets[ClientOutgoingPacketType.Ping] += HandlePingRequest;
         }
 

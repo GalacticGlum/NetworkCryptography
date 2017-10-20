@@ -43,10 +43,7 @@ namespace NetworkCryptography.Core
         /// Adds a new user to the manager database.
         /// </summary>
         /// <param name="user">The user to add.</param>
-        public void Add(User user)
-        {
-            users.Add(user.Id, user);
-        }
+        public void Add(User user) => users[user.Id] = user;
 
         /// <summary>
         /// Adds a new user with a specified id and name to the manager database.

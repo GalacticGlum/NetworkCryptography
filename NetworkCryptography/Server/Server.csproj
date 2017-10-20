@@ -52,6 +52,7 @@
     <Compile Include="CoreServerApp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Server.cs" />
+    <Compile Include="ServerChatMessageManager.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="ServerUserManager.cs" />
   </ItemGroup>

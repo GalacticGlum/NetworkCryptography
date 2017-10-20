@@ -7,6 +7,7 @@
  * Description: Stores all data in the chatroom page. It is notified when data is changed and updates data accordingly.
  */
 
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -15,7 +16,10 @@ using NetworkCryptography.Core;
 
 namespace NetworkCryptography.Client.Pages
 {
-    public class ChatroomPageDataContext : INotifyPropertyChanged
+    /// <summary>
+    /// Stores all data in the chatroom page. It is notified when data is changed and updates data accordingly.
+    /// </summary>
+    public sealed class ChatroomPageDataContext : INotifyPropertyChanged
     {
         private ObservableCollection<User> users;
 
@@ -52,37 +56,48 @@ namespace NetworkCryptography.Client.Pages
             Users = new ObservableCollection<User>();
             Messages = new ObservableCollection<ChatMessage>();
 
-            CoreClientApp.Client.UserManager.UserListReceived += HandleUserListReceived;
-            CoreClientApp.Client.UserManager.NewUserJoined += HandleNewUserJoined;
+            // Initialize user events
+            CoreClientApp.Client.UserManager.UserListReceived += OnUserListReceived;
+            CoreClientApp.Client.UserManager.NewUserJoined += OnNewUserJoined;
+            CoreClientApp.Client.UserManager.UserLeft += OnUserLeft;
 
-            //Messages = new ObservableCollection<ChatMessage>
-            //{
-            //    new ChatMessage(userShon, "Hello, I am batman!", new DateTime(2017, 10, 19, 19, 20, 10)),
-            //    new ChatMessage(userLane, "No, I am batman!", new DateTime(2017, 10, 19, 19, 22, 56)),
-            //    new ChatMessage(userOle, "Wait, I thought Elessar was batman?", new DateTime(2017, 10, 19, 19, 23, 37)),
-            //    new ChatMessage(userShon, "No! I am batman!", new DateTime(2017, 10, 19, 19, 26, 7)),
-            //    new ChatMessage(userShon, "Actually maybe I'm not batman.", new DateTime(2017, 10, 19, 19, 26, 42)),
-            //    new ChatMessage(userShon, "Frankly, who even knows!", new DateTime(2017, 10, 19, 19, 27, 41)),
-            //    new ChatMessage(userShon, "Ahhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh!" +
-            //                              "THIS IS A LONG MESSAGE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" +
-            //                              "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" +
-            //                              "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", new DateTime(2017, 10, 19, 19, 27, 41))
-            //};
+            // Initialize chat message events
+            CoreClientApp.Client.ChatMessageManager.ChatMessageReceived += OnChatMessageReceived;
         }
 
-        private void HandleUserListReceived(object sender, UserListEventArgs args)
-        {
-            Users = new ObservableCollection<User>(args.Users);
-        }
+        /// <summary>
+        /// Handles the <see cref="UserListReceivedEventHandler"/>. Initializes the Users list with the specified users.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void OnUserListReceived(object sender, UserListEventArgs args) => RunSafely(() => Users = new ObservableCollection<User>(args.Users));
 
-        private void HandleNewUserJoined(object sender, UserEventArgs args)
-        {
-            // Add the user to the ObservableCOllection on the UI thread, otherwise the change isn't registered.
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                Users.Add(args.User);
-            });
-        }
+        /// <summary>
+        /// Handles the <see cref="NewUserJoinedEventHandler"/>. Adds the <see cref="User"/> to the Users list. 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void OnNewUserJoined(object sender, UserEventArgs args) => RunSafely(() => Users.Add(args.User));
+
+        /// <summary>
+        /// Handles the <see cref="UserLeftEventHandler"/>. Removes the <see cref="User"/> from the Users list.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void OnUserLeft(object sender, UserEventArgs args) => RunSafely(() => Users.Remove(args.User));
+
+        /// <summary>
+        /// Handles the <see cref="ChatMessageReceivedEventHandler"/>. Adds the <see cref="ChatMessage"/> to the Messages list.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void OnChatMessageReceived(object sender, ChatMessageEventArgs args) => RunSafely(() => Messages.Add(args.ChatMessage));
+
+        /// <summary>
+        /// Runs the <paramref name="action"/> on the UI thread.
+        /// </summary>
+        /// <param name="action">The action to execute.</param>
+        private static void RunSafely(Action action) => Application.Current.Dispatcher.Invoke(action);
 
         /// <summary>
         /// Event for notification of a change of data.

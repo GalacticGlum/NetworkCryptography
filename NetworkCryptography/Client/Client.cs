@@ -16,21 +16,22 @@ namespace NetworkCryptography.Client
     /// <summary>
     /// The client peer; handles all client-side networking.
     /// </summary>
-    public class Client : Peer<NetClient>
+    public sealed class Client : Peer<NetClient>
     {
         /// <summary>
         /// Manager for all users connected.
         /// </summary>
         public ClientUserManager UserManager { get; }
 
+        /// <summary>
+        /// Manager for all chat messages.
+        /// </summary>
+        public ClientChatMessageManager ChatMessageManager { get; }
+
         public Client()
         {
-            UserManager = new ClientUserManager();
-
-            Packets[ServerOutgoingPacketType.SendBelongingUserToClient] += UserManager.ReceiveBelongingUser;
-            Packets[ServerOutgoingPacketType.SendUserList] += UserManager.HandleUserListPacket;
-            Packets[ServerOutgoingPacketType.SendUserJoined] += UserManager.HandleNewUser;
-            Packets[ServerOutgoingPacketType.SendUserLeft] += UserManager.HandleUserLeft;
+            UserManager = new ClientUserManager(Packets);
+            ChatMessageManager = new ClientChatMessageManager(Packets);
 
             Packets[ServerOutgoingPacketType.Pong] += HandlePongMessage;
         }

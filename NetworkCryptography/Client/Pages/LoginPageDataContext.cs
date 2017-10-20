@@ -16,7 +16,7 @@ namespace NetworkCryptography.Client.Pages
     /// Stores all data in the login page. 
     /// It is notified when data is changed and updates data accordingly.
     /// </summary>
-    public class LoginPageDataContext : INotifyPropertyChanged
+    public sealed class LoginPageDataContext : INotifyPropertyChanged
     {
         private string username;
 

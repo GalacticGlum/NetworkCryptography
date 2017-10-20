@@ -79,6 +79,7 @@
     </Compile>
     <Compile Include="ChatAutoScrollBehaviour.cs" />
     <Compile Include="Client.cs" />
+    <Compile Include="ClientChatMessageManager.cs" />
     <Compile Include="ClientUserManager.cs" />
     <Compile Include="CoreClientApp.cs" />
     <Compile Include="Pages\ChatroomPageDataContext.cs" />

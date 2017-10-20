@@ -15,7 +15,7 @@ namespace NetworkCryptography.Client
     /// <summary>
     /// Validates whether a property is empty.
     /// </summary>
-    public class NotEmptyValidationRule : ValidationRule
+    public sealed class NotEmptyValidationRule : ValidationRule
     {
         /// <summary>
         /// Validate a property.

@@ -7,6 +7,7 @@
       xmlns:client="clr-namespace:NetworkCryptography.Client"
       xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
       xmlns:pages="clr-namespace:NetworkCryptography.Client.Pages"
+      xmlns:core="clr-namespace:NetworkCryptography.Core;assembly=Core"
       mc:Ignorable="d" 
       d:DataContext="{d:DesignInstance pages:ChatroomPageDataContext, d:IsDesignTimeCreatable=False}"
       d:DesignHeight="450" d:DesignWidth="650"
@@ -93,6 +94,7 @@
                     </Grid>
 
                     <!--Name-->
+                    <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
                     <TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left"
                                Margin="5,0" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
                                Text="{Binding Name}" SnapsToDevicePixels="True" Foreground="#C0C1C2" FontSize="14"/>
@@ -101,7 +103,7 @@
             </Border>
         </DataTemplate>
 
-        <DataTemplate x:Key="MessagesDataTemplate">
+        <DataTemplate x:Key="MessagesDataTemplate" DataType="core:ChatMessage">
             <Border Name="MessageBorder" MinHeight="40" BorderThickness="1" Background="Transparent" 
                     Margin="10,0,60,10" BorderBrush="{x:Null}" CornerRadius="2" SnapsToDevicePixels="True">
                 <Grid>
@@ -218,7 +220,6 @@
                          Background="#484B51"
                          Foreground="#C0C1C2"
                          Padding="2, 0, 2, 0"
-                         Text="{Binding Message, UpdateSourceTrigger=PropertyChanged}"
                          VerticalAlignment="Center" 
                          PreviewKeyDown="OnMessageTextboxPreviewKeyDown">
 

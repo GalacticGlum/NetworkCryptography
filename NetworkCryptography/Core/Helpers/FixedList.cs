@@ -10,6 +10,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.ComTypes;
 
 namespace NetworkCryptography.Core.Helpers
 {
@@ -76,7 +77,14 @@ namespace NetworkCryptography.Core.Helpers
                 nextIndexPointer = 0;
             }
 
-            items[nextIndexPointer++] = item;
+            if (Count >= nextIndexPointer + 1)
+            {
+                items[nextIndexPointer++] = item;
+            }
+            else
+            {
+                items.Add(item);
+            }
         }
 
         /// <summary>

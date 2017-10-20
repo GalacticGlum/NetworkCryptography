@@ -18,7 +18,7 @@ namespace NetworkCryptography.Client
     /// <summary>
     /// Scrolls to new items as they are added in a control unless the scrollbar is scrolled up already.
     /// </summary>
-    public class ChatAutoScrollBehaviour : Behavior<ItemsControl>
+    public sealed class ChatAutoScrollBehaviour : Behavior<ItemsControl>
     {
         private ScrollViewer scrollViewer;
         private bool shouldScroll;

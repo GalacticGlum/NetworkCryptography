@@ -1,6 +1,6 @@
 ﻿/*
  * Author: Shon Verch
- * File Name: UserManager.cs
+ * File Name: ClientUserManager.cs
  * Project Name: NetworkCryptography
  * Creation Date: 10/17/2017
  * Modified Date: 10/20/2017
@@ -9,9 +9,7 @@
 
 using System;
 using System.Collections.Generic;
-using NetworkCryptography.Client.Pages;
 using NetworkCryptography.Core;
-using NetworkCryptography.Core.Logging;
 using NetworkCryptography.Core.Networking;
 
 namespace NetworkCryptography.Client
@@ -22,6 +20,13 @@ namespace NetworkCryptography.Client
     /// <param name="sender"></param>
     /// <param name="args"></param>
     public delegate void NewUserJoinedEventHandler(object sender, UserEventArgs args);
+
+    /// <summary>
+    /// Event for whenever a user leaves.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="args"></param>
+    public delegate void UserLeftEventHandler(object sender, UserEventArgs args);
 
     /// <summary>
     /// Generic event arguments for any user event.
@@ -106,6 +111,32 @@ namespace NetworkCryptography.Client
         }
 
         /// <summary>
+        /// Event which is raised whenever a user leaves.
+        /// </summary>
+        public event UserLeftEventHandler UserLeft;
+
+        /// <summary>
+        /// Raises the UserLeft event.
+        /// </summary>
+        /// <param name="user"></param>
+        private void OnUserLeft(User user)
+        {
+            UserLeft?.Invoke(this, new UserEventArgs(user));
+        }
+
+        /// <summary>
+        /// Initializes the <see cref="ClientUserManager"/> and all events.
+        /// </summary>
+        /// <param name="packetHandler"></param>
+        public ClientUserManager(PacketHandlerCollection packetHandler)
+        {
+            packetHandler[ServerOutgoingPacketType.SendBelongingUserToClient] += ReceiveBelongingUser;
+            packetHandler[ServerOutgoingPacketType.SendUserList] += HandleUserListPacket;
+            packetHandler[ServerOutgoingPacketType.SendUserJoined] += HandleNewUser;
+            packetHandler[ServerOutgoingPacketType.SendUserLeft] += HandleUserLeft;
+        }
+
+        /// <summary>
         /// Reads the list of users sent from the server.
         /// </summary>
         /// <param name="sender"></param>
@@ -147,14 +178,14 @@ namespace NetworkCryptography.Client
         public void HandleNewUser(object sender, PacketRecievedEventArgs args)
         {
             int id = args.Message.ReadInt32();
+            if (id == BelongingUser.Id) return;
+
             string name = args.Message.ReadString();
 
             User user = new User(id, name);
             Add(user);
 
             OnNewUserJoined(user);
-
-            Logger.Log($"{name} joined.");
         }
 
         /// <summary>
@@ -167,7 +198,7 @@ namespace NetworkCryptography.Client
             int id = args.Message.ReadInt32();
             User user = Remove(id);
 
-            Logger.Log($"{user.Name} left");
+            OnUserLeft(user);
         }
 
         /// <summary>

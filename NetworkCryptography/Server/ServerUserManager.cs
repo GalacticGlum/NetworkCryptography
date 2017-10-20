@@ -16,7 +16,7 @@ namespace NetworkCryptography.Server
     /// <summary>
     /// Manages all users connected to the server.
     /// </summary>
-    public class ServerUserManager : UserManager
+    public sealed class ServerUserManager : UserManager
     {
         /// <summary>
         /// Sends the user list to a target client.

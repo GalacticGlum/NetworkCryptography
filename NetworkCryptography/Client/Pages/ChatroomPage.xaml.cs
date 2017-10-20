@@ -1,7 +1,5 @@
-using System;
 using System.Windows;
 using System.Windows.Input;
-using NetworkCryptography.Core;
 
 namespace NetworkCryptography.Client.Pages
 {
@@ -36,14 +34,13 @@ namespace NetworkCryptography.Client.Pages
 
         private void SendMessage()
         {
+            // If our text message is empty, don't send anything!
             string textMessage = MessageTextBox.Text;
             if (string.IsNullOrEmpty(textMessage)) return;
 
+            // Clear our message text box and send the message.
             MessageTextBox.Text = string.Empty;
-
-            ChatMessage message = new ChatMessage(CoreClientApp.Client.UserManager.BelongingUser, textMessage, DateTime.Now);
-            ChatroomPageDataContext dataContext = (ChatroomPageDataContext)DataContext;
-            dataContext.Messages.Add(message);
+            CoreClientApp.Client.ChatMessageManager.SendMessage(textMessage);
         }
     }
 }
