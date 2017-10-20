@@ -134,12 +134,17 @@
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
 
-                            <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="7,0,0,0"                                
-                                       TextWrapping="Wrap" Text="{Binding User.Name}" FontWeight="DemiBold" FontSize="14" Foreground="White"/>
-
-                            <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Bottom"
-                                       Margin="7,0,0,1" FontSize="10" Opacity="0.8"
-                                       Text="{Binding Time, StringFormat={}{0:t}}" Foreground="#5B5E62" FontWeight="SemiBold"/>
+                            <StackPanel HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="7, 0, 0, 0" Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
+                                <StackPanel.Resources>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="LineHeight" Value="14"/>
+                                        <Setter Property="LineStackingStrategy" Value="BlockLineHeight"></Setter>
+                                    </Style>
+                                </StackPanel.Resources>
+                                
+                                <TextBlock TextWrapping="Wrap" Text="{Binding User.Name}" FontWeight="DemiBold" FontSize="14" Foreground="White"/>
+                                <TextBlock Margin="7, 0, 0, 0" FontSize="10" Text="{Binding Time, StringFormat={}{0:t}}" Foreground="#5B5E62" FontWeight="SemiBold"/>
+                            </StackPanel>
                         </Grid>
 
                         <!-- We use a textbox here (instead of a textblock) because we want the user to be able to copy the message. -->

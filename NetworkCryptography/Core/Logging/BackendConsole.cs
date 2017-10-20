@@ -3,7 +3,7 @@
  * File Name: BackendConsole.cs
  * Project Name: NetworkCryptography
  * Creation Date: 10/17/2017
- * Modified Date: 10/17/2017
+ * Modified Date: 10/19/2017
  * Description: Console functionality using the backend Win32 API.
  * URL: https://stackoverflow.com/a/718505
  */
@@ -99,7 +99,7 @@ namespace NetworkCryptography.Core.Logging
                 errorField.SetValue(null, null);
             }
 
-            stdOutErrorMethod.Invoke(null, new object[] { true });
+            stdOutErrorMethod?.Invoke(null, new object[] { true });
         }
 
         /// <summary>
