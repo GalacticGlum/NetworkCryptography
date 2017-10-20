@@ -50,6 +50,11 @@ namespace NetworkCryptography.Core.Helpers
         private readonly List<T> items;
 
         /// <summary>
+        /// The pointer index where the next element will go in.
+        /// </summary>
+        private int nextIndexPointer;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="FixedList{T}"/> class that is empty and has the specified fixed size.
         /// </summary>
         /// <param name="maxSize"></param>
@@ -65,13 +70,13 @@ namespace NetworkCryptography.Core.Helpers
         /// <param name="item">The object to be added to the end of the <see cref="FixedList{T}"/>. The value can be null for reference types.</param>
         public void Add(T item)
         {
-            // If we have exceeded our max size, remove elements from the start until we reach the fixed capacity.
-            while (Count >= MaxSize)
+            // If we have exceeded our max size, set our pointer to 0 so it resets to the start.
+            if (Count >= MaxSize)
             {
-                items.RemoveAt(0);
+                nextIndexPointer = 0;
             }
 
-            items.Add(item);
+            items[nextIndexPointer++] = item;
         }
 
         /// <summary>

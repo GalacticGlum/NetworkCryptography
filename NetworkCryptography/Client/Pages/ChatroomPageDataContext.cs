@@ -7,7 +7,6 @@
  * Description: Stores all data in the chatroom page. It is notified when data is changed and updates data accordingly.
  */
 
-using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -16,20 +15,6 @@ using NetworkCryptography.Core;
 
 namespace NetworkCryptography.Client.Pages
 {
-    public class ChatMessage
-    {
-        public User User { get; set; }
-        public string Message { get; set; }
-        public DateTime Time { get; set; }
-
-        public ChatMessage(User user, string message, DateTime time)
-        {
-            User = user;
-            Message = message;
-            Time = time;
-        }
-    }
-
     public class ChatroomPageDataContext : INotifyPropertyChanged
     {
         private ObservableCollection<User> users;

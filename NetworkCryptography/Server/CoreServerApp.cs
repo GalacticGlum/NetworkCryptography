@@ -159,8 +159,10 @@ namespace NetworkCryptography.Server
         /// <param name="args"></param>
         private static void Main(string[] args)
         {
+            const int maxPortValue = 65535;
+
             int port;
-            if (Settings == null || Settings.Port <= 0)
+            if (Settings == null || Settings.Port <= 0 || Settings.Port >= maxPortValue)
             {
                port = int.Parse(ConsoleDisplay.InputField("Please enter the port you would like to run the server on."));
             }

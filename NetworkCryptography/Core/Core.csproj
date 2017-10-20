@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CaeserCryptographicMethod.cs" />
+    <Compile Include="ChatMessage.cs" />
     <Compile Include="CryptographyMethodType.cs" />
     <Compile Include="DesCryptographicMethod.cs" />
     <Compile Include="FiestelCryptographicMethod.cs" />

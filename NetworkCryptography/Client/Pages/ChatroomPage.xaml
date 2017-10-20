@@ -188,7 +188,7 @@
                       ScrollViewer.VerticalScrollBarVisibility="Auto" 
                       FocusVisualStyle="{x:Null}">
             <i:Interaction.Behaviors>
-                <!--<utils:BringNewItemIntoViewBehavior/>-->
+                <client:ChatAutoScrollBehaviour />
             </i:Interaction.Behaviors>
             
             <ItemsControl.Template>
@@ -209,24 +209,25 @@
                 </Grid.ColumnDefinitions>
                 
                 <!--Message-->
-                <TextBox x:Name="MessageTxtBox" Margin="10,10,0,10" MaxHeight="80"                                         
+                <TextBox x:Name="MessageTextBox" Margin="10,10,0,10" MaxHeight="80"                                         
                          BorderThickness="0"
                          materialDesign:HintAssist.Hint="Message"
                          TextWrapping="Wrap" AcceptsReturn="True"  
                          materialDesign:TextFieldAssist.DecorationVisibility="Hidden"
-                         VerticalScrollBarVisibility="Auto"
-                         Text="{Binding Message, UpdateSourceTrigger=PropertyChanged}"                 
+                         VerticalScrollBarVisibility="Auto"               
                          Background="#484B51"
                          Foreground="#C0C1C2"
                          Padding="2, 0, 2, 0"
-                         VerticalAlignment="Center">
+                         Text="{Binding Message, UpdateSourceTrigger=PropertyChanged}"
+                         VerticalAlignment="Center" 
+                         PreviewKeyDown="OnMessageTextboxPreviewKeyDown">
 
                     <TextBox.Resources>
                         <Style TargetType="{x:Type Border}">
                             <Setter Property="CornerRadius" Value="3"/>
                         </Style>
                     </TextBox.Resources>
-                    
+
                     <TextBox.CaretBrush>
                         <SolidColorBrush Color="#C0C1C2"/>
                     </TextBox.CaretBrush>
@@ -235,8 +236,9 @@
                 <!--Send-->
                 <Button x:Name="SendButton" Grid.Column="1" Margin="10"
                         Style="{DynamicResource SendButtonStyle}"
-                        Command="{Binding SendMessageCommand}"/>
+                        Click="OnSendButtonClicked"/>
             </Grid>
         </Border>
     </Grid>
 </Page>
+
