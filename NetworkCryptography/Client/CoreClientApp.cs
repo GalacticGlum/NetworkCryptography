@@ -26,8 +26,7 @@ namespace NetworkCryptography.Client
         /// <summary>
         /// Networked client peer.
         /// </summary>
-        public static Client Client { get; private set; }
-
+        public static Client Client { get; }
         /// <summary>
         /// The logic loop ticker.
         /// </summary>
@@ -35,6 +34,7 @@ namespace NetworkCryptography.Client
 
         static CoreClientApp()
         {
+            Client = new Client();
             tickLoop = new TickLoop(Tick);
         }
 
@@ -46,7 +46,6 @@ namespace NetworkCryptography.Client
         /// <param name="port"></param>
         public static void Run(string username, string ip, int port)
         {
-            Client = new Client();
             Client.Connect(username, ip, port);
             
             tickLoop.Start();

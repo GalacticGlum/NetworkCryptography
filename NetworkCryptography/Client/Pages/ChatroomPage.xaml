@@ -183,7 +183,7 @@
 
         <!--Messages-->
         <ItemsControl x:Name="MessagesItemsCtrl" Grid.Row="0" Grid.Column="1" Margin="0,5,0,0" 
-                      ItemsSource="{Binding Messages}" 
+                      ItemsSource="{Binding Messages, Mode=OneWay}"  
                       ItemTemplate="{DynamicResource MessagesDataTemplate}"
                       ScrollViewer.VerticalScrollBarVisibility="Auto" 
                       FocusVisualStyle="{x:Null}">

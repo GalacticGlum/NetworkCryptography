@@ -10,7 +10,7 @@
 namespace NetworkCryptography.Core
 {
     /// <summary>
-    /// A information about a user conected to the server.
+    /// Information about a user conected to the server.
     /// </summary>
     public class User
     {

@@ -3,7 +3,7 @@
  * File Name: ChatroomPageDataContext.cs
  * Project: NetworkCryptography
  * Creation Date: 10/19/2017
- * Modified Date: 10/19/2017
+ * Modified Date: 10/20/2017
  * Description: Stores all data in the chatroom page. It is notified when data is changed and updates data accordingly.
  */
 
@@ -64,30 +64,39 @@ namespace NetworkCryptography.Client.Pages
 
         public ChatroomPageDataContext()
         {
-            User userLane = new User(0, "Lane");
-            User userShon = new User(1, "Shon");
-            User userOle = new User(2, "Ole");
+            Users = new ObservableCollection<User>();
+            Messages = new ObservableCollection<ChatMessage>();
 
-            Users = new ObservableCollection<User>
-            {
-                userLane,
-                userShon,
-                userOle
-            };
+            CoreClientApp.Client.UserManager.UserListReceived += HandleUserListReceived;
+            CoreClientApp.Client.UserManager.NewUserJoined += HandleNewUserJoined;
 
-            Messages = new ObservableCollection<ChatMessage>
+            //Messages = new ObservableCollection<ChatMessage>
+            //{
+            //    new ChatMessage(userShon, "Hello, I am batman!", new DateTime(2017, 10, 19, 19, 20, 10)),
+            //    new ChatMessage(userLane, "No, I am batman!", new DateTime(2017, 10, 19, 19, 22, 56)),
+            //    new ChatMessage(userOle, "Wait, I thought Elessar was batman?", new DateTime(2017, 10, 19, 19, 23, 37)),
+            //    new ChatMessage(userShon, "No! I am batman!", new DateTime(2017, 10, 19, 19, 26, 7)),
+            //    new ChatMessage(userShon, "Actually maybe I'm not batman.", new DateTime(2017, 10, 19, 19, 26, 42)),
+            //    new ChatMessage(userShon, "Frankly, who even knows!", new DateTime(2017, 10, 19, 19, 27, 41)),
+            //    new ChatMessage(userShon, "Ahhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh!" +
+            //                              "THIS IS A LONG MESSAGE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" +
+            //                              "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" +
+            //                              "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", new DateTime(2017, 10, 19, 19, 27, 41))
+            //};
+        }
+
+        private void HandleUserListReceived(object sender, UserListEventArgs args)
+        {
+            Users = new ObservableCollection<User>(args.Users);
+        }
+
+        private void HandleNewUserJoined(object sender, UserEventArgs args)
+        {
+            // Add the user to the ObservableCOllection on the UI thread, otherwise the change isn't registered.
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                new ChatMessage(userShon, "Hello, I am batman!", new DateTime(2017, 10, 19, 19, 20, 10)),
-                new ChatMessage(userLane, "No, I am batman!", new DateTime(2017, 10, 19, 19, 22, 56)),
-                new ChatMessage(userOle, "Wait, I thought Elessar was batman?", new DateTime(2017, 10, 19, 19, 23, 37)),
-                new ChatMessage(userShon, "No! I am batman!", new DateTime(2017, 10, 19, 19, 26, 7)),
-                new ChatMessage(userShon, "Actually maybe I'm not batman.", new DateTime(2017, 10, 19, 19, 26, 42)),
-                new ChatMessage(userShon, "Frankly, who even knows!", new DateTime(2017, 10, 19, 19, 27, 41)),
-                new ChatMessage(userShon, "Ahhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh!" +
-                                          "THIS IS A LONG MESSAGE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" +
-                                          "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" +
-                                          "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", new DateTime(2017, 10, 19, 19, 27, 41))
-            };
+                Users.Add(args.User);
+            });
         }
 
         /// <summary>

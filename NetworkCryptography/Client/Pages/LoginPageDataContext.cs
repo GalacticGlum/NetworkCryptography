@@ -29,7 +29,7 @@ namespace NetworkCryptography.Client.Pages
             set
             {
                 username = value;
-                OnPropertyChanged(username);
+                OnPropertyChanged();
             }
         }
 
@@ -44,7 +44,7 @@ namespace NetworkCryptography.Client.Pages
             set
             {
                 ipAddress = value;
-                OnPropertyChanged(ipAddress);
+                OnPropertyChanged();
             }
         }
 
@@ -59,7 +59,7 @@ namespace NetworkCryptography.Client.Pages
             set
             {
                 port = value;
-                OnPropertyChanged(port);
+                OnPropertyChanged();
             }
         }
 

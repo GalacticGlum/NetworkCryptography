@@ -18,16 +18,19 @@ namespace NetworkCryptography.Client
     /// </summary>
     public class Client : Peer<NetClient>
     {
-        private readonly ClientUserManager userManager;
+        /// <summary>
+        /// Manager for all users connected.
+        /// </summary>
+        public ClientUserManager UserManager { get; }
 
         public Client()
         {
-            userManager = new ClientUserManager();
+            UserManager = new ClientUserManager();
 
-            Packets[ServerOutgoingPacketType.SendBelongingUserToClient] += userManager.ReceiveBelongingUser;
-            Packets[ServerOutgoingPacketType.SendUserList] += userManager.HandleUserListPacket;
-            Packets[ServerOutgoingPacketType.SendUserJoined] += userManager.HandleNewUser;
-            Packets[ServerOutgoingPacketType.SendUserLeft] += userManager.HandleUserLeft;
+            Packets[ServerOutgoingPacketType.SendBelongingUserToClient] += UserManager.ReceiveBelongingUser;
+            Packets[ServerOutgoingPacketType.SendUserList] += UserManager.HandleUserListPacket;
+            Packets[ServerOutgoingPacketType.SendUserJoined] += UserManager.HandleNewUser;
+            Packets[ServerOutgoingPacketType.SendUserLeft] += UserManager.HandleUserLeft;
 
             Packets[ServerOutgoingPacketType.Pong] += HandlePongMessage;
         }
@@ -78,7 +81,7 @@ namespace NetworkCryptography.Client
         {
             Validate();
             NetPeer.Start();
-            userManager.Clear();
+            UserManager.Clear();
 
             NetPeer.Connect(ip, port, NetPeer.CreateMessage(username));
         }
@@ -88,10 +91,10 @@ namespace NetworkCryptography.Client
         /// </summary>
         public void Disconnect()
         {
-            if (NetPeer.ConnectionStatus != NetConnectionStatus.Connected) return;
+            if (NetPeer == null || NetPeer.ConnectionStatus != NetConnectionStatus.Connected) return;
 
             // Send id with disconnection so we can identify who disconnected.
-            NetPeer.Disconnect(userManager.BelongingUser.Id.ToString());
+            NetPeer.Disconnect(UserManager.BelongingUser.Id.ToString());
         }
 
         /// <summary>
