@@ -10,6 +10,7 @@
 using System;
 using Lidgren.Network;
 using NetworkCryptography.Core;
+using NetworkCryptography.Core.ChatCommands;
 using NetworkCryptography.Core.Networking;
 
 namespace NetworkCryptography.Client
@@ -55,9 +56,14 @@ namespace NetworkCryptography.Client
         /// Raises the ChatMessageReceived event.
         /// </summary>
         /// <param name="chatMessage"></param>
-        private void OnChatMessageReceived(ChatMessage chatMessage)
+        private void OnChatMessageReceived(ChatMessage chatMessage, bool processForCommand = true)
         {
-            ChatMessageReceived?.Invoke(this, new ChatMessageEventArgs(chatMessage));
+            // Process the chat message for any commands.
+            // Since we still need to process the command text we run the processor but don't actually execute the actions.
+            ChatMessage processedChatMessage = ChatCommandProcessor.Process(chatMessage, processForCommand);
+            
+
+            ChatMessageReceived?.Invoke(this, new ChatMessageEventArgs(processedChatMessage));
         }
 
         /// <summary>
@@ -126,7 +132,7 @@ namespace NetworkCryptography.Client
                 long time = args.Message.ReadInt64();
 
                 if(!TryParseFromSimplified(new SimplifiedChatMessage(userId, message, time), out ChatMessage chatMessage)) continue;
-                OnChatMessageReceived(chatMessage);
+                OnChatMessageReceived(chatMessage, false);
             }
         }
 
