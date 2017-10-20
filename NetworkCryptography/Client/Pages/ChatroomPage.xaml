@@ -7,7 +7,6 @@
       xmlns:client="clr-namespace:NetworkCryptography.Client"
       xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
       xmlns:pages="clr-namespace:NetworkCryptography.Client.Pages"
-      Background="#36393E"
       mc:Ignorable="d" 
       d:DataContext="{d:DesignInstance pages:ChatroomPageDataContext, d:IsDesignTimeCreatable=False}"
       d:DesignHeight="450" d:DesignWidth="650"
@@ -71,6 +70,9 @@
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+
+            <!-- disable dotted border on tab-focus -->
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
         </Style>
 
         <DataTemplate x:Key="UserDataTemplate">
@@ -100,27 +102,57 @@
         </DataTemplate>
 
         <DataTemplate x:Key="MessagesDataTemplate">
-            <Border Name="MessageBorder" MinHeight="40" BorderThickness="1" Background="#EFEBE9" 
-                    Margin="10,0,60,10" BorderBrush="#BCAAA4" CornerRadius="2" SnapsToDevicePixels="True">
+            <Border Name="MessageBorder" MinHeight="40" BorderThickness="1" Background="Transparent" 
+                    Margin="10,0,60,10" BorderBrush="{x:Null}" CornerRadius="2" SnapsToDevicePixels="True">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition/>
-                        <RowDefinition Height="15"/>
+                        <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <TextBlock VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="7,5,7,0"                                
-                               TextWrapping="Wrap" Text="{Binding Message}"/>
-                    <TextBlock Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Stretch"
-                               Margin="0,0,5,0" FontSize="10" Opacity="0.8"
-                               Text="{Binding Time, StringFormat={}{0:t}}"/>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid SnapsToDevicePixels="True" Grid.Column="0" Grid.Row="0">
+                        <Image Source="{StaticResource DefaultUserAvatar}" Stretch="UniformToFill" SnapsToDevicePixels="True" Width="Auto" Height="50"
+                               HorizontalAlignment="Stretch" VerticalAlignment="Top">
+                        </Image>
+                    </Grid>
+
+                    <Grid Grid.Column="1" Grid.Row="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition Height="15"/>
+                            <!--<RowDefinition />-->
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="7,0,0,0"                                
+                                       TextWrapping="Wrap" Text="{Binding User.Name}" FontWeight="DemiBold" FontSize="14" Foreground="White"/>
+
+                            <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                                       Margin="7,0,0,1" FontSize="10" Opacity="0.8"
+                                       Text="{Binding Time, StringFormat={}{0:t}}" Foreground="#5B5E62" FontWeight="SemiBold"/>
+                        </Grid>
+
+                        <!-- We use a textbox here (instead of a textblock) because we want the user to be able to copy the message. -->
+                        <TextBox Grid.Row ="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="7,0,7,0"                                
+                                 TextWrapping="Wrap" Text="{Binding Message, Mode=OneWay}" Foreground="#C0C1C2" Background="Transparent" 
+                                 BorderThickness="0" IsReadOnly="True" materialDesign:TextFieldAssist.DecorationVisibility="Hidden"/>
+
+                    </Grid>
+
+                    <Separator Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0"
+                               Background="{DynamicResource MaterialDesignDivider}"/>
                 </Grid>
             </Border>
-            <DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding IsOriginNative}" Value="True">
-                    <Setter TargetName="MessageBorder" Property="Margin" Value="60,0,10,10"/>
-                    <Setter TargetName="MessageBorder" Property="Background" Value="#BBDEFB"/>
-                    <Setter TargetName="MessageBorder" Property="BorderBrush" Value="#64B5F6"/>
-                </DataTrigger>
-            </DataTemplate.Triggers>
         </DataTemplate>
     </Page.Resources>
 
@@ -146,9 +178,10 @@
 
         <!--Messages-->
         <ItemsControl x:Name="MessagesItemsCtrl" Grid.Row="0" Grid.Column="1" Margin="0,5,0,0" 
-                      ItemsSource="{Binding SelectedParticipant.Chatter}" 
+                      ItemsSource="{Binding Messages}" 
                       ItemTemplate="{DynamicResource MessagesDataTemplate}"
-                      ScrollViewer.VerticalScrollBarVisibility="Auto">
+                      ScrollViewer.VerticalScrollBarVisibility="Auto" 
+                      FocusVisualStyle="{x:Null}">
             <i:Interaction.Behaviors>
                 <!--<utils:BringNewItemIntoViewBehavior/>-->
             </i:Interaction.Behaviors>

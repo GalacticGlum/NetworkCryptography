@@ -7,16 +7,36 @@
  * Description: Stores all data in the chatroom page. It is notified when data is changed and updates data accordingly.
  */
 
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows;
 using NetworkCryptography.Core;
 
 namespace NetworkCryptography.Client.Pages
 {
+    public class ChatMessage
+    {
+        public User User { get; set; }
+        public string Message { get; set; }
+        public DateTime Time { get; set; }
+
+        public ChatMessage(User user, string message, DateTime time)
+        {
+            User = user;
+            Message = message;
+            Time = time;
+        }
+    }
+
     public class ChatroomPageDataContext : INotifyPropertyChanged
     {
         private ObservableCollection<User> users;
+
+        /// <summary>
+        /// A collection of all the users in the chatroom.
+        /// </summary>
         public ObservableCollection<User> Users
         {
             get => users;
@@ -27,15 +47,47 @@ namespace NetworkCryptography.Client.Pages
             }
         }
 
+        private ObservableCollection<ChatMessage> messages;
+
+        /// <summary>
+        /// A collection of all the messages sent in the chatroom.
+        /// </summary>
+        public ObservableCollection<ChatMessage> Messages
+        {
+            get => messages;
+            set
+            {
+                messages = value;
+                OnPropertyChanged();
+            }
+        }
+
         public ChatroomPageDataContext()
         {
+            User userLane = new User(0, "Lane");
+            User userShon = new User(1, "Shon");
+            User userOle = new User(2, "Ole");
+
             Users = new ObservableCollection<User>
             {
-                new User(0, "Lane"),
-                new User(0, "Ole"),
-                new User(0, "Shon")
+                userLane,
+                userShon,
+                userOle
             };
 
+            Messages = new ObservableCollection<ChatMessage>
+            {
+                new ChatMessage(userShon, "Hello, I am batman!", new DateTime(2017, 10, 19, 19, 20, 10)),
+                new ChatMessage(userLane, "No, I am batman!", new DateTime(2017, 10, 19, 19, 22, 56)),
+                new ChatMessage(userOle, "Wait, I thought Elessar was batman?", new DateTime(2017, 10, 19, 19, 23, 37)),
+                new ChatMessage(userShon, "No! I am batman!", new DateTime(2017, 10, 19, 19, 26, 7)),
+                new ChatMessage(userShon, "Actually maybe I'm not batman.", new DateTime(2017, 10, 19, 19, 26, 42)),
+                new ChatMessage(userShon, "Frankly, who even knows!", new DateTime(2017, 10, 19, 19, 27, 41)),
+                new ChatMessage(userShon, "Ahhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh!" +
+                                          "THIS IS A LONG MESSAGE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" +
+                                          "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" +
+                                          "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", new DateTime(2017, 10, 19, 19, 27, 41))
+            };
         }
 
         /// <summary>

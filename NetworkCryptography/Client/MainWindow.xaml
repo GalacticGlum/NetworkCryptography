@@ -7,6 +7,6 @@
         ShowTitleBar="True" BorderBrush="{DynamicResource PrimaryHueDarkBrush}" 
         ResizeMode="NoResize"
         Closing="OnWindowClose">
-
+ 
 </controls:MetroWindow>
 
