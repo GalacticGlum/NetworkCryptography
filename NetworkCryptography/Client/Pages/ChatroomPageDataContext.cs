@@ -3,7 +3,7 @@
  * File Name: ChatroomPageDataContext.cs
  * Project: NetworkCryptography
  * Creation Date: 10/19/2017
- * Modified Date: 10/20/2017
+ * Modified Date: 10/21/2017
  * Description: Stores all data in the chatroom page. It is notified when data is changed and updates data accordingly.
  */
 
@@ -51,6 +51,72 @@ namespace NetworkCryptography.Client.Pages
             }
         }
 
+        private bool isScrolledToBottom = true;
+
+        /// <summary>
+        /// Indicates whether the message control is scrolled to the bottom.
+        /// </summary>
+        public bool IsScrolledToBottom
+        {
+            get => isScrolledToBottom;
+            set
+            {
+                isScrolledToBottom = value;
+                if (isScrolledToBottom)
+                {
+                    UnreadMessages = 0;
+                    DisplayMessageNotifications = false;
+                }
+
+                OnPropertyChanged();
+            }
+        }
+
+        private int unreadMessages;
+
+        /// <summary>
+        /// The amount of messages the user hasn't seen.
+        /// </summary>
+        public int UnreadMessages
+        {
+            get => unreadMessages;
+            set
+            {
+                unreadMessages = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private DateTime firstUnreadMessageTime;
+
+        /// <summary>
+        /// The time at which the first unread message was posted.
+        /// </summary>
+        public DateTime FirstUnreadMessageTime
+        {
+            get => firstUnreadMessageTime;
+            set
+            {
+                firstUnreadMessageTime = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private bool displayMessageNotifications;
+
+        /// <summary>
+        /// Indicates whether the message notification bar should be displayed.
+        /// </summary>
+        public bool DisplayMessageNotifications
+        {
+            get => displayMessageNotifications;
+            set
+            {
+                displayMessageNotifications = value;
+                OnPropertyChanged();
+            }
+        }
+
         public ChatroomPageDataContext()
         {
             Users = new ObservableCollection<User>();
@@ -83,7 +149,19 @@ namespace NetworkCryptography.Client.Pages
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        private void OnChatMessageReceived(object sender, ChatMessageEventArgs args) => RunSafely(() => Messages.Add(args.ChatMessage));
+        private void OnChatMessageReceived(object sender, ChatMessageEventArgs args)
+        {
+            RunSafely(() => Messages.Add(args.ChatMessage));
+            DisplayMessageNotifications = !IsScrolledToBottom;
+            if (!DisplayMessageNotifications) return;
+
+            if (unreadMessages <= 0)
+            {
+                FirstUnreadMessageTime = args.ChatMessage.Time;
+            }
+
+            UnreadMessages++;
+        }
 
         /// <summary>
         /// Runs the <paramref name="action"/> on the UI thread.

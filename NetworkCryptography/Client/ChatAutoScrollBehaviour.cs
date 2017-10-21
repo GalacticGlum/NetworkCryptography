@@ -21,7 +21,6 @@ namespace NetworkCryptography.Client
     public sealed class ChatAutoScrollBehaviour : Behavior<ItemsControl>
     {
         private ScrollViewer scrollViewer;
-        private bool shouldScroll;
 
         protected override void OnAttached()
         {
@@ -57,11 +56,7 @@ namespace NetworkCryptography.Client
         private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (scrollViewer == null) return;
-
-            // We subtract 80 from the scrollable height to add some "leeway" in when we should auto scroll.
-            // Otherwise, we must be exactly scrolled at the bottom to auto scroll (which is not good).
-            shouldScroll = scrollViewer.VerticalOffset >= scrollViewer.ScrollableHeight - 80;
-            if (e.Action != NotifyCollectionChangedAction.Add || !shouldScroll) return;
+            if (e.Action != NotifyCollectionChangedAction.Add || !scrollViewer.IsScrolledToBottom()) return;
 
             int count = AssociatedObject.Items.Count;
             if (count == 0) return;

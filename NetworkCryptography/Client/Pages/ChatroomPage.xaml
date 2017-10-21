@@ -127,7 +127,6 @@
                             <RowDefinition/>
                             <RowDefinition/>
                             <RowDefinition Height="15"/>
-                            <!--<RowDefinition />-->
                         </Grid.RowDefinitions>
 
                         <Grid Grid.Row="0">
@@ -183,25 +182,69 @@
                      ScrollViewer.VerticalScrollBarVisibility="Auto"/>
         </Border>
 
-        <!--Messages-->
-        <ItemsControl x:Name="MessagesItemsCtrl" Grid.Row="0" Grid.Column="1" Margin="0,5,0,0" 
-                      ItemsSource="{Binding Messages, Mode=OneWay}"  
-                      ItemTemplate="{DynamicResource MessagesDataTemplate}"
-                      ScrollViewer.VerticalScrollBarVisibility="Auto" 
-                      FocusVisualStyle="{x:Null}">
-            <i:Interaction.Behaviors>
-                <client:ChatAutoScrollBehaviour />
-            </i:Interaction.Behaviors>
-            
-            <ItemsControl.Template>
-                <ControlTemplate TargetType="ItemsControl">
-                    <ScrollViewer>
-                        <ItemsPresenter/>
-                    </ScrollViewer>
-                </ControlTemplate>
-            </ItemsControl.Template>
-        </ItemsControl>
+        <Grid Grid.Row="0" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="28"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
 
+            <ItemsControl x:Name="MessageItems" Grid.RowSpan="2" Margin="0,5,0,0" 
+                          ItemsSource="{Binding Messages, Mode=OneWay}"  
+                          ItemTemplate="{DynamicResource MessagesDataTemplate}"
+                          ScrollViewer.VerticalScrollBarVisibility="Auto" 
+                          FocusVisualStyle="{x:Null}"
+                          Loaded="OnMessageItemsLoaded">
+                <i:Interaction.Behaviors>
+                    <client:ChatAutoScrollBehaviour/>
+                </i:Interaction.Behaviors>
+
+                <ItemsControl.Template>
+                    <ControlTemplate TargetType="ItemsControl">
+                        <ScrollViewer>
+                            <ItemsPresenter/>
+                        </ScrollViewer>
+                    </ControlTemplate>
+                </ItemsControl.Template>
+            </ItemsControl>
+
+            <Border Name="MessageNotification" Grid.Row="0" Margin="15 0 15 0" 
+                    BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="0 1 0 0" CornerRadius="0 0 3 3" MouseDown="OnMessageNotificationClicked">
+
+                <Border.Style>
+                    <Style>
+                        <Setter Property="Border.Background" Value="#6B81CA"/>
+                        <Setter Property="Border.Opacity" Value="0.9"/>
+                        <Setter Property="Border.Visibility" Value="Hidden"/>
+
+                        <Style.Triggers>
+                            <Trigger Property="Border.IsMouseOver" Value="True">
+                                <Setter Property="Border.Background" Value="#7891E2"></Setter>
+                                <Setter Property="Border.Opacity" Value="1"></Setter>
+                            </Trigger>
+
+                            <DataTrigger Binding="{Binding DisplayMessageNotifications}" Value="True">
+                                <Setter Property="Border.Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                
+                <Grid>
+                    <TextBlock Grid.Column="0" VerticalAlignment="Center"
+                           HorizontalAlignment="Left" Margin="5 0 0 0" Foreground="White" FontWeight="SemiBold" FontSize="12">
+
+                        <Run Text="{Binding UnreadMessages}"/>
+                        <Run Text=" messages since "/>
+                        <Run Text="{Binding FirstUnreadMessageTime, StringFormat={}{0:t}}"></Run>
+                       
+                    </TextBlock>
+                    
+                    <Label Grid.Column="0" Content="JUMP TO PRESENT" VerticalAlignment="Center" 
+                           HorizontalAlignment="Right" Margin="0 0 5 0" Foreground="White" FontWeight="Normal" FontSize="10"/>
+                </Grid>
+            </Border>
+        </Grid>
+        
         <Border Grid.Row="1" Grid.Column="1" SnapsToDevicePixels="True"
                 BorderBrush="{DynamicResource MaterialDesignDivider}">
             <Grid>
