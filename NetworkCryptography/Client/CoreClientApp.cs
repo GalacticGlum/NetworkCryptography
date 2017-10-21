@@ -7,9 +7,12 @@
  * Description: The main application context; manages all logic.
  */
 
+using System;
 using System.Timers;
 using NetworkCryptography.Core;
+using NetworkCryptography.Core.Helpers;
 using NetworkCryptography.Core.Logging;
+using NetworkCryptography.Core.Networking;
 
 namespace NetworkCryptography.Client
 {
@@ -27,6 +30,17 @@ namespace NetworkCryptography.Client
         /// Networked client peer.
         /// </summary>
         public static Client Client { get; }
+
+        /// <summary>
+        /// The cryptography method which the server utilises.
+        /// </summary>
+        public static CryptographyMethodType SelectedCryptographyMethodType { get; private set; }
+
+        /// <summary>
+        /// The cryptography engine that is used for decrypting and encrypting messages.
+        /// </summary>
+        public static ICryptographicMethod CryptographicEngine { get; private set; }
+        
         /// <summary>
         /// The logic loop ticker.
         /// </summary>
@@ -52,12 +66,28 @@ namespace NetworkCryptography.Client
             Logger.Destination = LoggerDestination.All;
         }
 
+        /// <summary>
+        /// Handle quit logic.
+        /// </summary>
         public static void Quit()
         {
             Logger.FlushMessageBuffer();
             Client.Disconnect();
 
             tickLoop.Stop();
+        }
+
+        /// <summary>
+        /// Handle the SendCryptographyMethodType message from the server.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        public static void HandleCryptographyMethodType(object sender, PacketRecievedEventArgs args)
+        {
+            Logger.LogFunctionEntry();
+
+            SelectedCryptographyMethodType = (CryptographyMethodType) args.Message.ReadByte();
+            CryptographicEngine = CryptographyHelper.CreateEngine(SelectedCryptographyMethodType);
         }
 
         /// <summary>

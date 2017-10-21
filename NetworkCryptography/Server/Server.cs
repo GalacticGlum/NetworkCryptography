@@ -123,12 +123,23 @@ namespace NetworkCryptography.Server
             User newUser = new User(UserManager.Count, username);
             UserManager.Add(newUser);
 
+            SendCryptographyMethodType(args.Connection);
             UserManager.SendUserList(args.Connection);
+            UserManager.SendBelongingUserToClient(newUser, args.Connection);
             ChatMessageManager.SendMessageHistory(args.Connection);
 
-            UserManager.SendBelongingUserToClient(newUser, args.Connection);
-
             SendUserJoined(newUser);
+        }
+
+        /// <summary>
+        /// Sends the cryptographic method type that the server is using to a target client.
+        /// </summary>
+        /// <param name="target">The target client to send to.</param>
+        private void SendCryptographyMethodType(NetConnection target)
+        {
+            NetBuffer messageBuffer = CreatePacket(ServerOutgoingPacketType.SendCryptographyMethodType);
+            messageBuffer.Write((byte)CoreServerApp.SelectedCryptographyMethodType);
+            Send(messageBuffer, target, NetDeliveryMethod.ReliableOrdered);
         }
 
         /// <summary>

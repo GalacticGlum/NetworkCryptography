@@ -14,6 +14,7 @@ namespace NetworkCryptography.Core.Networking
     /// </summary>
     public enum ServerOutgoingPacketType
     {
+        SendCryptographyMethodType,
         SendBelongingUserToClient,
         SendUserList,
         SendUserJoined,
