@@ -29,18 +29,19 @@ namespace NetworkCryptography.Core
         /// <summary>
         /// Indicates whether the user is offline.
         /// </summary>
-        public bool IsOffline { get; set; }
+        public bool IsOffline { get; internal set; }
 
         /// <summary>
         /// Creates a new user with a specified id and name.
         /// </summary>
         /// <param name="id">The id of the user.</param>
         /// <param name="name">The name of the user.</param>
-        public User(int id, string name)
+        /// <param name="isOffline">Is the user offline.</param>
+        public User(int id, string name, bool isOffline = false)
         {
             Id = id;
             Name = name;
-            IsOffline = false;
+            IsOffline = isOffline;
         }
     }
 }

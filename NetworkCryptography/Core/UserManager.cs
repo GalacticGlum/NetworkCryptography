@@ -67,7 +67,7 @@ namespace NetworkCryptography.Core
         {
             if (!users.ContainsKey(id)) return null;
             User user = Get(id);
-            users.Remove(id);
+            user.IsOffline = true;
 
             return user;
         }

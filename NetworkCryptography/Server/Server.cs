@@ -151,8 +151,8 @@ namespace NetworkCryptography.Server
             int id = int.Parse(args.Message.ReadString());
             SendUserLeft(id);
 
-            UserManager[id].IsOffline = true;
-            Logger.Log($"{UserManager[id].Name} disconnected!", LoggerVerbosity.Plain);
+            User user = UserManager.Remove(id);
+            Logger.Log($"{user.Name} disconnected!", LoggerVerbosity.Plain);
         }
 
         /// <summary>

@@ -109,11 +109,15 @@ namespace NetworkCryptography.Client
             {
                 int id = args.Message.ReadInt32();
                 string name = args.Message.ReadString();
+                bool isOffline = args.Message.ReadBoolean();
 
-                User user = new User(id, name);
+                User user = new User(id, name, isOffline);
 
                 Add(user);
-                OnNewUserJoined(user);
+                if (!isOffline)
+                {
+                    OnNewUserJoined(user);
+                }
             }
         }
 
@@ -154,9 +158,9 @@ namespace NetworkCryptography.Client
         public void HandleUserLeft(object sender, PacketRecievedEventArgs args)
         {
             int id = args.Message.ReadInt32();
+            User user = Remove(id);
 
-            this[id].IsOffline = true;
-            OnUserLeft(this[id]);
+            OnUserLeft(user);
         }
 
         /// <summary>

@@ -30,6 +30,7 @@ namespace NetworkCryptography.Server
             {
                 message.Write(user.Id);
                 message.Write(user.Name);
+                message.Write(user.IsOffline);
             }
 
             CoreServerApp.Server.Send(message, target, NetDeliveryMethod.ReliableOrdered);
