@@ -27,6 +27,11 @@ namespace NetworkCryptography.Core
         public string Name { get; }
 
         /// <summary>
+        /// Indicates whether the user is offline.
+        /// </summary>
+        public bool IsOffline { get; set; }
+
+        /// <summary>
         /// Creates a new user with a specified id and name.
         /// </summary>
         /// <param name="id">The id of the user.</param>
@@ -35,6 +40,7 @@ namespace NetworkCryptography.Core
         {
             Id = id;
             Name = name;
+            IsOffline = false;
         }
     }
 }

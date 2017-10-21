@@ -144,12 +144,13 @@ namespace NetworkCryptography.Server
                         {
                             string time = $"{DateTime.FromBinary(message.TimeInBinary):hh:mm:ss tt}";
                             builder.AppendLine($"{Server.UserManager[message.UserId].Name}: {message.Message} | {time}");
-
-                            FileInfo file = new FileInfo($"./Logs/{DateTime.Now:dd_MM_yyyy}.log");
-                            file.Directory?.Create();
-
-                            File.WriteAllText(file.FullName, builder.ToString());
                         }
+
+                        FileInfo file = new FileInfo($"./Logs/{DateTime.Now:dd_MM_yyyy}.log");
+                        file.Directory?.Create();
+
+                        File.WriteAllText(file.FullName, builder.ToString());
+
                         break;
                     default:
                         IsCommandRunning = false;

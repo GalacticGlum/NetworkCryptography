@@ -154,9 +154,9 @@ namespace NetworkCryptography.Client
         public void HandleUserLeft(object sender, PacketRecievedEventArgs args)
         {
             int id = args.Message.ReadInt32();
-            User user = Remove(id);
 
-            OnUserLeft(user);
+            this[id].IsOffline = true;
+            OnUserLeft(this[id]);
         }
 
         /// <summary>
