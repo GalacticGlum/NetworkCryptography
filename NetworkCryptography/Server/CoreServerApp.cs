@@ -8,6 +8,8 @@
  */
 
 using System;
+using System.IO;
+using System.Text;
 using System.Timers;
 using NetworkCryptography.Core;
 using NetworkCryptography.Core.Helpers;
@@ -133,6 +135,21 @@ namespace NetworkCryptography.Server
                         break;
                     case "users":
                         Server.PrintConnectedUsers();
+                        break;
+                    case "write_history":
+                        Logger.Log(Server.ChatMessageManager.Count, LoggerVerbosity.Plain);
+
+                        StringBuilder builder = new StringBuilder();
+                        foreach (SimplifiedChatMessage message in Server.ChatMessageManager)
+                        {
+                            string time = $"{DateTime.FromBinary(message.TimeInBinary):hh:mm:ss tt}";
+                            builder.AppendLine($"{Server.UserManager[message.UserId].Name}: {message.Message} | {time}");
+
+                            FileInfo file = new FileInfo($"./Logs/{DateTime.Now:dd_MM_yyyy}.log");
+                            file.Directory?.Create();
+
+                            File.WriteAllText(file.FullName, builder.ToString());
+                        }
                         break;
                     default:
                         IsCommandRunning = false;

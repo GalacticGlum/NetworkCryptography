@@ -10,7 +10,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.InteropServices.ComTypes;
+using System.Linq;
 
 namespace NetworkCryptography.Core.Helpers
 {
@@ -38,7 +38,7 @@ namespace NetworkCryptography.Core.Helpers
         /// <summary>
         /// Gets the number of elements contained in the <see cref="FixedList{T}"/>.
         /// </summary>
-        public int Count => items.Count;
+        public int Count { get; private set; }
 
         /// <summary>
         /// Is this list read-only?
@@ -63,6 +63,10 @@ namespace NetworkCryptography.Core.Helpers
         {
             MaxSize = maxSize;
             items = new List<T>(maxSize);
+            for (int i = 0; i < maxSize; i++)
+            {
+                items.Add(default(T));
+            }
         }
 
         /// <summary>
@@ -77,20 +81,18 @@ namespace NetworkCryptography.Core.Helpers
                 nextIndexPointer = 0;
             }
 
-            if (Count >= nextIndexPointer + 1)
-            {
-                items[nextIndexPointer++] = item;
-            }
-            else
-            {
-                items.Add(item);
-            }
+            Count++;
+            items[nextIndexPointer++] = item;       
         }
 
         /// <summary>
         /// Removes all elements from the <see cref="FixedList{T}"/>.
         /// </summary>
-        public void Clear() => items.Clear();
+        public void Clear()
+        {
+            Count = 0;
+            items.Clear();
+        }
 
         /// <summary>
         /// Determines whether an element is in the <see cref="FixedList{T}"/>.
@@ -113,7 +115,15 @@ namespace NetworkCryptography.Core.Helpers
         /// Removes the first occurence of a specific object from the <see cref="FixedList{T}"/>.
         /// </summary>
         /// <param name="item">The object to remove from the <see cref="FixedList{T}"/>. The value can be null for reference types.</param>
-        public bool Remove(T item) => items.Remove(item);
+        public bool Remove(T item)
+        {
+            int index = IndexOf(item);
+            if (index < 0) return false;
+
+            Count--;
+            items[index] = default(T);
+            return true;
+        }       
 
         /// <summary>
         /// Searches for the specified object and returns the zero-based index of the first occurence within the entire <see cref="FixedList{T}"/>.
@@ -134,12 +144,29 @@ namespace NetworkCryptography.Core.Helpers
         /// </summary>
         /// <param name="index">The zero-based index of the element to remove.</param>
         /// <exception cref="ArgumentOutOfRangeException"/>
-        public void RemoveAt(int index) => items.RemoveAt(index);
+        public void RemoveAt(int index)
+        {
+            if (index < 0 || index >= MaxSize)
+            {
+                throw new ArgumentException();
+            }
+
+            items[index] = default(T);
+        }
 
         /// <summary>
         /// Returns an enumerator that iterates through the <see cref="FixedList{T}"/>.
         /// </summary>
-        public IEnumerator<T> GetEnumerator() => items.GetEnumerator();
+        public IEnumerator<T> GetEnumerator()
+        {
+            T[] actualItems = new T[Count];
+            for (int i = 0; i < Count; i++)
+            {
+                actualItems[i] = items[i];
+            }
+
+            return actualItems.AsEnumerable().GetEnumerator();
+        }
 
         /// <summary>
         /// Returns an enumerator that iterates through the <see cref="FixedList{T}"/>.

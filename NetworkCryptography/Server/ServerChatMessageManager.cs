@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using Lidgren.Network;
 using NetworkCryptography.Core;
 using NetworkCryptography.Core.Helpers;
+using NetworkCryptography.Core.Logging;
 using NetworkCryptography.Core.Networking;
 
 namespace NetworkCryptography.Server
@@ -79,6 +80,8 @@ namespace NetworkCryptography.Server
             long time = args.Message.ReadInt64();
 
             SimplifiedChatMessage chatMessage = new SimplifiedChatMessage(userId, message, time);
+
+            Logger.Log($"Adding message: \"{message}\"");
             Add(chatMessage);
             Relay(chatMessage);
         }
