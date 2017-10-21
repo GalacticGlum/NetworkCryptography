@@ -58,7 +58,9 @@ namespace NetworkCryptography.Client
         {
             if (scrollViewer == null) return;
 
-            shouldScroll = scrollViewer.VerticalOffset == scrollViewer.ScrollableHeight;
+            // We subtract 80 from the scrollable height to add some "leeway" in when we should auto scroll.
+            // Otherwise, we must be exactly scrolled at the bottom to auto scroll (which is not good).
+            shouldScroll = scrollViewer.VerticalOffset >= scrollViewer.ScrollableHeight - 80;
             if (e.Action != NotifyCollectionChangedAction.Add || !shouldScroll) return;
 
             int count = AssociatedObject.Items.Count;

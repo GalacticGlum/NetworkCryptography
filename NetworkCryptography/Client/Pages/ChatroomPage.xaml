@@ -240,6 +240,13 @@
                         Click="OnSendButtonClicked"/>
             </Grid>
         </Border>
+
+        <!-- Settings -->
+        <Border Grid.Row="1" Grid.Column="0" SnapsToDevicePixels="True" BorderBrush="{DynamicResource MaterialDesignDivider}" 
+                Background="#2A2C31" BorderThickness="0 1 1 0">
+            <Grid >
+            </Grid>
+        </Border>
     </Grid>
 </Page>
 

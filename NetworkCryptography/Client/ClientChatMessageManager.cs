@@ -68,7 +68,6 @@ namespace NetworkCryptography.Client
                 decryptedMessage = CoreClientApp.CryptographicEngine.Decrypt(chatMessage.Message);
             }
 
-
             // Process the chat message for any commands.
             // Since we still need to process the command text we run the processor but don't actually execute the actions.
             ChatMessage processedChatMessage = ChatCommandProcessor.Process(new ChatMessage(chatMessage.User, decryptedMessage, chatMessage.Time), processForCommand);          
