@@ -62,6 +62,7 @@
     <Compile Include="FiestelCryptographicMethod.cs" />
     <Compile Include="Helpers\ArrayHelper.cs" />
     <Compile Include="Helpers\BitHelper.cs" />
+    <Compile Include="Helpers\CryptographyHelper.cs" />
     <Compile Include="Helpers\EnumHelper.cs" />
     <Compile Include="Helpers\FixedList.cs" />
     <Compile Include="Helpers\NetworkHelper.cs" />

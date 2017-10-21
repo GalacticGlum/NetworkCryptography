@@ -11,6 +11,7 @@ using System;
 using Lidgren.Network;
 using NetworkCryptography.Core;
 using NetworkCryptography.Core.ChatCommands;
+using NetworkCryptography.Core.Logging;
 using NetworkCryptography.Core.Networking;
 
 namespace NetworkCryptography.Client
@@ -56,13 +57,21 @@ namespace NetworkCryptography.Client
         /// Raises the ChatMessageReceived event.
         /// </summary>
         /// <param name="chatMessage"></param>
+        /// <param name="processForCommand"></param>
         private void OnChatMessageReceived(ChatMessage chatMessage, bool processForCommand = true)
         {
+            // We don't encrypt local messages so we shouldn't try to decrypt them either.
+            string decryptedMessage = chatMessage.Message;
+            if (chatMessage.User.Id != CoreClientApp.Client.UserManager.BelongingUser.Id)
+            {
+                // Decrypt our message
+                decryptedMessage = CoreClientApp.CryptographicEngine.Decrypt(chatMessage.Message);
+            }
+
+
             // Process the chat message for any commands.
             // Since we still need to process the command text we run the processor but don't actually execute the actions.
-            ChatMessage processedChatMessage = ChatCommandProcessor.Process(chatMessage, processForCommand);
-            
-
+            ChatMessage processedChatMessage = ChatCommandProcessor.Process(new ChatMessage(chatMessage.User, decryptedMessage, chatMessage.Time), processForCommand);          
             ChatMessageReceived?.Invoke(this, new ChatMessageEventArgs(processedChatMessage));
         }
 
@@ -82,20 +91,25 @@ namespace NetworkCryptography.Client
         /// <param name="message">The message to send.</param>
         public void SendMessage(string message)
         {
-            ChatMessage chatMessage = new ChatMessage(CoreClientApp.Client.UserManager.BelongingUser, message, DateTime.Now);
+            // Encrypt our message
+            string encryptedMessage = CoreClientApp.CryptographicEngine.Encrypt(message);
+
+            ChatMessage encryptedChatMessage = new ChatMessage(CoreClientApp.Client.UserManager.BelongingUser, encryptedMessage, DateTime.Now);
 
             NetBuffer messageBuffer = CoreClientApp.Client.CreatePacket(ClientOutgoingPacketType.SendMessage);
-            messageBuffer.Write(chatMessage.User.Id);
-            messageBuffer.Write(chatMessage.Message);
-            messageBuffer.Write(chatMessage.Time.ToBinary());
+            messageBuffer.Write(encryptedChatMessage.User.Id);
+            messageBuffer.Write(encryptedChatMessage.Message);
+            messageBuffer.Write(encryptedChatMessage.Time.ToBinary());
             CoreClientApp.Client.Send(messageBuffer, NetDeliveryMethod.ReliableOrdered);
 
             /*
              * This is a slight "hack"/cheat:
              *      since our ChatroomPageDataContext listens to this event (and updates it's messages list based on it) 
-             *      we can locally display the message through this event .
+             *      we can locally display the message through this event.
+             *      
+             * Since this is raising the event locally, there is no reason to encrypt our message so let's send the original.
              */          
-            OnChatMessageReceived(chatMessage);
+            OnChatMessageReceived(new ChatMessage(encryptedChatMessage.User, message, encryptedChatMessage.Time));
         }
 
         /// <summary>
@@ -124,6 +138,8 @@ namespace NetworkCryptography.Client
         /// <param name="args"></param>
         private void HandleMessageHistory(object sender, PacketRecievedEventArgs args)
         {
+            Logger.LogFunctionEntry();
+
             int count = args.Message.ReadInt32();
             for (int i = 0; i < count; i++)
             {

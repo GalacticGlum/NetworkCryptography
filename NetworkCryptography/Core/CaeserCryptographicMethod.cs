@@ -32,7 +32,7 @@ namespace NetworkCryptography.Core
             for (int i = 0; i < result.Length; i++)
             {
                 // Shift the character at in in the message by the offset and insert it into the array at i.
-                result[i] = (char)((message[i] + offset) % 26);
+                result[i] = (char)(message[i] + offset);
             }
 
             // Convert the result char array to a string object.

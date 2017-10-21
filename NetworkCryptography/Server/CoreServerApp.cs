@@ -43,6 +43,11 @@ namespace NetworkCryptography.Server
         public static bool IsCommandRunning { get; private set; }
 
         /// <summary>
+        /// The selected cryptography method type.
+        /// </summary>
+        public static CryptographyMethodType SelectedCryptographyMethodType { get; private set; }
+
+        /// <summary>
         /// The title of the server console window.
         /// </summary>
         private const string WindowTitle = "Airballoon Server";
@@ -74,8 +79,7 @@ namespace NetworkCryptography.Server
         /// Starts up the server on the specified port with the specified cryptography method.
         /// </summary>
         /// <param name="port"></param>
-        /// <param name="cryptographyMethodType"></param>
-        public static void Run(int port, CryptographyMethodType cryptographyMethodType)
+        public static void Run(int port)
         {
             Server = new Server(port);
             Server.Start();
@@ -191,11 +195,11 @@ namespace NetworkCryptography.Server
 
             Console.Clear();
 
-            CryptographyMethodType selectedMethod = EnumHelper.GetValue<CryptographyMethodType>(ConsoleDisplay.Menu(
+            SelectedCryptographyMethodType = EnumHelper.GetValue<CryptographyMethodType>(ConsoleDisplay.Menu(
                 "What cryptography method would you like to use?", cryptographyTypeNames));
 
             Console.Clear();
-            Run(port, selectedMethod);
+            Run(port);
             ProcessConsoleCommands();
         }
     }

@@ -34,7 +34,8 @@ namespace NetworkCryptography.Client
             ChatMessageManager = new ClientChatMessageManager(Packets);
 
             Packets[ServerOutgoingPacketType.Pong] += HandlePongMessage;
-        }
+            Packets[ServerOutgoingPacketType.SendCryptographyMethodType] += CoreClientApp.HandleCryptographyMethodType;
+         }
 
         /// <summary>
         /// Handle a ping response by logging pong.
