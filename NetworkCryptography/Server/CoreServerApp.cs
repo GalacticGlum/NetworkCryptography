@@ -86,10 +86,11 @@ namespace NetworkCryptography.Server
         {
             Logger.Destination = LoggerDestination.All;
 
-            ulong encrypt = DES.Encode(BitConverter.ToUInt64(Encoding.Unicode.GetBytes("Hellgfhgfhgfo"), 0), 32);
-            Logger.Log(encrypt);
-
-            Logger.Log(Encoding.Unicode.GetString(BitConverter.GetBytes(DES.Decode(encrypt, 32))));
+            for (int i = 0; i < 10; i++)
+            { 
+                string encrypted = CBCDes.Encrypt("Hello", 32);
+                Logger.Log(CBCDes.Decrypt(encrypted, 32));
+            }
 
             Server = new Server(port);
             Server.Start();

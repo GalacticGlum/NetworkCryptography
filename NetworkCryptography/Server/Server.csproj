@@ -52,6 +52,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CBCDes.cs" />
     <Compile Include="ConsoleDisplay.cs" />
     <Compile Include="CoreServerApp.cs" />
     <Compile Include="DES.cs" />
