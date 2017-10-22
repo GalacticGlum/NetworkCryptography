@@ -43,6 +43,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Speech" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -62,11 +63,13 @@
     <Compile Include="DesCryptographicMethod.cs" />
     <Compile Include="FiestelCryptographicMethod.cs" />
     <Compile Include="Helpers\ArrayHelper.cs" />
+    <Compile Include="Helpers\BlockBuffer.cs" />
     <Compile Include="Helpers\BitHelper.cs" />
     <Compile Include="Helpers\CryptographyHelper.cs" />
     <Compile Include="Helpers\EnumHelper.cs" />
     <Compile Include="Helpers\FixedList.cs" />
     <Compile Include="Helpers\NetworkHelper.cs" />
+    <Compile Include="Helpers\PaddedBuffer.cs" />
     <Compile Include="Helpers\StringHelper.cs" />
     <Compile Include="ICryptographicMethod.cs" />
     <Compile Include="Logging\BackendConsole.cs" />

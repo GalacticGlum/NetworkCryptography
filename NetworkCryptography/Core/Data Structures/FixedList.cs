@@ -12,7 +12,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace NetworkCryptography.Core.Helpers
+namespace NetworkCryptography.Core.DataStructures
 {
     /// <summary>
     /// Represents a list with a fixed capacity. Throws out elements from the bottom when it reaches the max size (to make room for new elements).

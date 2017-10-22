@@ -15,6 +15,7 @@ using System.Linq;
 using System.Text;
 using System.Timers;
 using NetworkCryptography.Core;
+using NetworkCryptography.Core.DataStructures;
 using NetworkCryptography.Core.Helpers;
 using NetworkCryptography.Core.Logging;
 
@@ -86,11 +87,17 @@ namespace NetworkCryptography.Server
         {
             Logger.Destination = LoggerDestination.All;
 
-            for (int i = 0; i < 10; i++)
-            { 
-                string encrypted = CBCDes.Encrypt("Hello", 32);
-                Logger.Log(CBCDes.Decrypt(encrypted, 32));
-            }
+            string message = "In cryptography, a Feistel cipher is a symmetric structure used in the construction of block ciphers, " +
+                               "named after the German-born physicist and cryptographer Horst Feistel who did pioneering research while " +
+                               "working for IBM (USA); it is also commonly known as a Feistel network. A large proportion of block ciphers " +
+                               "use the scheme, including the Data Encryption Standard (DES). The Feistel structure has the advantage that " +
+                               "encryption and decryption operations are very similar, even identical in some cases, requiring only a reversal " +
+                               "of the key schedule. Therefore, the size of the code or circuitry required to implement such a cipher is nearly " +
+                               "halved.\r\n\r\nA Feistel network is an iterated cipher with an internal function called a round function.[1]";
+
+            PaddedBuffer ciphertext = CBCDes.Encrypt(message, 67);
+            string plaintext = CBCDes.Decrypt(ciphertext, 67);
+            Logger.Log(plaintext);
 
             Server = new Server(port);
             Server.Start();

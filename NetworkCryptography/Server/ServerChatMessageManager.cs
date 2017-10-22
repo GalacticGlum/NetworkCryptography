@@ -11,6 +11,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Lidgren.Network;
 using NetworkCryptography.Core;
+using NetworkCryptography.Core.DataStructures;
 using NetworkCryptography.Core.Helpers;
 using NetworkCryptography.Core.Logging;
 using NetworkCryptography.Core.Networking;
