@@ -14,152 +14,160 @@
       Title="Airballoon">
 
     <Page.Resources>
-        <Style x:Key="SendButtonStyle" TargetType="{x:Type Button}">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderBrush" Value="Transparent"/>
-            <Setter Property="Foreground" Value="{DynamicResource PrimaryHueDarkBrush}"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="FontWeight" Value="Medium"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
-            <Setter Property="Padding" Value="0"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type Button}">
-                        <Grid Background="#00000000">
-                            <materialDesign:PackIcon Name="SendIcon" Kind="Send" SnapsToDevicePixels="True"
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.TextBlock.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <Style x:Key="SendButtonStyle" TargetType="{x:Type Button}">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderBrush" Value="Transparent"/>
+                <Setter Property="Foreground" Value="{DynamicResource PrimaryHueDarkBrush}"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="FontWeight" Value="Medium"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                <Setter Property="Padding" Value="0"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <Grid Background="#00000000">
+                                <materialDesign:PackIcon Name="SendIcon" Kind="Send" SnapsToDevicePixels="True"
                                                      Foreground="{TemplateBinding Foreground}"
                                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                                      Margin="{TemplateBinding Padding}" Width="Auto" Height="Auto"/>
-                        </Grid>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Foreground" TargetName="SendIcon" Value="{DynamicResource PrimaryHueMidBrush}"/>
-                            </Trigger>
-                            <Trigger Property="IsKeyboardFocused" Value="True">
-                                <Setter Property="Foreground" TargetName="SendIcon" Value="{DynamicResource PrimaryHueMidBrush}"/>
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Opacity" Value="0.23"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Foreground" TargetName="SendIcon" Value="{DynamicResource PrimaryHueMidBrush}"/>
+                                </Trigger>
+                                <Trigger Property="IsKeyboardFocused" Value="True">
+                                    <Setter Property="Foreground" TargetName="SendIcon" Value="{DynamicResource PrimaryHueMidBrush}"/>
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="Opacity" Value="0.23"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
 
-        <Style x:Key="UsersListBoxItemStyle" TargetType="{x:Type ListBoxItem}">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="HorizontalContentAlignment" 
+            <Style x:Key="UsersListBoxItemStyle" TargetType="{x:Type ListBoxItem}">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="HorizontalContentAlignment" 
                     Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
-            <Setter Property="VerticalContentAlignment" 
+                <Setter Property="VerticalContentAlignment" 
                     Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
-            <Setter Property="Padding" Value="2,0,0,0"/>
-            <Setter Property="Margin" Value="0"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                        <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" 
+                <Setter Property="Padding" Value="2,0,0,0"/>
+                <Setter Property="Margin" Value="0"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                            <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" 
                                 Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
-                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                               SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
                                               VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
 
-            <!-- disable dotted border on tab-focus -->
-            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-        </Style>
+                <!-- disable dotted border on tab-focus -->
+                <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            </Style>
 
-        <DataTemplate x:Key="UserDataTemplate">
-            <Border BorderThickness="0,0,0,1" BorderBrush="{DynamicResource MaterialDesignDivider}"
+            <DataTemplate x:Key="UserDataTemplate">
+                <Border BorderThickness="0,0,0,1" BorderBrush="{DynamicResource MaterialDesignDivider}"
                     Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}}"
                     Height="50">
-                <Grid Margin="5,0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="50"/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition Width="15"/>
-                        <ColumnDefinition Width="25"/>
-                    </Grid.ColumnDefinitions>
-                    <!--Pic-->
-                    <Grid Margin="6" SnapsToDevicePixels="True">
-                        <Image Source="{StaticResource DefaultUserAvatar}" Stretch="UniformToFill" SnapsToDevicePixels="True" Width="Auto" Height="Auto"
+                    <Grid Margin="5,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="50"/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="15"/>
+                            <ColumnDefinition Width="25"/>
+                        </Grid.ColumnDefinitions>
+                        <!--Pic-->
+                        <Grid Margin="6" SnapsToDevicePixels="True">
+                            <Image Source="{StaticResource DefaultUserAvatar}" Stretch="UniformToFill" SnapsToDevicePixels="True" Width="Auto" Height="Auto"
                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-                    </Grid>
+                        </Grid>
 
-                    <!--Name-->
-                    <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
-                    <TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left"
+                        <!--Name-->
+                        <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
+                        <TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left"
                                Margin="5,0" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
                                Text="{Binding Name}" SnapsToDevicePixels="True" Foreground="#C0C1C2" FontSize="14"/>
-              
-                </Grid>
-            </Border>
-        </DataTemplate>
 
-        <DataTemplate x:Key="MessagesDataTemplate" DataType="core:ChatMessage">
-            <Border Name="MessageBorder" MinHeight="40" BorderThickness="1" Background="Transparent" 
-                    Margin="10,0,60,10" BorderBrush="{x:Null}" CornerRadius="2" SnapsToDevicePixels="True">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="50"/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-
-                    <Grid SnapsToDevicePixels="True" Grid.Column="0" Grid.Row="0">
-                        <Image Source="{StaticResource DefaultUserAvatar}" Stretch="UniformToFill" SnapsToDevicePixels="True" Width="Auto" Height="50"
-                               HorizontalAlignment="Stretch" VerticalAlignment="Top">
-                        </Image>
                     </Grid>
+                </Border>
+            </DataTemplate>
 
-                    <Grid Grid.Column="1" Grid.Row="0">
+            <DataTemplate x:Key="MessagesDataTemplate" DataType="core:ChatMessage">
+                <Border Name="MessageBorder" MinHeight="40" BorderThickness="1" Background="Transparent" 
+                    Margin="10,0,60,10" BorderBrush="{x:Null}" CornerRadius="2" SnapsToDevicePixels="True">
+                    <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition/>
                             <RowDefinition/>
-                            <RowDefinition Height="15"/>
                         </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="50"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
 
-                        <Grid Grid.Row="0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-
-                            <StackPanel HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="7, 0, 0, 0" Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
-                                <StackPanel.Resources>
-                                    <Style TargetType="TextBlock">
-                                        <Setter Property="LineHeight" Value="14"/>
-                                        <Setter Property="LineStackingStrategy" Value="BlockLineHeight"></Setter>
-                                    </Style>
-                                </StackPanel.Resources>
-                                
-                                <TextBlock TextWrapping="Wrap" Text="{Binding User.Name}" FontWeight="DemiBold" FontSize="14" Foreground="White"/>
-                                <TextBlock Margin="7, 0, 0, 0" FontSize="10" Text="{Binding Time, StringFormat={}{0:t}}" Foreground="#5B5E62" FontWeight="SemiBold"/>
-                            </StackPanel>
+                        <Grid SnapsToDevicePixels="True" Grid.Column="0" Grid.Row="0">
+                            <Image Source="{StaticResource DefaultUserAvatar}" Stretch="UniformToFill" SnapsToDevicePixels="True" Width="Auto" Height="50"
+                               HorizontalAlignment="Stretch" VerticalAlignment="Top">
+                            </Image>
                         </Grid>
 
-                        <!-- We use a textbox here (instead of a textblock) because we want the user to be able to copy the message. -->
-                        <TextBox Grid.Row ="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="7,0,7,0"                                
+                        <Grid Grid.Column="1" Grid.Row="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                                <RowDefinition Height="15"/>
+                            </Grid.RowDefinitions>
+
+                            <Grid Grid.Row="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="7, 0, 0, 0" Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
+                                    <StackPanel.Resources>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="LineHeight" Value="14"/>
+                                            <Setter Property="LineStackingStrategy" Value="BlockLineHeight"></Setter>
+                                        </Style>
+                                    </StackPanel.Resources>
+
+                                    <TextBlock TextWrapping="Wrap" Text="{Binding User.Name}" FontWeight="DemiBold" FontSize="14" Foreground="White"/>
+                                    <TextBlock Margin="7, 0, 0, 0" FontSize="10" Text="{Binding Time, StringFormat={}{0:t}}" Foreground="#5B5E62" FontWeight="SemiBold"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- We use a textbox here (instead of a textblock) because we want the user to be able to copy the message. -->
+                            <TextBox Grid.Row ="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="7,0,7,0"                                
                                  TextWrapping="Wrap" Text="{Binding Message, Mode=OneWay}" Foreground="#C0C1C2" Background="Transparent" 
                                  BorderThickness="0" IsReadOnly="True" materialDesign:TextFieldAssist.DecorationVisibility="Hidden"/>
 
-                    </Grid>
+                        </Grid>
 
-                    <Separator Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0"
+                        <Separator Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0"
                                Background="{DynamicResource MaterialDesignDivider}"/>
-                </Grid>
-            </Border>
-        </DataTemplate>
+                    </Grid>
+                </Border>
+            </DataTemplate>
+        </ResourceDictionary>
     </Page.Resources>
 
     <Grid>
@@ -252,7 +260,7 @@
                     <ColumnDefinition/>
                     <ColumnDefinition Width="50"/>
                 </Grid.ColumnDefinitions>
-                
+
                 <!--Message-->
                 <TextBox x:Name="MessageTextBox" Margin="10,10,0,10" MaxHeight="80"                                         
                          BorderThickness="0"
@@ -276,7 +284,7 @@
                         <SolidColorBrush Color="#C0C1C2"/>
                     </TextBox.CaretBrush>
                 </TextBox>
-                
+
                 <!--Send-->
                 <Button x:Name="SendButton" Grid.Column="1" Margin="10"
                         Style="{DynamicResource SendButtonStyle}"
@@ -288,6 +296,44 @@
         <Border Grid.Row="1" Grid.Column="0" SnapsToDevicePixels="True" BorderBrush="{DynamicResource MaterialDesignDivider}" 
                 Background="#2A2C31" BorderThickness="0 1 1 0">
             <Grid >
+                <Grid Margin="5,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="50"/>
+                    </Grid.ColumnDefinitions>
+                    <!--Pic-->
+                    <Grid Margin="6" SnapsToDevicePixels="True">
+                        <Image Source="{StaticResource DefaultUserAvatar}" Stretch="UniformToFill" SnapsToDevicePixels="True" Width="Auto" Height="Auto"
+                               HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                    </Grid>
+
+                    <!--Name-->
+                    <TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left"
+                               Margin="5,0" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
+                               Text="{Binding BelongingUser.Name}" SnapsToDevicePixels="True" Foreground="#C0C1C2" FontSize="14"/>
+
+                    <Grid Grid.Column="2" Margin="6" SnapsToDevicePixels="True">
+                        <Button ToolTip="Settings" Width="Auto" Height="Auto"
+                                Margin="2 2 2 2">
+
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignFloatingActionButton}">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="BorderBrush" Value="{x:Null}"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="Button.IsMouseOver" Value="True">
+                                            <Setter Property="Button.BorderBrush" Value="{StaticResource MaterialDesignDivider}"/>
+                                            <Setter Property="Button.Background" Value="{StaticResource MaterialDesignDivider}"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                            
+                            <materialDesign:PackIcon Kind="Settings" Height="20" Width="20" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White"/>
+                        </Button>
+                    </Grid>
+                </Grid>
             </Grid>
         </Border>
     </Grid>

@@ -12,6 +12,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using NetworkCryptography.Client.Annotations;
 using NetworkCryptography.Core;
 
 namespace NetworkCryptography.Client.Pages
@@ -117,6 +118,21 @@ namespace NetworkCryptography.Client.Pages
             }
         }
 
+        private User belongingUser;
+
+        /// <summary>
+        /// The user which belong to this client.
+        /// </summary>
+        public User BelongingUser
+        {
+            get => belongingUser;
+            set
+            {
+                belongingUser = value;
+                OnPropertyChanged();
+            }
+        }
+
         public ChatroomPageDataContext()
         {
             Users = new ObservableCollection<User>();
@@ -125,24 +141,32 @@ namespace NetworkCryptography.Client.Pages
             // Initialize user events
             CoreClientApp.Client.UserManager.NewUserJoined += OnNewUserJoined;
             CoreClientApp.Client.UserManager.UserLeft += OnUserLeft;
+            CoreClientApp.Client.UserManager.BelongingUserReceived += OnBelongingUserReceived;
 
             // Initialize chat message events
             CoreClientApp.Client.ChatMessageManager.ChatMessageReceived += OnChatMessageReceived;
         }
 
         /// <summary>
-        /// Handles the <see cref="NewUserJoinedEventHandler"/>. Adds the <see cref="User"/> to the Users list. 
+        /// Handles the NewUserJoined event. Adds the <see cref="User"/> to the Users list. 
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
         private void OnNewUserJoined(object sender, UserEventArgs args) => RunSafely(() => Users.Add(args.User));
 
         /// <summary>
-        /// Handles the <see cref="UserLeftEventHandler"/>. Removes the <see cref="User"/> from the Users list.
+        /// Handles the UserLeft event. Removes the <see cref="User"/> from the Users list.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
         private void OnUserLeft(object sender, UserEventArgs args) => RunSafely(() => Users.Remove(args.User));
+
+        /// <summary>
+        /// Handles the BelongingUserReceived event. 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void OnBelongingUserReceived(object sender, UserEventArgs args) => BelongingUser = args.User;
 
         /// <summary>
         /// Handles the <see cref="ChatMessageReceivedEventHandler"/>. Adds the <see cref="ChatMessage"/> to the Messages list.

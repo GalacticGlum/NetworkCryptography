@@ -8,6 +8,7 @@
  */
 
 using System;
+using System.Security.Cryptography;
 
 namespace NetworkCryptography.Core.Helpers
 {
@@ -32,6 +33,20 @@ namespace NetworkCryptography.Core.Helpers
                     return null;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
+            }
+        }
+
+        /// <summary>
+        /// Generate a random key.
+        /// </summary>
+        /// <returns></returns>
+        public static byte[] GenerateRandomKey(int blockBitSize)
+        {
+            byte[] password = new byte[blockBitSize / 8];
+            using (RNGCryptoServiceProvider randomCryptoService = new RNGCryptoServiceProvider())
+            {
+                randomCryptoService.GetBytes(password);
+                return password;
             }
         }
     }

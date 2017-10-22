@@ -14,18 +14,11 @@ using NetworkCryptography.Core.Networking;
 namespace NetworkCryptography.Client
 {
     /// <summary>
-    /// Event for whenever a new user joins.
+    /// Generic event handler for any user-related event.
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="args"></param>
-    public delegate void NewUserJoinedEventHandler(object sender, UserEventArgs args);
-
-    /// <summary>
-    /// Event for whenever a user leaves.
-    /// </summary>
-    /// <param name="sender"></param>
-    /// <param name="args"></param>
-    public delegate void UserLeftEventHandler(object sender, UserEventArgs args);
+    public delegate void UserEventHandler(object sender, UserEventArgs args);
 
     /// <summary>
     /// Generic event arguments for any user event.
@@ -60,7 +53,7 @@ namespace NetworkCryptography.Client
         /// <summary>
         /// Event which is raised whenever a new user joins.
         /// </summary>
-        public event NewUserJoinedEventHandler NewUserJoined;
+        public event UserEventHandler NewUserJoined;
 
         /// <summary>
         /// Raises the NewUserJoined event.
@@ -74,7 +67,7 @@ namespace NetworkCryptography.Client
         /// <summary>
         /// Event which is raised whenever a user leaves.
         /// </summary>
-        public event UserLeftEventHandler UserLeft;
+        public event UserEventHandler UserLeft;
 
         /// <summary>
         /// Raises the UserLeft event.
@@ -83,6 +76,19 @@ namespace NetworkCryptography.Client
         private void OnUserLeft(User user)
         {
             UserLeft?.Invoke(this, new UserEventArgs(user));
+        }
+
+        /// <summary>
+        /// Event which is raised when the belonging user is sent from the server.
+        /// </summary>
+        public event UserEventHandler BelongingUserReceived;
+
+        /// <summary>
+        /// Raises the BelongingUserReceived event.
+        /// </summary>
+        private void OnBelongingUserReceived()
+        {
+            BelongingUserReceived?.Invoke(this, new UserEventArgs(BelongingUser));
         }
 
         /// <summary>
@@ -130,6 +136,8 @@ namespace NetworkCryptography.Client
         {
             int id = args.Message.ReadInt32();
             BelongingUser = this[id];
+
+            OnBelongingUserReceived();
         }
 
         /// <summary>

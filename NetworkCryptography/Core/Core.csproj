@@ -58,6 +58,7 @@
     <Compile Include="Chat Commands\ChatCommandProcessor.cs" />
     <Compile Include="ChatMessage.cs" />
     <Compile Include="CryptographyMethodType.cs" />
+    <Compile Include="Data Structures\Substitution.cs" />
     <Compile Include="DesCryptographicMethod.cs" />
     <Compile Include="FiestelCryptographicMethod.cs" />
     <Compile Include="Helpers\ArrayHelper.cs" />
@@ -76,6 +77,7 @@
     <Compile Include="Networking\Peer.cs" />
     <Compile Include="Networking\PacketHandlerCollection.cs" />
     <Compile Include="Networking\ServerOutgoingPacketType.cs" />
+    <Compile Include="Data Structures\Permutation.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

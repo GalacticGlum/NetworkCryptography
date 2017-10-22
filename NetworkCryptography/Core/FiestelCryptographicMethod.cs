@@ -36,6 +36,9 @@ namespace NetworkCryptography.Core
         /// </summary>
         public int BlockSize { get; }
 
+        /// <summary>
+        /// Random engine.
+        /// </summary>
         private readonly Random random;
 
         /// <summary>
@@ -111,7 +114,7 @@ namespace NetworkCryptography.Core
                 using (MemoryStream outputBuffer = new MemoryStream())
                 {
                     // Write the initialization vector to the output
-                    outputBuffer.Write(currentCipherBlock.ToBytes(), 0, blockSizeInBytes);
+                    outputBuffer.Write(currentCipherBlock.ToBytesInBigEndian(), 0, blockSizeInBytes);
 
                     while (bytesRead > 0)
                     {
@@ -123,11 +126,11 @@ namespace NetworkCryptography.Core
 
                         // Process our block buffer and encrypt a new block of data.
                         BitSet blockBits = new BitSet(blockBuffer);
-                        blockBits.Xor(currentCipherBlock); 
+                        blockBits ^= currentCipherBlock; 
                         currentCipherBlock = ProcessBlock(blockBits, keyBuffer, GetEncryptionKey);
 
                         // Write out the encrypted block to the output stream.
-                        outputBuffer.Write(currentCipherBlock.ToBytes(0, BlockSize), 0, blockSizeInBytes);
+                        outputBuffer.Write(currentCipherBlock.ToBytesInBigEndian(0, BlockSize), 0, blockSizeInBytes);
 
                         // Read in a new block of data
                         bytesRead = dataBuffer.Read(blockBuffer, 0, blockSizeInBytes);
@@ -174,7 +177,7 @@ namespace NetworkCryptography.Core
 
                         // Process our block of data
                         BitSet decryptedBlock = ProcessBlock(blockBits, keyBuffer, GetDecryptionKey);
-                        currentPlainTextBlock.Xor(decryptedBlock);
+                        currentPlainTextBlock ^= decryptedBlock;
 
                         // If we have reached the end of the stream then let's finally unpad our data.
                         if (bytesRead <= 0)
@@ -183,10 +186,10 @@ namespace NetworkCryptography.Core
                         }
 
                         // Write the new block of decrypted data to our output stream
-                        outputBuffer.Write(currentPlainTextBlock.ToBytes(0, bytesAfterUnpadding * 8), 0, bytesAfterUnpadding);
+                        outputBuffer.Write(currentPlainTextBlock.ToBytesInBigEndian(0, bytesAfterUnpadding * 8), 0, bytesAfterUnpadding);
                         currentPlainTextBlock = blockBits;
                     }
- 
+
                     return Encoding.Unicode.GetString(outputBuffer.ToArray());
                 }
             }
@@ -235,7 +238,7 @@ namespace NetworkCryptography.Core
         /// <param name="key">The key.</param>
         private void StepRound(BitSet left, BitSet right, BitSet key)
         {
-            left.Xor(Round(right, key));
+            left ^= Round(right, key);
             SwapBits(left, right);
         }
 
@@ -295,7 +298,7 @@ namespace NetworkCryptography.Core
         /// <returns></returns>
         private static int Unpad(BitSet buffer, int targetSize)
         {
-            byte[] data = buffer.ToBytes();
+            byte[] data = buffer.ToBytesInBigEndian();
 
             // Since we pad data with the delta size between the current and target data.
             // We can check if data is padded by seeing if the last value is less than

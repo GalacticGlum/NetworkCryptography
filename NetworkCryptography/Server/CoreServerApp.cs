@@ -8,7 +8,10 @@
  */
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Timers;
 using NetworkCryptography.Core;
@@ -81,12 +84,17 @@ namespace NetworkCryptography.Server
         /// <param name="port"></param>
         public static void Run(int port)
         {
+            Logger.Destination = LoggerDestination.All;
+
+            ulong encrypt = DES.Encode(BitConverter.ToUInt64(Encoding.Unicode.GetBytes("Hellgfhgfhgfo"), 0), 32);
+            Logger.Log(encrypt);
+
+            Logger.Log(Encoding.Unicode.GetString(BitConverter.GetBytes(DES.Decode(encrypt, 32))));
+
             Server = new Server(port);
             Server.Start();
 
             Initialize();
-
-            Logger.Destination = LoggerDestination.All;
 
             string address = $"<{NetworkHelper.GetLocalIpAddress()}:{port}>";
             Logger.Log($"Started server on {address}", LoggerVerbosity.Plain);
@@ -199,6 +207,7 @@ namespace NetworkCryptography.Server
                 "What cryptography method would you like to use?", cryptographyTypeNames));
 
             Console.Clear();
+            
             Run(port);
             ProcessConsoleCommands();
         }
