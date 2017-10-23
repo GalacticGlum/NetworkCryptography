@@ -311,7 +311,7 @@ namespace NetworkCryptography.Core
         /// <param name="block">The block of data to perform the cipher on.</param>
         /// <param name="isEncrypting">Indicates whether we should encrypt or decrypt the block of data.</param>
         /// <returns></returns>
-        public ulong Cipher(ulong block, bool isEncrypting)
+        private ulong Cipher(ulong block, bool isEncrypting)
         {
             ulong initialPermutation = BitHelper.Permute(block, InitialPermutation);
             var schedule = GetKeySchedule(Key);
@@ -369,10 +369,10 @@ namespace NetworkCryptography.Core
         public ulong Round(ulong right, ulong roundKey)
         {
             ulong expansion = BitHelper.Permute(right, Expansion);
-            ulong x = expansion ^ roundKey;
+            ulong data = expansion ^ roundKey;
 
             // Split our data into 8 6-bit values to make the substitution easier.
-            byte[] bytes = BitHelper.Split48(x);
+            byte[] bytes = BitHelper.Split48(data);
             ulong substitutionBox = 0;
 
             // For each substitution box, perform a lookup; there are 8 boxes.

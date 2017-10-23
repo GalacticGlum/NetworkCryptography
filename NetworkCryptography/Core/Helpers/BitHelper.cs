@@ -4,7 +4,7 @@
  * Project Name: NetworkCryptography
  * Creation Date: 9/19/2017
  * Modified Date: 10/22/2017
- * Description: Helper methods for bit manipulation and binary.
+ * Description: Helper methods for bit manipulation and related functionality.
  */
 
 using System;

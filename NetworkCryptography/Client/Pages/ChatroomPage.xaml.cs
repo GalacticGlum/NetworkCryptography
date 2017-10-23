@@ -7,6 +7,7 @@
  * Description: Interaction logic for ChatroomPage.xaml
  */
 
+using System.Net.Mime;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -21,6 +22,11 @@ namespace NetworkCryptography.Client.Pages
     /// </summary>
     public partial class ChatroomPage
     {
+        private const int MaxImageWidth = 512;
+        private const int MaxImageHeight = 512;
+
+        private readonly FileDialogService dialogService;
+
         /// <summary>
         /// Initializes a <see cref="ChatroomPage"/>.
         /// </summary>
@@ -28,6 +34,7 @@ namespace NetworkCryptography.Client.Pages
         {
             InitializeComponent();
             DataContext = new ChatroomPageDataContext();
+            dialogService = new FileDialogService();
         }
 
         /// <summary>
@@ -112,6 +119,22 @@ namespace NetworkCryptography.Client.Pages
         private void OnSettingsButtonClicked(object sender, RoutedEventArgs e)
         {
             SettingsDialogPanel.IsOpen = true;
+        }
+
+        private void OnSelectPhotoButtonClicked(object sender, RoutedEventArgs e)
+        {
+            var pic = dialogService.OpenFile("Select image file", "Images (*.jpg;*.png)|*.jpg;*.png");
+            if (!string.IsNullOrEmpty(pic))
+            {
+                //var img = MediaTypeNames.Image.FromFile(pic);
+                //if (img.Width > MaxImageWidth || img.Height > MaxImageHeight)
+                //{
+                //    dialogService.ShowNotification($"Image size should be {MaxImageWidth} x {MaxImageHeight} or less.");
+                //    return;
+                //}
+
+                //Photo = pic;
+            }
         }
     }
 }

@@ -34,5 +34,10 @@ namespace NetworkCryptography.Client
         {
             CoreClientApp.Quit();
         }
+
+        public void ReturnToLoginPage()
+        {
+            Content = new LoginPage();   
+        }
     }
 }

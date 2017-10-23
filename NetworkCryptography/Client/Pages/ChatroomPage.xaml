@@ -171,56 +171,40 @@
         </ResourceDictionary>
     </Page.Resources>
 
-    <materialDesign:DialogHost Name="SettingsDialogPanel">
-        <materialDesign:DialogHost.DialogContent>
-            <StackPanel Margin="16" Width="300" Height="100">
-                <Grid Margin="1,0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="100"/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
+    <Grid>
+        <materialDesign:DialogHost Name="ConnectionDialog" IsOpen="{Binding IsConnecting}">
+            <materialDesign:DialogHost.DialogContent>
+                <StackPanel Margin="16" Width="300" Height="100">
+                    <Grid Margin="1,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="20"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
 
-                    <!--Pic-->
-                    <Grid Margin="1" SnapsToDevicePixels="True">
-                        <Image Source="{StaticResource DefaultUserAvatar}" Stretch="UniformToFill" SnapsToDevicePixels="True" Width="Auto" Height="Auto"
-                                       HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                        <TextBlock Text="Connecting..." Foreground="#2A2C31" HorizontalAlignment="Center" VerticalAlignment="Top" 
+                                   Grid.Row="0" FontSize="16" FontWeight="DemiBold">
+                            
+                            <!-- Animate ellipsis -->
+                            <TextBlock.Triggers>
+                                <EventTrigger RoutedEvent="TextBlock.Loaded">
+                                    <BeginStoryboard>
+                                        <Storyboard Duration="0:0:3" RepeatBehavior="Forever">
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Text">
+                                                <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="Connecting."/>
+                                                <DiscreteObjectKeyFrame KeyTime="0:0:1" Value="Connecting.."/>
+                                                <DiscreteObjectKeyFrame KeyTime="0:0:2" Value="Connecting..."/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </TextBlock.Triggers>
+                        </TextBlock>
+
+                        <client:LoadingSpinnerControl VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="1"
+                                                      Margin="0 6 0 0"/>
                     </Grid>
 
-                    <!--Name-->
-                    <TextBlock Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Left"
-                                       Margin="5,5,0,0" TextTrimming="CharacterEllipsis"
-                                        SnapsToDevicePixels="True">
-                        <Run Text="USERNAME" Foreground="#2A2C31" FontWeight="SemiBold" FontSize="12"/>
-                        <LineBreak />
-                        <Run Text="{Binding BelongingUser.Name, Mode=OneWay}" Foreground="DarkSlateGray" FontWeight="Regular" FontSize="14"/>
-                    </TextBlock>
-
-                    <!--<Button Grid.Column="1" Style="{StaticResource MaterialDesignFlatButton}"
-                            IsDefault="True"
-                            Margin="-5 5 0 0"
-                            Command="materialDesign:DialogHost.CloseDialogCommand"
-                            HorizontalAlignment="Left" VerticalAlignment="Bottom"
-                            HorizontalContentAlignment="Left">
-                        <Button.CommandParameter>
-                            <system:Boolean>True</system:Boolean>
-                        </Button.CommandParameter>
-                        CHANGE AVATAR
-                    </Button>-->
-                    
-                    <Button Grid.Column="1" Style="{StaticResource MaterialDesignFlatButton}"
-                            IsCancel="True"
-                            Margin="0 5 0 0"
-                            Command="materialDesign:DialogHost.CloseDialogCommand"
-                            HorizontalAlignment="Center" VerticalAlignment="Bottom">
-                        <Button.CommandParameter>
-                            <system:Boolean>False</system:Boolean>
-                        </Button.CommandParameter>
-                        CLOSE
-                    </Button>
-
-                </Grid>
-
-                <!--<TextBlock>Add a new fruit.</TextBlock>
+                    <!--<TextBlock>Add a new fruit.</TextBlock>
                 <TextBox Margin="0 8 0 0" HorizontalAlignment="Stretch" x:Name="FruitTextBox" />
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" >
                     <Button Style="{StaticResource MaterialDesignFlatButton}"
@@ -242,102 +226,203 @@
                         CLOSE
                     </Button>
                 </StackPanel>-->
-            </StackPanel>
-        </materialDesign:DialogHost.DialogContent>
+                </StackPanel>
+            </materialDesign:DialogHost.DialogContent>
 
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="220"/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
+            <materialDesign:DialogHost Name="SettingsDialogPanel">
+                <materialDesign:DialogHost.DialogContent>
+                    <StackPanel Margin="16" Width="300" Height="100">
+                        <Grid Margin="1,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="100"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
 
-            <Border Grid.RowSpan="2" BorderThickness="0,0,1,0" SnapsToDevicePixels="True"
+                            <Border Grid.Column="0" BorderThickness="0,0,1,0" SnapsToDevicePixels="True"
+                                    BorderBrush="{DynamicResource MaterialDesignDivider}">
+                                <Grid Margin="0 0 10 0">
+                                    <Grid HorizontalAlignment="Center" Width="Auto" Height="Auto" VerticalAlignment="Center"
+                                          SnapsToDevicePixels="True" Margin="0 0 5 0">
+                                        <Grid.OpacityMask>
+                                            <VisualBrush Visual="{Binding ElementName=ClipEllipse}"/>
+                                        </Grid.OpacityMask>
+                                        <Ellipse x:Name="ClipEllipse" Fill="White"/>
+                                        <materialDesign:PackIcon Kind="AccountCircle" Width="Auto" Height="Auto" Margin="-12"/>
+                                        <!--<Image Source="{Binding Photo, FallbackValue={StaticResource BlankImage},
+                            TargetNullValue={StaticResource BlankImage}}"/>-->
+                                    </Grid>
+
+                                    <Button  Style="{StaticResource MaterialDesignFloatingActionMiniDarkButton}"
+                                             Background="#484B51"
+                                             BorderBrush="{DynamicResource MaterialDesignDivider}"
+                                            HorizontalAlignment="Right" VerticalAlignment="Top"
+                                            Click="OnSelectPhotoButtonClicked"
+                                            ToolTip="Click to select picture"
+                                            Width="25" Height="25" Margin="0 0 2 2">
+                                        <materialDesign:PackIcon Kind="FileImage" Width="18" Height="18" />
+                                    </Button>
+                                </Grid>
+                            </Border>
+
+                            <!--Pic-->
+                            <!--
+                            <Grid Margin="1" SnapsToDevicePixels="True">
+                                <Image Source="{StaticResource DefaultUserAvatar}" Stretch="UniformToFill" SnapsToDevicePixels="True" Width="Auto" Height="Auto"
+                                       HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                            </Grid>-->
+
+                            <!--Name-->
+                            <TextBlock Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Left"
+                                       Margin="10 5 0 0" TextTrimming="CharacterEllipsis"
+                                        SnapsToDevicePixels="True">
+                        <Run Text="USERNAME" Foreground="#2A2C31" FontWeight="SemiBold" FontSize="12"/>
+                        <LineBreak />
+                        <Run Text="{Binding BelongingUser.Name, Mode=OneWay}" Foreground="DarkSlateGray" FontWeight="Regular" FontSize="14"/>
+                            </TextBlock>
+
+                            <!--<Button Grid.Column="1" Style="{StaticResource MaterialDesignFlatButton}"
+                            IsDefault="True"
+                            Margin="-5 5 0 0"
+                            Command="materialDesign:DialogHost.CloseDialogCommand"
+                            HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                            HorizontalContentAlignment="Left">
+                        <Button.CommandParameter>
+                            <system:Boolean>True</system:Boolean>
+                        </Button.CommandParameter>
+                        CHANGE AVATAR
+                    </Button>-->
+
+                            <Button Grid.Column="1" Style="{StaticResource MaterialDesignFlatButton}"
+                            IsCancel="True"
+                            Margin="0 5 0 0"
+                            Command="materialDesign:DialogHost.CloseDialogCommand"
+                            HorizontalAlignment="Center" VerticalAlignment="Bottom">
+                                <Button.CommandParameter>
+                                    <system:Boolean>False</system:Boolean>
+                                </Button.CommandParameter>
+                                CLOSE
+                            </Button>
+
+                        </Grid>
+
+                        <!--<TextBlock>Add a new fruit.</TextBlock>
+                <TextBox Margin="0 8 0 0" HorizontalAlignment="Stretch" x:Name="FruitTextBox" />
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" >
+                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                            IsDefault="True"
+                            Margin="0 8 8 0"
+                            Command="materialDesign:DialogHost.CloseDialogCommand">
+                        <Button.CommandParameter>
+                            <system:Boolean>True</system:Boolean>
+                        </Button.CommandParameter>
+                        ACCEPT
+                    </Button>
+                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                            IsCancel="True"
+                            Margin="0 8 8 0"
+                            Command="materialDesign:DialogHost.CloseDialogCommand">
+                        <Button.CommandParameter>
+                            <system:Boolean>False</system:Boolean>
+                        </Button.CommandParameter>
+                        CLOSE
+                    </Button>
+                </StackPanel>-->
+                    </StackPanel>
+                </materialDesign:DialogHost.DialogContent>
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="220"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border Grid.RowSpan="2" BorderThickness="0,0,1,0" SnapsToDevicePixels="True"
                     BorderBrush="{DynamicResource MaterialDesignDivider}">
-                <ListBox ItemsSource="{Binding Users}"
+                        <ListBox ItemsSource="{Binding Users}"
                          Background="#2F3136"
                          ItemTemplate="{DynamicResource UserDataTemplate}"
                          ItemContainerStyle="{DynamicResource UsersListBoxItemStyle}"
                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                          ScrollViewer.VerticalScrollBarVisibility="Auto"/>
-            </Border>
+                    </Border>
 
-            <Grid Grid.Row="0" Grid.Column="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="28"/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
+                    <Grid Grid.Row="0" Grid.Column="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="28"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
 
-                <ItemsControl x:Name="MessageItems" Grid.RowSpan="2" Margin="0,5,0,0" 
+                        <ItemsControl x:Name="MessageItems" Grid.RowSpan="2" Margin="0,5,0,0" 
                               ItemsSource="{Binding Messages, Mode=OneWay}"  
                               ItemTemplate="{DynamicResource MessagesDataTemplate}"
                               ScrollViewer.VerticalScrollBarVisibility="Auto" 
                               FocusVisualStyle="{x:Null}"
                               Loaded="OnMessageItemsLoaded">
-                    <i:Interaction.Behaviors>
-                        <client:ChatAutoScrollBehaviour/>
-                    </i:Interaction.Behaviors>
+                            <i:Interaction.Behaviors>
+                                <client:ChatAutoScrollBehaviour/>
+                            </i:Interaction.Behaviors>
 
-                    <ItemsControl.Template>
-                        <ControlTemplate TargetType="ItemsControl">
-                            <ScrollViewer>
-                                <ItemsPresenter/>
-                            </ScrollViewer>
-                        </ControlTemplate>
-                    </ItemsControl.Template>
-                </ItemsControl>
+                            <ItemsControl.Template>
+                                <ControlTemplate TargetType="ItemsControl">
+                                    <ScrollViewer>
+                                        <ItemsPresenter/>
+                                    </ScrollViewer>
+                                </ControlTemplate>
+                            </ItemsControl.Template>
+                        </ItemsControl>
 
-                <Border Name="MessageNotification" Grid.Row="0" Margin="15 0 15 0" 
+                        <Border Name="MessageNotification" Grid.Row="0" Margin="15 0 15 0" 
                         BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="0 1 0 0" CornerRadius="0 0 3 3" MouseDown="OnMessageNotificationClicked">
 
-                    <Border.Style>
-                        <Style>
-                            <Setter Property="Border.Background" Value="#6B81CA"/>
-                            <Setter Property="Border.Opacity" Value="0.9"/>
-                            <Setter Property="Border.Visibility" Value="Hidden"/>
+                            <Border.Style>
+                                <Style>
+                                    <Setter Property="Border.Background" Value="#6B81CA"/>
+                                    <Setter Property="Border.Opacity" Value="0.9"/>
+                                    <Setter Property="Border.Visibility" Value="Hidden"/>
 
-                            <Style.Triggers>
-                                <Trigger Property="Border.IsMouseOver" Value="True">
-                                    <Setter Property="Border.Background" Value="#7891E2"></Setter>
-                                    <Setter Property="Border.Opacity" Value="1"></Setter>
-                                </Trigger>
+                                    <Style.Triggers>
+                                        <Trigger Property="Border.IsMouseOver" Value="True">
+                                            <Setter Property="Border.Background" Value="#7891E2"></Setter>
+                                            <Setter Property="Border.Opacity" Value="1"></Setter>
+                                        </Trigger>
 
-                                <DataTrigger Binding="{Binding DisplayMessageNotifications}" Value="True">
-                                    <Setter Property="Border.Visibility" Value="Visible"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Border.Style>
+                                        <DataTrigger Binding="{Binding DisplayMessageNotifications}" Value="True">
+                                            <Setter Property="Border.Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
 
-                    <Grid>
-                        <TextBlock Grid.Column="0" VerticalAlignment="Center"
+                            <Grid>
+                                <TextBlock Grid.Column="0" VerticalAlignment="Center"
                                    HorizontalAlignment="Left" Margin="5 0 0 0" Foreground="White" FontWeight="SemiBold" FontSize="12">
 
                             <Run Text="{Binding UnreadMessages}"/>
                             <Run Text=" messages since "/>
                             <Run Text="{Binding FirstUnreadMessageTime, StringFormat={}{0:t}}"></Run>
 
-                        </TextBlock>
+                                </TextBlock>
 
-                        <Label Grid.Column="0" Content="JUMP TO PRESENT" VerticalAlignment="Center" 
+                                <Label Grid.Column="0" Content="JUMP TO PRESENT" VerticalAlignment="Center" 
                                HorizontalAlignment="Right" Margin="0 0 5 0" Foreground="White" FontWeight="Normal" FontSize="10"/>
+                            </Grid>
+                        </Border>
                     </Grid>
-                </Border>
-            </Grid>
 
-            <Border Grid.Row="1" Grid.Column="1" SnapsToDevicePixels="True"
+                    <Border Grid.Row="1" Grid.Column="1" SnapsToDevicePixels="True"
                     BorderBrush="{DynamicResource MaterialDesignDivider}">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition Width="50"/>
-                    </Grid.ColumnDefinitions>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="50"/>
+                            </Grid.ColumnDefinitions>
 
-                    <!--Message-->
-                    <TextBox x:Name="MessageTextBox" Margin="10,10,0,10" MaxHeight="80"                                         
+                            <!--Message-->
+                            <TextBox x:Name="MessageTextBox" Margin="10,10,0,10" MaxHeight="80"                                         
                              BorderThickness="0"
                              materialDesign:HintAssist.Hint="Message"
                              TextWrapping="Wrap" AcceptsReturn="True"  
@@ -349,70 +434,72 @@
                              VerticalAlignment="Center" 
                              PreviewKeyDown="OnMessageTextboxPreviewKeyDown">
 
-                        <TextBox.Resources>
-                            <Style TargetType="{x:Type Border}">
-                                <Setter Property="CornerRadius" Value="3"/>
-                            </Style>
-                        </TextBox.Resources>
+                                <TextBox.Resources>
+                                    <Style TargetType="{x:Type Border}">
+                                        <Setter Property="CornerRadius" Value="3"/>
+                                    </Style>
+                                </TextBox.Resources>
 
-                        <TextBox.CaretBrush>
-                            <SolidColorBrush Color="#C0C1C2"/>
-                        </TextBox.CaretBrush>
-                    </TextBox>
+                                <TextBox.CaretBrush>
+                                    <SolidColorBrush Color="#C0C1C2"/>
+                                </TextBox.CaretBrush>
+                            </TextBox>
 
-                    <!--Send-->
-                    <Button x:Name="SendButton" Grid.Column="1" Margin="10"
+                            <!--Send-->
+                            <Button x:Name="SendButton" Grid.Column="1" Margin="10"
                             Style="{DynamicResource SendButtonStyle}"
                             Click="OnSendButtonClicked"/>
-                </Grid>
-            </Border>
-
-            <!-- Bottom user panel -->
-            <Border Grid.Row="1" Grid.Column="0" SnapsToDevicePixels="True" BorderBrush="{DynamicResource MaterialDesignDivider}" 
-                    Background="#2A2C31" BorderThickness="0 1 1 0">
-                <Grid >
-                    <Grid Margin="5,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="50"/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition Width="50"/>
-                        </Grid.ColumnDefinitions>
-                        <!--Pic-->
-                        <Grid Margin="6" SnapsToDevicePixels="True">
-                            <Image Source="{StaticResource DefaultUserAvatar}" Stretch="UniformToFill" SnapsToDevicePixels="True" Width="Auto" Height="Auto"
-                                   HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                         </Grid>
+                    </Border>
 
-                        <!--Name-->
-                        <TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left"
+                    <!-- Bottom user panel -->
+                    <Border Grid.Row="1" Grid.Column="0" SnapsToDevicePixels="True" BorderBrush="{DynamicResource MaterialDesignDivider}" 
+                    Background="#2A2C31" BorderThickness="0 1 1 0">
+                        <Grid >
+                            <Grid Margin="5,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="50"/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="50"/>
+                                </Grid.ColumnDefinitions>
+                                <!--Pic-->
+                                <Grid Margin="6" SnapsToDevicePixels="True">
+                                    <Image Source="{StaticResource DefaultUserAvatar}" Stretch="UniformToFill" SnapsToDevicePixels="True" Width="Auto" Height="Auto"
+                                   HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                                </Grid>
+
+                                <!--Name-->
+                                <TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left"
                                    Margin="5,0" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"
                                    Text="{Binding BelongingUser.Name}" SnapsToDevicePixels="True" Foreground="#C0C1C2" FontSize="14"/>
 
-                        <!-- Settings button -->
-                        <Grid Grid.Column="2" Margin="6" SnapsToDevicePixels="True">
-                            <Button ToolTip="Settings" Width="Auto" Height="Auto"
+                                <!-- Settings button -->
+                                <Grid Grid.Column="2" Margin="6" SnapsToDevicePixels="True">
+                                    <Button ToolTip="Settings" Width="Auto" Height="Auto"
                                     Margin="2 2 2 2" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">
 
-                                <Button.Style>
-                                    <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignFloatingActionButton}">
-                                        <Setter Property="Background" Value="Transparent"/>
-                                        <Setter Property="BorderBrush" Value="{x:Null}"/>
-                                        <Style.Triggers>
-                                            <Trigger Property="Button.IsMouseOver" Value="True">
-                                                <Setter Property="Button.BorderBrush" Value="{StaticResource MaterialDesignDivider}"/>
-                                                <Setter Property="Button.Background" Value="{StaticResource MaterialDesignDivider}"/>
-                                            </Trigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
+                                        <Button.Style>
+                                            <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignFloatingActionButton}">
+                                                <Setter Property="Background" Value="Transparent"/>
+                                                <Setter Property="BorderBrush" Value="{x:Null}"/>
+                                                <Style.Triggers>
+                                                    <Trigger Property="Button.IsMouseOver" Value="True">
+                                                        <Setter Property="Button.BorderBrush" Value="{StaticResource MaterialDesignDivider}"/>
+                                                        <Setter Property="Button.Background" Value="{StaticResource MaterialDesignDivider}"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
 
-                                <materialDesign:PackIcon Kind="Settings" Height="20" Width="20" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White"/>
-                            </Button>
+                                        <materialDesign:PackIcon Kind="Settings" Height="20" Width="20" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White"/>
+                                    </Button>
+                                </Grid>
+                            </Grid>
                         </Grid>
-                    </Grid>
+                    </Border>
                 </Grid>
-            </Border>
-        </Grid>
-    </materialDesign:DialogHost>
+            </materialDesign:DialogHost>
+        </materialDesign:DialogHost>
+    </Grid>
 </Page>
 

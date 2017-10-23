@@ -7,6 +7,8 @@
  * Description: The client peer; handles all client-side networking.
  */
 
+using System;
+using System.Timers;
 using Lidgren.Network;
 using NetworkCryptography.Core.Logging;
 using NetworkCryptography.Core.Networking;
@@ -27,6 +29,11 @@ namespace NetworkCryptography.Client
         /// Manager for all chat messages.
         /// </summary>
         public ClientChatMessageManager ChatMessageManager { get; }
+
+        /// <summary>
+        /// The amount of times we have detected not being connected.
+        /// </summary>
+        private int timedOutAmount;
 
         public Client()
         {

@@ -10,9 +10,10 @@
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Net.Mime;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using NetworkCryptography.Client.Annotations;
+using System.Windows.Input;
 using NetworkCryptography.Core;
 
 namespace NetworkCryptography.Client.Pages
@@ -133,10 +134,26 @@ namespace NetworkCryptography.Client.Pages
             }
         }
 
+        private bool isConnecting;
+
+        /// <summary>
+        /// Indicates whether we are still trying to connect to the server.
+        /// </summary>
+        public bool IsConnecting
+        {
+            get => isConnecting;
+            set
+            {
+                isConnecting = value;
+                OnPropertyChanged();
+            }
+        }
+
         public ChatroomPageDataContext()
         {
             Users = new ObservableCollection<User>();
             Messages = new ObservableCollection<ChatMessage>();
+            IsConnecting = true;
 
             // Initialize user events
             CoreClientApp.Client.UserManager.NewUserJoined += OnNewUserJoined;
@@ -166,7 +183,13 @@ namespace NetworkCryptography.Client.Pages
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        private void OnBelongingUserReceived(object sender, UserEventArgs args) => BelongingUser = args.User;
+        private void OnBelongingUserReceived(object sender, UserEventArgs args)
+        {
+            // When we receive our belonging user than we know (for certain) that we have connected.
+            IsConnecting = false;
+
+            BelongingUser = args.User;
+        }
 
         /// <summary>
         /// Handles the <see cref="ChatMessageReceivedEventHandler"/>. Adds the <see cref="ChatMessage"/> to the Messages list.

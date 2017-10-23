@@ -69,6 +69,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="LoadingSpinnerControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -83,6 +87,10 @@
     <Compile Include="ClientUserManager.cs" />
     <Compile Include="ControlHelper.cs" />
     <Compile Include="CoreClientApp.cs" />
+    <Compile Include="FileDialogService.cs" />
+    <Compile Include="LoadingSpinnerControl.xaml.cs">
+      <DependentUpon>LoadingSpinnerControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\ChatroomPageDataContext.cs" />
     <Compile Include="Pages\LoginPageDataContext.cs" />
     <Compile Include="MainWindow.xaml.cs">

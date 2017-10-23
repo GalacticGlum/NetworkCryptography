@@ -7,8 +7,8 @@
  * Description: The main application context; manages all logic.
  */
 
-using System;
 using System.Timers;
+using System.Windows;
 using NetworkCryptography.Core;
 using NetworkCryptography.Core.Helpers;
 using NetworkCryptography.Core.Logging;
@@ -69,12 +69,17 @@ namespace NetworkCryptography.Client
         /// <summary>
         /// Handle quit logic.
         /// </summary>
-        public static void Quit()
+        public static void Quit(bool returnToLoginPage = false)
         {
             Logger.FlushMessageBuffer();
             Client.Disconnect();
 
             tickLoop.Stop();
+
+            if (!returnToLoginPage) return;
+
+            MainWindow mainWindow = (MainWindow) Application.Current.MainWindow;
+            mainWindow?.ReturnToLoginPage();
         }
 
         /// <summary>
