@@ -12,6 +12,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Timers;
 using NetworkCryptography.Core;
@@ -95,9 +96,17 @@ namespace NetworkCryptography.Server
                                "of the key schedule. Therefore, the size of the code or circuitry required to implement such a cipher is nearly " +
                                "halved.\r\n\r\nA Feistel network is an iterated cipher with an internal function called a round function.[1]";
 
-            PaddedBuffer ciphertext = CBCDes.Encrypt(message, 67);
-            string plaintext = CBCDes.Decrypt(ciphertext, 67);
+            RsaKeySet keys = new RsaKeySet(65537, 1919621681, 2114731571);
+
+            RsaCryptographicMethod rsa = new RsaCryptographicMethod(keys);
+            int[] ciphertext = rsa.Encrypt(message);
+            ciphertext.Print();
+            string plaintext = rsa.Decrypt(ciphertext);
             Logger.Log(plaintext);
+
+            //PaddedBuffer ciphertext = CBCDes.Encrypt(message, 67);
+            //string plaintext = CBCDes.Decrypt(ciphertext, 67);
+            //Logger.Log(plaintext);
 
             Server = new Server(port);
             Server.Start();

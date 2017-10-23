@@ -17,9 +17,9 @@ namespace NetworkCryptography.Core
         /// <summary>
         /// Encrypt the message string.
         /// </summary>
-        /// <param name="message">The plain text to encrypt.</param>
+        /// <param name="plaintext">The plain text to encrypt.</param>
         /// <returns>The encrypted message.</returns>
-        string Encrypt(string message);
+        string Encrypt(string plaintext);
 
         /// <summary>
         /// Decrypt the encrypted message string.

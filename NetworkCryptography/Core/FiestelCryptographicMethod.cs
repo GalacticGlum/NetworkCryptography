@@ -95,15 +95,15 @@ namespace NetworkCryptography.Core
         /// <summary>
         /// Encrypt a message. 
         /// </summary>
-        /// <param name="message"></param>
+        /// <param name="plaintext"></param>
         /// <returns></returns>
-        public string Encrypt(string message)
+        public string Encrypt(string plaintext)
         {
             // Create the block buffer, this will store the contents of the active block. 
             int blockSizeInBytes = BlockSize / (sizeof(byte) * 8);
             byte[] blockBuffer = new byte[blockSizeInBytes];
 
-            using (MemoryStream dataBuffer = new MemoryStream(Encoding.Unicode.GetBytes(message)))
+            using (MemoryStream dataBuffer = new MemoryStream(Encoding.Unicode.GetBytes(plaintext)))
             {
                 // Read in the first block of data.
                 int bytesRead = dataBuffer.Read(blockBuffer, 0, blockSizeInBytes);

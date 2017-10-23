@@ -1,23 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Numerics;
+using NetworkCryptography.Core.DataStructures;
 
 namespace NetworkCryptography.Core
 {
-    public class RsaCryptographicMethod : ICryptographicMethod
+    public class RsaCryptographicMethod 
     {
-        public string Encrypt(string message)
+        private readonly RsaKeySet keys;
+
+        public RsaCryptographicMethod(RsaKeySet keys)
         {
-            throw new NotImplementedException();
+            this.keys = keys;
         }
 
-        public string Decrypt(string encryptedMessage)
+        public int[] Encrypt(string plaintext)
         {
-            throw new NotImplementedException();
+            int[] ciphertext = new int[plaintext.Length];
+            for (int i = 0; i < ciphertext.Length; i++)
+            {
+                BigInteger result = BigInteger.ModPow((int)plaintext[i], keys.PublicExponent, keys.Modulus);
+                ciphertext[i] = (int) result;
+            }
+
+            return ciphertext;
         }
 
-        public 
+        public string Decrypt(int[] ciphertext)
+        {
+            string plaintext = string.Empty;
+            foreach (int value in ciphertext)
+            {
+                BigInteger result = BigInteger.ModPow(value, keys.PrivateExponent, keys.Modulus);
+                plaintext += (char) result;
+            }
+
+            return plaintext;
+        }
     }
 }

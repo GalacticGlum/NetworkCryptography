@@ -3,11 +3,12 @@
  * File Name: CryptographyHelper.cs
  * Project Name: NetworkCryptography
  * Creation Date: 10/20/2017
- * Modified Date: 10/20/2017
+ * Modified Date: 10/22/2017
  * Description: A collection of useful cryptography-related functionality.
  */
 
 using System;
+using System.Numerics;
 using System.Security.Cryptography;
 
 namespace NetworkCryptography.Core.Helpers
@@ -17,6 +18,11 @@ namespace NetworkCryptography.Core.Helpers
     /// </summary>
     public static class CryptographyHelper
     {
+        /// <summary>
+        /// Random service provider.
+        /// </summary>
+        private static readonly Random random = new Random();
+
         /// <summary>
         /// Creates a <see cref="ICryptographicMethod"/> from a <see cref="CryptographyMethodType"/>.
         /// </summary>
@@ -37,16 +43,16 @@ namespace NetworkCryptography.Core.Helpers
         }
 
         /// <summary>
-        /// Generate a random key.
+        /// Generate a block of bytes.
         /// </summary>
         /// <returns></returns>
-        public static byte[] GenerateRandomKey(int blockBitSize)
+        public static ulong GenerateRandomBlock(int bytes)
         {
-            byte[] password = new byte[blockBitSize / 8];
+            byte[] password = new byte[bytes];
             using (RNGCryptoServiceProvider randomCryptoService = new RNGCryptoServiceProvider())
             {
                 randomCryptoService.GetBytes(password);
-                return password;
+                return BitConverter.ToUInt64(password, 0);
             }
         }
     }

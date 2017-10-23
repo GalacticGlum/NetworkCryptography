@@ -42,9 +42,9 @@ namespace NetworkCryptography.Core
         /// <summary>
         /// Encrypt the message using Caeser Cipher.
         /// </summary>
-        /// <param name="message">The plain text message to encrypt.</param>
+        /// <param name="plaintext">The plain text message to encrypt.</param>
         /// <returns>The encrypted message.</returns>
-        public string Encrypt(string message) => Shift(message, ShiftOffset);
+        public string Encrypt(string plaintext) => Shift(plaintext, ShiftOffset);
 
         /// <summary>
         /// Decrypt the encrypted message string using Caeser Cipher.

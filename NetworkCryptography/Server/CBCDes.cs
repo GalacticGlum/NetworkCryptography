@@ -14,10 +14,10 @@ namespace NetworkCryptography.Server
         {
             BlockBuffer inputBuffer = new BlockBuffer(plaintext.Count + 1);
             inputBuffer.BlockCopy(plaintext.Data, 0, 1, plaintext.Count);
-            inputBuffer.Set(0, GenerateRandomBlock());
+            inputBuffer.Set(0, CryptographyHelper.GenerateRandomBlock(BlockBuffer.BlockSize));
 
             BlockBuffer outputBuffer = new BlockBuffer(inputBuffer.Count);
-            ulong currentBlock = GenerateRandomBlock();
+            ulong currentBlock = CryptographyHelper.GenerateRandomBlock(BlockBuffer.BlockSize);
             for (int i = 0; i < inputBuffer.Count; i++)
             {
                 ulong block = inputBuffer[i];
@@ -50,14 +50,6 @@ namespace NetworkCryptography.Server
 
             ciphertext.Data = outputBuffer;
             return ciphertext;
-        }
-
-        private static ulong GenerateRandomBlock()
-        {
-            byte[] buffer = new byte[64 / 8];
-            rng.NextBytes(buffer);
-
-            return BitConverter.ToUInt64(buffer, 0);
         }
     }
 }
