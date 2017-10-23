@@ -3,7 +3,7 @@
  * File Name: ArrayHelper.cs
  * Project Name: NetworkCryptography
  * Creation Date: 9/18/2017
- * Modified Date: 9/19/2017
+ * Modified Date: 10/22/2017
  * Description: A collection of extra array functionality.
  */
 
@@ -68,42 +68,6 @@ namespace NetworkCryptography.Core.Helpers
 
             Buffer.BlockCopy(array, 0, result, 0, array.Length * size);
             result[result.Length - 1] = appendValue;
-
-            return result;
-        }
-
-        /// <summary>
-        /// Creates a new array of <value>length</value> and initializes it with a value. 
-        /// </summary>
-        /// <typeparam name="T">The type of the array.</typeparam>
-        /// <param name="value">The value to fill the array with.</param>
-        /// <param name="length">The length of the array</param>
-        /// <returns></returns>
-        public static T[] MakeFilled<T>(T value, int length)
-        {
-            T[] array = new T[length];
-            for (int i = 0; i < length; i++)
-            {
-                array[i] = value;
-            }
-
-            return array;
-        }
-
-        /// <summary>
-        /// Pads an array with a specified value for a specified length.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="array">The array to pad.</param>
-        /// <param name="paddingLength">The length of the padding.</param>
-        /// <param name="padValue">The value to pad the array.</param>
-        /// <param name="suffix">Indicates whether the padding should be suffixed or prefixed. 
-        /// By default this value is false; therefore, we prefix the padding.</param>
-        /// <returns>A new padded array.</returns>
-        public static T[] Pad<T>(T[] array, int paddingLength, T padValue, bool suffix = false)
-        {
-            T[] padding = MakeFilled(padValue, paddingLength);
-            T[] result = suffix ? Combine(array, padding) : Combine(padding, array);
 
             return result;
         }

@@ -24,7 +24,6 @@ namespace NetworkCryptography.Core.Logging
     /// <summary>
     /// Event for when a message is logged using the logger.
     /// </summary>
-    /// <param name="sender"></param>
     /// <param name="args"></param>
     public delegate void MessageLoggedEventHandler(MessagedLoggerEventArgs args);
 

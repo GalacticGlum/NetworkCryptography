@@ -3,43 +3,58 @@
  * File Name: DesCryptographicMethod.cs
  * Project Name: NetworkCryptography
  * Creation Date: 9/19/2017
- * Modified Date: 10/21/2017
+ * Modified Date: 10/22/2017
  * Description: An implementation of the DES cryptographic method.
  */
 
 using System;
-using System.Collections;
 using NetworkCryptography.Core.DataStructures;
 using NetworkCryptography.Core.Helpers;
 
 namespace NetworkCryptography.Core
 {
-    /// Permutation constants (and explanations) are taken from https://en.wikipedia.org/wiki/DES_supplementary_material
-
     /// <summary>
     /// Data Encryption Standard cryptography method.
     /// </summary>
-    public class DesCryptographicMethod : FiestelCryptographicMethod
+    public class DesCryptographicMethod
     {
         /// <summary>
-        /// The amount of rounds used in DES.
+        /// Represents two halves of a data block. 
+        /// This is only used internally inside the <see cref="DesCryptographicMethod"/>.
         /// </summary>
-        public new const int Rounds = 16;
-        
-        /// <summary>
-        /// The size of a block in DES.
-        /// </summary>
-        public new const int BlockSize = 64;
+        private struct Block
+        {
+            /// <summary>
+            /// The left half of the block.
+            /// </summary>
+            public ulong Left { get; set; }
+
+            /// <summary>
+            /// The right half of the block.
+            /// </summary>
+            public ulong Right { get; set; }
+
+            /// <summary>
+            /// Initializes a <see cref="Block"/> with left and right values.
+            /// </summary>
+            /// <param name="left"></param>
+            /// <param name="right"></param>
+            public Block(ulong left, ulong right)
+            {
+                Left = left;
+                Right = right;
+            }
+        }
 
         /// <summary>
-        /// Size of a key block.
+        /// Amount of rounds to perform.
         /// </summary>
-        private const int KeyBlockSize = 56;
+        public const int Rounds = 16;
 
         /// <summary>
-        /// This table specifies the input permutation on a 64-bit block.
+        /// Initial permuation table.
         /// </summary>
-        private static readonly Permutation InitialPermuation = new[]
+        private static readonly int[] InitialPermutation =
         {
             58, 50, 42, 34, 26, 18, 10, 2,
             60, 52, 44, 36, 28, 20, 12, 4,
@@ -54,7 +69,7 @@ namespace NetworkCryptography.Core
         /// <summary>
         /// Final permutation table. This is the inverse of the initial permutation table.
         /// </summary>
-        private static readonly Permutation FinalPermuation = new[]
+        private static readonly int[] FinalPermutation =
         {
             40, 8, 48, 16, 56, 24, 64, 32,
             39, 7, 47, 15, 55, 23, 63, 31,
@@ -69,7 +84,7 @@ namespace NetworkCryptography.Core
         /// <summary>
         /// The expansion function table.
         /// </summary>
-        private static readonly Permutation ExpansionFunction = new[]
+        private static readonly int[] Expansion =
         {
             32, 1, 2, 3, 4, 5,
             4, 5, 6, 7, 8, 9,
@@ -82,20 +97,24 @@ namespace NetworkCryptography.Core
         };
 
         /// <summary>
-        /// The P permutation table shuffles the bits of a 32-bit half-block.
+        /// Permutation table.
         /// </summary>
-        private static readonly Permutation RoundPermutation = new[]
+        private static readonly int[] ShufflePermutation =
         {
-            16, 7, 20, 21, 29, 12, 28, 17,
-            1, 15, 23, 26, 5, 18, 31, 10,
-            2, 8 , 24, 14, 32, 27, 3, 9,
-            19, 13, 30, 6, 22, 11, 4, 25
+            16, 7, 20, 21,
+            29, 12, 28, 17,
+            1, 15, 23, 26,
+            5, 18, 31, 10,
+            2, 8, 24, 14,
+            32, 27, 3, 9,
+            19, 13, 30, 6,
+            22, 11, 4, 25
         };
 
         /// <summary>
         /// The first permuted choice table.
         /// </summary>
-        private static readonly Permutation PermuationChoice1 = new[]
+        private static readonly int[] PermutationChoice1 =
         {
             57, 49, 41, 33, 25, 17, 9,
             1, 58, 50, 42, 34, 26, 18,
@@ -110,7 +129,7 @@ namespace NetworkCryptography.Core
         /// <summary>
         /// The second permuted choice table.
         /// </summary>
-        private static readonly Permutation PermutedChoice2 = new[]
+        private static readonly int[] PermutedChoice2 =
         {
             14, 17, 11, 24, 1, 5,
             3, 28, 15, 6, 21, 10,
@@ -122,223 +141,298 @@ namespace NetworkCryptography.Core
             46, 42, 50, 36, 29, 32
         };
 
-        ///// <summary>
-        ///// Substitution boxes.
-        ///// </summary>
-        private static readonly Substitution[] SubstitutionBoxes =
+        /// <summary>
+        /// Substitution boxes.
+        /// </summary>
+        private static readonly byte[,] SubstitutionBoxes =
         {
-            // Substitution box 1 (S1)
-            new[]
+            // Substitution box 1.
             {
-                new byte[] { 14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7 },
-                new byte[] { 0, 15, 7, 4, 14, 2, 13, 1, 10, 6, 12, 11, 9, 5, 3, 8 },
-                new byte[] { 4, 1, 14, 8, 13, 6, 2, 11, 15, 12, 9, 7, 3, 10, 5, 0 },
-                new byte[] { 15, 12, 8, 2, 4, 9, 1, 7, 5, 11, 3, 14, 10, 0, 6, 13 }
+                14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7,
+                0, 15, 7, 4, 14, 2, 13, 1, 10, 6, 12, 11, 9, 5, 3, 8,
+                4, 1, 14, 8, 13, 6, 2, 11, 15, 12, 9, 7, 3, 10, 5, 0,
+                15, 12, 8, 2, 4, 9, 1, 7, 5, 11, 3, 14, 10, 0, 6, 13
             },
 
-            // Substitution box 2 (S2)
-            new[]
+            // Substitution box 2.
             {
-                new byte[] { 15, 1, 8, 14, 6, 11, 3, 4, 9, 7, 2, 13, 12, 0, 5, 10 },
-                new byte[] { 3, 13, 4, 7, 15, 2, 8, 14, 12, 0, 1, 10, 6, 9, 11, 5 },
-                new byte[] { 0, 14, 7, 11, 10, 4, 13, 1, 5, 8, 12, 6, 9, 3, 2, 15 },
-                new byte[] { 13, 8, 10, 1, 3, 15, 4, 2, 11, 6, 7, 12, 0, 5, 14, 9 }
+                15, 1, 8, 14, 6, 11, 3, 4, 9, 7, 2, 13, 12, 0, 5, 10,
+                3, 13, 4, 7, 15, 2, 8, 14, 12, 0, 1, 10, 6, 9, 11, 5,
+                0, 14, 7, 11, 10, 4, 13, 1, 5, 8, 12, 6, 9, 3, 2, 15,
+                13, 8, 10, 1, 3, 15, 4, 2, 11, 6, 7, 12, 0, 5, 14, 9
             },
 
-            // Substitution box 3 (S3)
-            new[]
+            // Substitution box 3.
             {
-                new byte[] { 10, 0, 9, 14, 6, 3, 15, 5, 1, 13, 12, 7, 11, 4, 2, 8 },
-                new byte[] { 13, 7, 0, 9, 3, 4, 6, 10, 2, 8, 5, 14, 12, 11, 15, 1 },
-                new byte[] { 13, 6, 4, 9, 8, 15, 3, 0, 11, 1, 2, 12, 5, 10, 14, 7 },
-                new byte[] { 1, 10, 13, 0, 6, 9, 8, 7, 4, 15, 14, 3, 11, 5, 2, 12 }
+                10, 0, 9, 14, 6, 3, 15, 5, 1, 13, 12, 7, 11, 4, 2, 8,
+                13, 7, 0, 9, 3, 4, 6, 10, 2, 8, 5, 14, 12, 11, 15, 1,
+                13, 6, 4, 9, 8, 15, 3, 0, 11, 1, 2, 12, 5, 10, 14, 7,
+                1, 10, 13, 0, 6, 9, 8, 7, 4, 15, 14, 3, 11, 5, 2, 12
             },
 
-            // Substitution box 4 (S4)
-            new[]
+            // Substitution box 4.
             {
-                new byte[] { 7, 13, 14, 3, 0, 6, 9, 10, 1, 2, 8, 5, 11, 12, 4, 15 },
-                new byte[] { 13, 8, 11, 5, 6, 15, 0, 3, 4, 7, 2, 12, 1, 10, 14, 9 },
-                new byte[] { 10, 6, 9, 0, 12, 11, 7, 13, 15, 1, 3, 14, 5, 2, 8, 4 },
-                new byte[] { 3, 15, 0, 6, 10, 1, 13, 8, 9, 4, 5, 11, 12, 7, 2, 14 }
+                7, 13, 14, 3, 0, 6, 9, 10, 1, 2, 8, 5, 11, 12, 4, 15,
+                13, 8, 11, 5, 6, 15, 0, 3, 4, 7, 2, 12, 1, 10, 14, 9,
+                10, 6, 9, 0, 12, 11, 7, 13, 15, 1, 3, 14, 5, 2, 8, 4,
+                3, 15, 0, 6, 10, 1, 13, 8, 9, 4, 5, 11, 12, 7, 2, 14
             },
 
-            // Substitution box 5 (S5)
-            new[]
+            // Substitution box 5.
             {
-                new byte[] { 2, 12, 4, 1, 7, 10, 11, 6, 8, 5, 3, 15, 13, 0, 14, 9 },
-                new byte[] { 14, 11, 2, 12, 4, 7, 13, 1, 5, 0, 15, 10, 3, 9, 8, 6 },
-                new byte[] { 4, 2, 1, 11, 10, 13, 7, 8, 15, 9, 12, 5, 6, 3, 0, 14 },
-                new byte[] { 11, 8, 12, 7, 1, 14, 2, 13, 6, 15, 0, 9, 10, 4, 5, 3 }
+                2, 12, 4, 1, 7, 10, 11, 6, 8, 5, 3, 15, 13, 0, 14, 9,
+                14, 11, 2, 12, 4, 7, 13, 1, 5, 0, 15, 10, 3, 9, 8, 6,
+                4, 2, 1, 11, 10, 13, 7, 8, 15, 9, 12, 5, 6, 3, 0, 14,
+                11, 8, 12, 7, 1, 14, 2, 13, 6, 15, 0, 9, 10, 4, 5, 3
             },
 
-            // Substitution box 6 (S6)
-            new[]
+            // Substitution box 6.
             {
-                new byte[] { 12, 1, 10, 15, 9, 2, 6, 8, 0, 13, 3, 4, 14, 7, 5, 11 },
-                new byte[] { 10, 15, 4, 2, 7, 12, 9, 5, 6, 1, 13, 14, 0, 11, 3, 8 },
-                new byte[] { 9, 14, 15, 5, 2, 8, 12, 3, 7, 0, 4, 10, 1, 13, 11, 6 },
-                new byte[] { 4, 3, 2, 12, 9, 5, 15, 10, 11, 14, 1, 7, 6, 0, 8, 13 }
+                12, 1, 10, 15, 9, 2, 6, 8, 0, 13, 3, 4, 14, 7, 5, 11,
+                10, 15, 4, 2, 7, 12, 9, 5, 6, 1, 13, 14, 0, 11, 3, 8,
+                9, 14, 15, 5, 2, 8, 12, 3, 7, 0, 4, 10, 1, 13, 11, 6,
+                4, 3, 2, 12, 9, 5, 15, 10, 11, 14, 1, 7, 6, 0, 8, 13
             },
 
-            // Substitution box 7 (S7)
-            new[]
+            // Substitution box 7.
             {
-                new byte[] { 4, 11, 2, 14, 15, 0, 8, 13, 3, 12, 9, 7, 5, 10, 6, 1 },
-                new byte[] { 13, 0, 11, 7, 4, 9, 1, 10, 14, 3, 5, 12, 2, 15, 8, 6 },
-                new byte[] { 1, 4, 11, 13, 12, 3, 7, 14, 10, 15, 6, 8, 0, 5, 9, 2 },
-                new byte[] { 6, 11, 13, 8, 1, 4, 10, 7, 9, 5, 0, 15, 14, 2, 3, 12 }
+                4, 11, 2, 14, 15, 0, 8, 13, 3, 12, 9, 7, 5, 10, 6, 1,
+                13, 0, 11, 7, 4, 9, 1, 10, 14, 3, 5, 12, 2, 15, 8, 6,
+                1, 4, 11, 13, 12, 3, 7, 14, 10, 15, 6, 8, 0, 5, 9, 2,
+                6, 11, 13, 8, 1, 4, 10, 7, 9, 5, 0, 15, 14, 2, 3, 12
             },
 
-            // Substitution box 8 (S8)
-            new[]
+            // Substitution box 8.
             {
-                new byte[] { 13, 2, 8, 4, 6, 15, 11, 1, 10, 9, 3, 14, 5, 0, 12, 7 },
-                new byte[] { 1, 15, 13, 8, 10, 3, 7, 4, 12, 5, 6, 11, 0, 14, 9, 2 },
-                new byte[] { 7, 11, 4, 1, 9, 12, 14, 2, 0, 6, 10, 13, 15, 3, 5, 8 },
-                new byte[] { 2, 1, 14, 7, 4, 10, 8, 13, 15, 12, 9, 0, 3, 5, 6, 11 }
+                13, 2, 8, 4, 6, 15, 11, 1, 10, 9, 3, 14, 5, 0, 12, 7,
+                1, 15, 13, 8, 10, 3, 7, 4, 12, 5, 6, 11, 0, 14, 9, 2,
+                7, 11, 4, 1, 9, 12, 14, 2, 0, 6, 10, 13, 15, 3, 5, 8,
+                2, 1, 14, 7, 4, 10, 8, 13, 15, 12, 9, 0, 3, 5, 6, 11
             }
         };
 
         /// <summary>
         /// The round left shifts.
         /// </summary>
-        private static int[] LeftShifts =
-        {
-            1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1
-        };
+        private static readonly int[] KeyRotations = { 1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1 };
 
         /// <summary>
-        /// Initializes a <see cref="DesCryptographicMethod"/> with a specified <paramref name="keys"/>.
+        /// The key to use for encryption and decryption.
         /// </summary>
-        /// <param name="keys"></param>
-        public DesCryptographicMethod(byte[] keys) : base(keys, Rounds, BlockSize)
-        {          
+        public ulong Key { get; }
+
+        /// <summary>
+        /// The random service provider.
+        /// </summary>
+        private readonly Random random = new Random();
+
+        /// <summary>
+        /// Initializes a new <see cref="DesCryptographicMethod"/> with a key.
+        /// </summary>
+        /// <param name="key"></param>
+        public DesCryptographicMethod(ulong key)
+        {
+            Key = key;
         }
 
         /// <summary>
-        /// Perform the initial permutation on the <paramref name="cipherText"/>.
+        /// Encrypt plaintext.
         /// </summary>
-        /// <param name="cipherText"></param>
-        protected override void InitialPermutation(BitSet cipherText) => InitialPermuation.Permute(cipherText);
+        /// <param name="plaintext">The plaintext to encrypt.</param>
+        /// <returns>A <see cref="PaddedBuffer"/> representing the ciphertext.</returns>
+        public PaddedBuffer Encrypt(string plaintext) => EncryptBlocks(new PaddedBuffer(plaintext));
 
         /// <summary>
-        /// Perform the final permutation on the <paramref name="cipherText"/>.
+        /// Encrypt a <see cref="PaddedBuffer"/> representing blocks of plaintext.
         /// </summary>
-        /// <param name="cipherText"></param>
-        protected override void FinalPermutation(BitSet cipherText) => FinalPermuation.Permute(cipherText);
-
-        /// <summary>
-        /// Perform a DES round.
-        /// </summary>
-        /// <param name="right"></param>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        protected override BitSet Round(BitSet right, BitSet key)
+        /// <param name="plaintext">The <see cref="PaddedBuffer"/> of blocks.</param>
+        /// <returns>A <see cref="PaddedBuffer"/> representing the ciphertext.</returns>
+        private PaddedBuffer EncryptBlocks(PaddedBuffer plaintext)
         {
-            BitSet roundBuffer = (BitSet)right.Clone();
-            ExpansionFunction.Permute(roundBuffer);
+            // Initialize the input buffer and copy the data from plaintext into it.
+            BlockBuffer inputBuffer = new BlockBuffer(plaintext.Count + 1);
+            inputBuffer.BlockCopy(plaintext.Data, 0, 1, plaintext.Count);
 
-            roundBuffer ^= key;
-            BitSet substitutionBuffer = new BitSet(BlockSize / 2);
-            for (int i = 0; i < SubstitutionBoxes.Length; i++)
-            { 
-                int start = i * Substitution.InputBlockSize;
-                BitSet bitsToSubstitute = roundBuffer.GetBits(start, start + Substitution.InputBlockSize);
-                SubstitutionBoxes[i].Substitute(bitsToSubstitute);
+            // Generate a random block of data to be used as the first block.
+            // Since we don't know the initialization vector on decryption, the first
+            // block of data will be corrupted. In order to circumvent this,
+            // if our first block of data is one that is irrelevant then it doesn't matter.
+            inputBuffer.Set(0, CryptographyHelper.GenerateRandomBlock(BlockBuffer.BlockSize));
 
-                substitutionBuffer.CopyFrom(i * Substitution.OutputBlockSize, bitsToSubstitute, bitsToSubstitute.Count);
+            BlockBuffer outputBuffer = new BlockBuffer(inputBuffer.Count);
+            ulong currentBlock = CryptographyHelper.GenerateRandomBlock(BlockBuffer.BlockSize);
+            for (int i = 0; i < inputBuffer.Count; i++)
+            {
+                ulong block = inputBuffer[i];
+                block ^= currentBlock;
+
+                currentBlock = Cipher(block, true);
+                outputBuffer[i] = currentBlock;
             }
 
-            RoundPermutation.Permute(roundBuffer);
-            return roundBuffer;
+            plaintext.Data = outputBuffer;
+            return plaintext;
         }
 
         /// <summary>
-        /// Calculates the encryption key for a specified round.
+        /// Decrypt ciphertext.
         /// </summary>
-        /// <param name="key"></param>
-        /// <param name="round"></param>
-        /// <returns></returns>
-        protected override BitSet GetEncryptionKey(BitSet key, int round)
-        {
-            const int halfKeyBlockSize = KeyBlockSize / 2;
-            return GetRoundKey(key, round, (leftBuffer, rightBuffer) =>
-            {
-                switch (round)
-                {
-                    case 0:
-                    case 1:
-                    case 8:
-                    case 15:
-                        leftBuffer.LeftCircularShft(1, halfKeyBlockSize);
-                        rightBuffer.LeftCircularShft(1, halfKeyBlockSize);
-                        break;
-                    default:
-                        leftBuffer.LeftCircularShft(2, halfKeyBlockSize);
-                        leftBuffer.LeftCircularShft(2, halfKeyBlockSize);
-                        break;
-                }
-            });
-        }
+        /// <param name="ciphertext">The ciphertext to decrypt.</param>
+        /// <returns>A string representing the plaintext.</returns>
+        public string Decrypt(PaddedBuffer ciphertext) => DecryptBlocks(ciphertext).ToString();
 
         /// <summary>
-        /// Calculates the decryption key for a specified round.
+        /// Decrypt a <see cref="PaddedBuffer"/> representing blocks of ciphertext.
         /// </summary>
-        /// <param name="key"></param>
-        /// <param name="round"></param>
-        /// <returns></returns>
-        protected override BitSet GetDecryptionKey(BitSet key, int round)
+        /// <param name="ciphertext">The ciphertext to decrypt.</param>
+        /// <returns>A <see cref="PaddedBuffer"/> representing the plaintext.</returns>
+        private PaddedBuffer DecryptBlocks(PaddedBuffer ciphertext)
         {
-            const int halfKeyBlockSize = KeyBlockSize / 2;
-            return GetRoundKey(key, round, (leftBuffer, rightBuffer) =>
-            {
-                switch (round)
-                {
-                    case 0:
-                        // Do nothing if it's the 0-th round.
-                        break;
-                    case 1:
-                    case 8:
-                    case 15:
-                        leftBuffer.RightCircularShft(1, halfKeyBlockSize);
-                        rightBuffer.RightCircularShft(1, halfKeyBlockSize);
-                        break;
-                    default:
-                        leftBuffer.RightCircularShft(2, halfKeyBlockSize);
-                        leftBuffer.RightCircularShft(2, halfKeyBlockSize);
-                        break;
-                }
-            });
-        }
+            BlockBuffer outputBuffer = new BlockBuffer(ciphertext.Count - 1);
+            ulong currentBlock = ciphertext[0];
 
-        /// <summary>
-        /// Calculates a key for a specific round with a specified rotation function.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="round"></param>
-        /// <param name="rotate"></param>
-        /// <returns></returns>
-        private static BitSet GetRoundKey(BitSet key, int round, Action<BitSet, BitSet> rotate)
-        {
-            if (round == 0)
+            for (int i = 1; i < ciphertext.Count; i++)
             {
-                PermuationChoice1.Permute(key);
+                ulong block = ciphertext[i];
+                ulong decoded = Cipher(block, false);
+                ulong plaintextBuffer = currentBlock ^ decoded;
+
+                currentBlock = block;
+                outputBuffer[i - 1] = plaintextBuffer;
             }
 
-            const int halfKeyBlockSize = KeyBlockSize / 2;
-            BitSet leftBuffer = key.GetBits(0, halfKeyBlockSize);
-            BitSet rightBuffer = key.GetBits(halfKeyBlockSize, KeyBlockSize);
+            ciphertext.Data = outputBuffer;
+            return ciphertext;
+        }
 
-            rotate(leftBuffer, rightBuffer);
+        /// <summary>
+        /// Perform a DES cipher.
+        /// </summary>
+        /// <param name="block">The block of data to perform the cipher on.</param>
+        /// <param name="isEncrypting">Indicates whether we should encrypt or decrypt the block of data.</param>
+        /// <returns></returns>
+        public ulong Cipher(ulong block, bool isEncrypting)
+        {
+            ulong initialPermutation = BitHelper.Permute(block, InitialPermutation);
+            var schedule = GetKeySchedule(Key);
 
-            key.CopyFrom(0, leftBuffer, halfKeyBlockSize);
-            key.CopyFrom(halfKeyBlockSize, rightBuffer, halfKeyBlockSize);
+            const ulong leftHalfMask = 0xFFFFFFFF00000000;
+            const ulong rightHalfMask = 0x00000000FFFFFFFF;
 
-            BitSet roundKey = (BitSet)key.Clone();
-            PermutedChoice2.Permute(roundKey);
+            Block currentBlock = new Block
+            {
+                Left = initialPermutation & leftHalfMask,
+                Right = (initialPermutation & rightHalfMask) << 32
+            };
 
-            return roundKey;
+            if (isEncrypting)
+            {
+                for (int i = 0; i < Rounds; i++)
+                {
+                    currentBlock = StepRound(schedule[i + 1], currentBlock);
+                }
+            }
+            else
+            {
+                // When we are decrypting, we want to go the opposite direction in blocks.
+                for (int i = Rounds - 1; i >= 0; i--)
+                {
+                    currentBlock = StepRound(schedule[i + 1], currentBlock);
+                }
+            }
+
+            ulong joined = currentBlock.Right | (currentBlock.Left >> 32);
+            return BitHelper.Permute(joined, FinalPermutation);
+        }
+
+        /// <summary>
+        /// Perform an individual DES round.
+        /// </summary>
+        /// <param name="roundKey">The key to use for tihs round.</param>
+        /// <param name="block">The block of data.</param>
+        /// <returns>The block of data after this round.</returns>
+        private Block StepRound(ulong roundKey, Block block)
+        {
+            return new Block
+            {
+                Left = block.Right,
+                Right = block.Left ^ Round(block.Right, roundKey)
+            };
+        }
+
+        /// <summary>
+        /// The f(k, r): round calulation function based on the right half of a block and a key.
+        /// </summary>
+        /// <param name="right">The right half of a block.</param>
+        /// <param name="roundKey">The key to use for this round.</param>
+        /// <returns>The right half of data after round calculation.</returns>
+        public ulong Round(ulong right, ulong roundKey)
+        {
+            ulong expansion = BitHelper.Permute(right, Expansion);
+            ulong x = expansion ^ roundKey;
+
+            // Split our data into 8 6-bit values to make the substitution easier.
+            byte[] bytes = BitHelper.Split48(x);
+            ulong substitutionBox = 0;
+
+            // For each substitution box, perform a lookup; there are 8 boxes.
+            for (int i = 0; i < 8; i++)
+            {
+                substitutionBox <<= 4;
+                substitutionBox |= LookupSubstitutionBox(bytes[i], i);
+            }
+
+            substitutionBox <<= 32;
+            return BitHelper.Permute(substitutionBox, ShufflePermutation);
+        }
+
+        /// <summary>
+        /// Retrieves the key schedule for a key.
+        /// </summary>
+        /// <param name="key">The key to retrieve the key schedule for.</param>
+        /// <returns>The key schedule.</returns>
+        public ulong[] GetKeySchedule(ulong key)
+        {
+            ulong permutation = BitHelper.Permute(key, PermutationChoice1);
+            ulong left = BitHelper.GetLeftHalfOf56Block(permutation);
+            ulong right = BitHelper.GetRightHalfOf56Block(permutation);
+
+            // Initialize our schedule so we have a block to "work with."
+            Block[] schedule = new Block[KeyRotations.Length + 1];
+            schedule[0] = new Block { Left = left, Right = right };
+
+            for (int i = 1; i <= KeyRotations.Length; i++)
+            {
+                schedule[i] = new Block
+                {
+                    Left = BitHelper.LeftShift56(schedule[i - 1].Left, KeyRotations[i - 1]),
+                    Right = BitHelper.LeftShift56(schedule[i - 1].Right, KeyRotations[i - 1])
+                };
+            }
+
+            // Join our key schedules into final values and permute them by the second permutation choice.
+            ulong[] result = new ulong[schedule.Length];
+            for (int i = 0; i < schedule.Length; i++)
+            {
+                ulong joined = BitHelper.JoinHalvesInto56(schedule[i].Left, schedule[i].Right);
+                ulong permuted = BitHelper.Permute(joined, PermutedChoice2);
+
+                result[i] = permuted;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Lookup a substitution box based on a value and table index.
+        /// </summary>
+        /// <param name="value">The value used for substitution.</param>
+        /// <param name="table">The index of the substitution table.</param>
+        /// <returns></returns>
+        public static byte LookupSubstitutionBox(byte value, int table)
+        {
+            int index = ((value & 0x80) >> 2) | ((value & 0x04) << 2) | ((value & 0x78) >> 3);
+            return SubstitutionBoxes[table, index];
         }
     }
 }

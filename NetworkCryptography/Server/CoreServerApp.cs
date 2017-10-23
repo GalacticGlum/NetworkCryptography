@@ -88,26 +88,6 @@ namespace NetworkCryptography.Server
         {
             Logger.Destination = LoggerDestination.All;
 
-            string message = "In cryptography, a Feistel cipher is a symmetric structure used in the construction of block ciphers, " +
-                               "named after the German-born physicist and cryptographer Horst Feistel who did pioneering research while " +
-                               "working for IBM (USA); it is also commonly known as a Feistel network. A large proportion of block ciphers " +
-                               "use the scheme, including the Data Encryption Standard (DES). The Feistel structure has the advantage that " +
-                               "encryption and decryption operations are very similar, even identical in some cases, requiring only a reversal " +
-                               "of the key schedule. Therefore, the size of the code or circuitry required to implement such a cipher is nearly " +
-                               "halved.\r\n\r\nA Feistel network is an iterated cipher with an internal function called a round function.[1]";
-
-            RsaKeySet keys = new RsaKeySet(65537, 1919621681, 2114731571);
-
-            RsaCryptographicMethod rsa = new RsaCryptographicMethod(keys);
-            int[] ciphertext = rsa.Encrypt(message);
-            ciphertext.Print();
-            string plaintext = rsa.Decrypt(ciphertext);
-            Logger.Log(plaintext);
-
-            //PaddedBuffer ciphertext = CBCDes.Encrypt(message, 67);
-            //string plaintext = CBCDes.Decrypt(ciphertext, 67);
-            //Logger.Log(plaintext);
-
             Server = new Server(port);
             Server.Start();
 

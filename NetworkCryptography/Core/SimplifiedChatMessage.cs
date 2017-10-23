@@ -4,8 +4,7 @@
  * Project Name: NetworkCryptography
  * Creation Date: 10/20/2017
  * Modified Date: 10/20/2017
- * Description: A chat message which only stores essential data; 
- *              which can be used to reconsruct the message.
+ * Description: A chat message which only stores essential data; which can be used to reconsruct the message.
  */
 namespace NetworkCryptography.Core
 {

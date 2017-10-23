@@ -23,6 +23,6 @@ namespace NetworkCryptography.Client
         /// <param name="leeway">The threshold of extra space recognized as the bottom.</param>
         /// <returns></returns>
         public static bool IsScrolledToBottom(this ScrollViewer scrollViewer, int leeway = 80) => 
-            scrollViewer.VerticalOffset >= scrollViewer.ScrollableHeight - leeway;
+scrollViewer.VerticalOffset >= scrollViewer.ScrollableHeight - leeway;
     }
 }
