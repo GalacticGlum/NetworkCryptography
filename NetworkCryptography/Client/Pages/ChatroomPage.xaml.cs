@@ -7,10 +7,12 @@
  * Description: Interaction logic for ChatroomPage.xaml
  */
 
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using MaterialDesignThemes.Wpf;
 
 namespace NetworkCryptography.Client.Pages
 {
@@ -99,6 +101,17 @@ namespace NetworkCryptography.Client.Pages
             // "Jump to present" - scroll to our latest item (the bottom).
             ScrollViewer scrollViewer = (ScrollViewer)VisualTreeHelper.GetChild(MessageItems, 0);
             scrollViewer.ScrollToBottom();
+        }
+
+        /// <summary>
+        /// Handle the click event of the settings button.
+        /// Opens the settings dialog panel.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnSettingsButtonClicked(object sender, RoutedEventArgs e)
+        {
+            SettingsDialogPanel.IsOpen = true;
         }
     }
 }
