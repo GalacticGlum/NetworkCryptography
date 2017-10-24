@@ -8,6 +8,8 @@
  */
 
 using System;
+using System.Data.SqlTypes;
+using System.IO;
 
 namespace NetworkCryptography.Core.DataStructures
 {
@@ -69,6 +71,26 @@ namespace NetworkCryptography.Core.DataStructures
         }
 
         /// <summary>
+        /// Initializes a <see cref="PaddedBuffer"/> with a specified array of bytes.
+        /// </summary>
+        /// <param name="data"></param>
+        public PaddedBuffer(byte[] data)
+        {
+            using (MemoryStream stream = new MemoryStream(data, false))
+            {
+                byte[] blockData = new byte[data.Length - sizeof(int)];
+                stream.Read(blockData, 0, blockData.Length);
+
+                Data = new BlockBuffer(blockData);
+
+                byte[] paddingLengthBytes = new byte[sizeof(int)];
+                stream.Read(paddingLengthBytes, 0, paddingLengthBytes.Length);
+
+                PaddingLength = BitConverter.ToInt32(paddingLengthBytes, 0);
+            }
+        }
+
+        /// <summary>
         /// Converts the <see cref="PaddedBuffer"/> to a string value performing any unpadding if necessary.
         /// </summary>
         /// <returns></returns>
@@ -88,6 +110,24 @@ namespace NetworkCryptography.Core.DataStructures
 
             int dataLength = Data.Count * BlockBuffer.BlockSizeForString - PaddingLength;
             return result.Substring(0, dataLength);
+        }
+
+        /// <summary>
+        /// Converts the <see cref="PaddedBuffer"/> to an array of bytes.
+        /// </summary>
+        public byte[] ToBytes()
+        {
+            // We want our BlockBuffer data and also the length of the padding applied to the data so we can unpad.
+            using (MemoryStream stream = new MemoryStream(Data.Count * BlockBuffer.BlockSize + sizeof(int)))
+            {
+                byte[] dataBytes = Data.ToBytes();
+                stream.Write(dataBytes, 0, dataBytes.Length);
+
+                byte[] paddingLengthInBytes = BitConverter.GetBytes(PaddingLength);
+                stream.Write(paddingLengthInBytes, 0, paddingLengthInBytes.Length);
+
+                return stream.ToArray();
+            }
         }
     }
 }

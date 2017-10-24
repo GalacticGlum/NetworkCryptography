@@ -11,6 +11,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 
 namespace NetworkCryptography.Core.DataStructures
@@ -100,6 +101,29 @@ namespace NetworkCryptography.Core.DataStructures
         }
 
         /// <summary>
+        /// Initializes a <see cref="BlockBuffer"/> with a specified array of bytes.
+        /// It is assumed that the specified byte[] does not need to be paded and has a length
+        /// which is a multiple of 8.
+        /// </summary>
+        /// <param name="data"></param>
+        public BlockBuffer(byte[] data)
+        {
+            using (MemoryStream stream = new MemoryStream(data, false))
+            {
+                int blockLength = data.Length / BlockSize;
+                blocks = new ulong[blockLength];
+
+                for (int i = 0; i < blockLength; i++)
+                {
+                    byte[] blockBytes = new byte[BlockSize];
+                    stream.Read(blockBytes, 0, blockBytes.Length);
+
+                    blocks[i] = BitConverter.ToUInt64(blockBytes, 0);
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets the element at the specified index.
         /// </summary>
         /// <param name="index">The index of the element.</param>
@@ -168,5 +192,22 @@ namespace NetworkCryptography.Core.DataStructures
         /// Returns an enumerator that iterates through the <see cref="BlockBuffer"/>.
         /// </summary>
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        /// <summary>
+        /// Converts the <see cref="BlockBuffer"/> to an array of bytes.
+        /// </summary>
+        public byte[] ToBytes()
+        {
+            using (MemoryStream stream = new MemoryStream())
+            {
+                foreach (ulong block in blocks)
+                {
+                    byte[] blockBytes = BitConverter.GetBytes(block);
+                    stream.Write(blockBytes, 0, blockBytes.Length);
+                }
+
+                return stream.ToArray();
+            }
+        }
     }
 }

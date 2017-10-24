@@ -7,6 +7,8 @@
  * Description: RSA scheme cryptography implementation.
  */
 
+using System;
+using System.IO;
 using System.Numerics;
 using NetworkCryptography.Core.DataStructures;
 
@@ -15,7 +17,7 @@ namespace NetworkCryptography.Core
     /// <summary>
     /// RSA scheme cryptography implementation.
     /// </summary>
-    public class RsaCryptographicMethod 
+    public class RsaCryptographicMethod : ICryptographicMethod
     {
         /*
          * This implementation of RSA is not very secure - quite so.
@@ -48,17 +50,20 @@ namespace NetworkCryptography.Core
         /// Encrypt plaintext.
         /// </summary>
         /// <param name="plaintext">The plaintext to encrypt.</param>
-        /// <returns>An array of integers containing the ciphertext.</returns>
-        public int[] Encrypt(string plaintext)
+        /// <returns>An array of bytes containing the ciphertext.</returns>
+        public byte[] Encrypt(string plaintext)
         {
-            int[] ciphertext = new int[plaintext.Length];
-            for (int i = 0; i < ciphertext.Length; i++)
+            using (MemoryStream stream = new MemoryStream())
             {
-                BigInteger result = BigInteger.ModPow((int)plaintext[i], keys.PublicExponent, keys.Modulus);
-                ciphertext[i] = (int) result;
-            }
+                foreach (char character in plaintext)
+                {
+                    BigInteger result = BigInteger.ModPow((int)character, keys.PublicExponent, keys.Modulus);
+                    byte[] bytes = BitConverter.GetBytes((int)result);
+                    stream.Write(bytes, 0, bytes.Length);
+                }
 
-            return ciphertext;
+                return stream.ToArray();
+            }
         }
 
         /// <summary>
@@ -66,16 +71,24 @@ namespace NetworkCryptography.Core
         /// </summary>
         /// <param name="ciphertext">The ciphertext to decrypt.</param>
         /// <returns>A string value representing the plaintext.</returns>
-        public string Decrypt(int[] ciphertext)
+        public string Decrypt(byte[] ciphertext)
         {
-            string plaintext = string.Empty;
-            foreach (int value in ciphertext)
+            using (MemoryStream stream = new MemoryStream(ciphertext, false))
             {
-                BigInteger result = BigInteger.ModPow(value, keys.PrivateExponent, keys.Modulus);
-                plaintext += (char) result;
-            }
+                string plaintext = string.Empty;
+                for (int i = 0; i < ciphertext.Length / sizeof(int); i++)
+                {
+                    byte[] buffer = new byte[sizeof(int)];
+                    stream.Read(buffer, 0, buffer.Length);
 
-            return plaintext;
+                    int value = BitConverter.ToInt32(buffer, 0);
+                    BigInteger result = BigInteger.ModPow(value, keys.PrivateExponent, keys.Modulus);
+
+                    plaintext += Convert.ToChar((int)result);
+                }
+
+                return plaintext;
+            }
         }
     }
 }

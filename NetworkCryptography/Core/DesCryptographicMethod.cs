@@ -16,7 +16,7 @@ namespace NetworkCryptography.Core
     /// <summary>
     /// Data Encryption Standard cryptography method.
     /// </summary>
-    public class DesCryptographicMethod
+    public class DesCryptographicMethod : ICryptographicMethod
     {
         /// <summary>
         /// Represents two halves of a data block. 
@@ -240,7 +240,10 @@ namespace NetworkCryptography.Core
         /// </summary>
         /// <param name="plaintext">The plaintext to encrypt.</param>
         /// <returns>A <see cref="PaddedBuffer"/> representing the ciphertext.</returns>
-        public PaddedBuffer Encrypt(string plaintext) => EncryptBlocks(new PaddedBuffer(plaintext));
+        public byte[] Encrypt(string plaintext)
+        {
+            return EncryptBlocks(new PaddedBuffer(plaintext)).ToBytes();
+        }
 
         /// <summary>
         /// Encrypt a <see cref="PaddedBuffer"/> representing blocks of plaintext.
@@ -279,7 +282,11 @@ namespace NetworkCryptography.Core
         /// </summary>
         /// <param name="ciphertext">The ciphertext to decrypt.</param>
         /// <returns>A string representing the plaintext.</returns>
-        public string Decrypt(PaddedBuffer ciphertext) => DecryptBlocks(ciphertext).ToString();
+        public string Decrypt(byte[] ciphertext)
+        {
+            PaddedBuffer buffer = new PaddedBuffer(ciphertext);
+            return DecryptBlocks(buffer).ToString();
+        }
 
         /// <summary>
         /// Decrypt a <see cref="PaddedBuffer"/> representing blocks of ciphertext.

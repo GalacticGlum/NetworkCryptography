@@ -21,7 +21,7 @@ namespace NetworkCryptography.Core
         /// <summary>
         /// The message.
         /// </summary>
-        public string Message { get; }
+        public byte[] Message { get; }
 
         /// <summary>
         /// The time the message was sent in a binary format.
@@ -34,7 +34,7 @@ namespace NetworkCryptography.Core
         /// <param name="userId"></param>
         /// <param name="message"></param>
         /// <param name="timeInBinary"></param>
-        public SimplifiedChatMessage(int userId, string message, long timeInBinary)
+        public SimplifiedChatMessage(int userId, byte[] message, long timeInBinary)
         {
             UserId = userId;
             Message = message;

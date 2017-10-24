@@ -19,13 +19,13 @@ namespace NetworkCryptography.Core
         /// </summary>
         /// <param name="plaintext">The plain text to encrypt.</param>
         /// <returns>The encrypted message.</returns>
-        string Encrypt(string plaintext);
+        byte[] Encrypt(string plaintext);
 
         /// <summary>
         /// Decrypt the encrypted message string.
         /// </summary>
-        /// <param name="encryptedMessage">The chiper text to decrypt.</param>
+        /// <param name="ciphertext">The chiper text to decrypt.</param>
         /// <returns>The decrypted message.</returns>
-        string Decrypt(string encryptedMessage);
+        string Decrypt(byte[] ciphertext);
     }
 }

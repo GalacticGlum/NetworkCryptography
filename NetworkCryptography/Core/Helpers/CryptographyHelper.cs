@@ -9,6 +9,7 @@
 
 using System;
 using System.Security.Cryptography;
+using NetworkCryptography.Core.DataStructures;
 
 namespace NetworkCryptography.Core.Helpers
 {
@@ -33,9 +34,9 @@ namespace NetworkCryptography.Core.Helpers
                 case CryptographyMethodType.Caesar:
                     return new CaeserCryptographicMethod();
                 case CryptographyMethodType.DES:
-                    return null;
+                    return new DesCryptographicMethod(89);
                 case CryptographyMethodType.RES:
-                    return null;
+                    return new RsaCryptographicMethod(new RsaKeySet(3079, 487, 5767));
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }

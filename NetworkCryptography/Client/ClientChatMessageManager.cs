@@ -60,17 +60,9 @@ namespace NetworkCryptography.Client
         /// <param name="processForCommand"></param>
         private void OnChatMessageReceived(ChatMessage chatMessage, bool processForCommand = true)
         {
-            // We don't encrypt local messages so we shouldn't try to decrypt them either.
-            string decryptedMessage = chatMessage.Message;
-            if (chatMessage.User.Id != CoreClientApp.Client.UserManager.BelongingUser.Id)
-            {
-                // Decrypt our message
-                decryptedMessage = CoreClientApp.CryptographicEngine.Decrypt(chatMessage.Message);
-            }
-
             // Process the chat message for any commands.
             // Since we still need to process the command text we run the processor but don't actually execute the actions.
-            ChatMessage processedChatMessage = ChatCommandProcessor.Process(new ChatMessage(chatMessage.User, decryptedMessage, chatMessage.Time), processForCommand);          
+            ChatMessage processedChatMessage = ChatCommandProcessor.Process(chatMessage, processForCommand);          
             ChatMessageReceived?.Invoke(this, new ChatMessageEventArgs(processedChatMessage));
         }
 
@@ -90,15 +82,17 @@ namespace NetworkCryptography.Client
         /// <param name="message">The message to send.</param>
         public void SendMessage(string message)
         {
-            // Encrypt our message
-            string encryptedMessage = CoreClientApp.CryptographicEngine.Encrypt(message);
+            DateTime messageTime = DateTime.Now;
 
-            ChatMessage encryptedChatMessage = new ChatMessage(CoreClientApp.Client.UserManager.BelongingUser, encryptedMessage, DateTime.Now);
+            // Encrypt our message
+            byte[] encryptedMessage = CoreClientApp.CryptographicEngine.Encrypt(message);
+            SimplifiedChatMessage encryptedChatMessage = new SimplifiedChatMessage(CoreClientApp.Client.UserManager.BelongingUser.Id, encryptedMessage, messageTime.ToBinary());
 
             NetBuffer messageBuffer = CoreClientApp.Client.CreatePacket(ClientOutgoingPacketType.SendMessage);
-            messageBuffer.Write(encryptedChatMessage.User.Id);
+            messageBuffer.Write(encryptedChatMessage.UserId);
+            messageBuffer.Write(encryptedChatMessage.Message.Length);
             messageBuffer.Write(encryptedChatMessage.Message);
-            messageBuffer.Write(encryptedChatMessage.Time.ToBinary());
+            messageBuffer.Write(encryptedChatMessage.TimeInBinary);
             CoreClientApp.Client.Send(messageBuffer, NetDeliveryMethod.ReliableOrdered);
 
             /*
@@ -108,7 +102,7 @@ namespace NetworkCryptography.Client
              *      
              * Since this is raising the event locally, there is no reason to encrypt our message so let's send the original.
              */          
-            OnChatMessageReceived(new ChatMessage(encryptedChatMessage.User, message, encryptedChatMessage.Time));
+            OnChatMessageReceived(new ChatMessage(CoreClientApp.Client.UserManager.BelongingUser, message, messageTime));
         }
 
         /// <summary>
@@ -118,15 +112,12 @@ namespace NetworkCryptography.Client
         /// <param name="args"></param>
         private void HandleRelayMessage(object sender, PacketRecievedEventArgs args)
         {
-            int userId = args.Message.ReadInt32();
+            SimplifiedChatMessage message = ReadMessageFromNetwork(args.Message);
 
             // If the user id sent is our user id then there is no reason to continue as we have already handled this message locally.
-            if (userId == CoreClientApp.Client.UserManager.BelongingUser.Id) return;
+            if (message.UserId == CoreClientApp.Client.UserManager.BelongingUser.Id) return;
 
-            string message = args.Message.ReadString();
-            long time = args.Message.ReadInt64();
-
-            if (!TryParseFromSimplified(new SimplifiedChatMessage(userId, message, time), out ChatMessage chatMessage)) return;
+            if (!TryParseFromSimplified(message, out ChatMessage chatMessage)) return;
             OnChatMessageReceived(chatMessage);
         }
 
@@ -137,18 +128,28 @@ namespace NetworkCryptography.Client
         /// <param name="args"></param>
         private void HandleMessageHistory(object sender, PacketRecievedEventArgs args)
         {
-            Logger.LogFunctionEntry();
-
             int count = args.Message.ReadInt32();
             for (int i = 0; i < count; i++)
             {
-                int userId = args.Message.ReadInt32();
-                string message = args.Message.ReadString();
-                long time = args.Message.ReadInt64();
-
-                if(!TryParseFromSimplified(new SimplifiedChatMessage(userId, message, time), out ChatMessage chatMessage)) continue;
+                SimplifiedChatMessage message = ReadMessageFromNetwork(args.Message);
+                if(!TryParseFromSimplified(message, out ChatMessage chatMessage)) continue;
                 OnChatMessageReceived(chatMessage, false);
             }
+        }
+
+        /// <summary>
+        /// Reads a <see cref="SimplifiedChatMessage"/> from a <see cref="NetBuffer"/>.
+        /// </summary>
+        /// <param name="buffer">The <see cref="NetBuffer"/> to read from.</param>
+        /// <returns>The read-in <see cref="SimplifiedChatMessage"/>.</returns>
+        private static SimplifiedChatMessage ReadMessageFromNetwork(NetBuffer buffer)
+        {
+            int userId = buffer.ReadInt32();
+            int messageLength = buffer.ReadInt32();
+            byte[] message = buffer.ReadBytes(messageLength);
+            long time = buffer.ReadInt64();
+
+            return new SimplifiedChatMessage(userId, message, time);
         }
 
         /// <summary>
@@ -159,13 +160,13 @@ namespace NetworkCryptography.Client
         private static bool TryParseFromSimplified(SimplifiedChatMessage simplifiedChatMessage, out ChatMessage chatMessage)
         {
             chatMessage = null;
-            if (string.IsNullOrEmpty(simplifiedChatMessage?.Message)) return false;
+            if (simplifiedChatMessage.Message.Length <= 0) return false;
 
             User user = CoreClientApp.Client.UserManager[simplifiedChatMessage.UserId];
             if (user == null) return false;
 
             DateTime time = DateTime.FromBinary(simplifiedChatMessage.TimeInBinary);
-            chatMessage = new ChatMessage(user, simplifiedChatMessage.Message, time);
+            chatMessage = new ChatMessage(user, CoreClientApp.CryptographicEngine.Decrypt(simplifiedChatMessage.Message), time);
 
             return true;
         }

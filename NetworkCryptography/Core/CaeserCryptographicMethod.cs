@@ -7,6 +7,8 @@
  * Description: An implementation of the Caeser Chiper cryptography method.
  */
 
+using System.Text;
+
 namespace NetworkCryptography.Core
 {
     /// <summary>
@@ -44,13 +46,21 @@ namespace NetworkCryptography.Core
         /// </summary>
         /// <param name="plaintext">The plain text message to encrypt.</param>
         /// <returns>The encrypted message.</returns>
-        public string Encrypt(string plaintext) => Shift(plaintext, ShiftOffset);
+        public byte[] Encrypt(string plaintext)
+        {
+            string ciphertext = Shift(plaintext, ShiftOffset);
+            return Encoding.Unicode.GetBytes(ciphertext);
+        }
 
         /// <summary>
         /// Decrypt the encrypted message string using Caeser Cipher.
         /// </summary>
-        /// <param name="encryptedMessage">The cipher text to decrypt.</param>
+        /// <param name="ciphertext">The cipher text to decrypt.</param>
         /// <returns>The decrypted plain text.</returns>
-        public string Decrypt(string encryptedMessage) => Shift(encryptedMessage, -ShiftOffset);
+        public string Decrypt(byte[] ciphertext)
+        {
+            string ciphertextString = Encoding.Unicode.GetString(ciphertext);
+            return Shift(ciphertextString, -ShiftOffset);
+        }
     }
 }

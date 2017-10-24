@@ -62,6 +62,7 @@ namespace NetworkCryptography.Server
             foreach (SimplifiedChatMessage chatMessage in messages)
             {
                 messageBuffer.Write(chatMessage.UserId);
+                messageBuffer.Write(chatMessage.Message.Length);
                 messageBuffer.Write(chatMessage.Message);
                 messageBuffer.Write(chatMessage.TimeInBinary);
             }
@@ -77,7 +78,8 @@ namespace NetworkCryptography.Server
         private void HandleNewMessage(object sender, PacketRecievedEventArgs args)
         {
             int userId = args.Message.ReadInt32();
-            string message = args.Message.ReadString();
+            int messageLength = args.Message.ReadInt32();
+            byte[] message = args.Message.ReadBytes(messageLength);
             long time = args.Message.ReadInt64();
 
             SimplifiedChatMessage chatMessage = new SimplifiedChatMessage(userId, message, time);
@@ -95,6 +97,7 @@ namespace NetworkCryptography.Server
         {
             NetBuffer messageBuffer = CoreServerApp.Server.CreatePacket(ServerOutgoingPacketType.RelayMessage);
             messageBuffer.Write(message.UserId);
+            messageBuffer.Write(message.Message.Length);
             messageBuffer.Write(message.Message);
             messageBuffer.Write(message.TimeInBinary);
 
@@ -106,18 +109,6 @@ namespace NetworkCryptography.Server
         /// </summary>
         /// <param name="chatMessage">The message to add.</param>
         public void Add(SimplifiedChatMessage chatMessage) => messages.Add(chatMessage);
-
-        /// <summary>
-        /// Adds a new <see cref="SimplifiedChatMessage"/> from a specified id, message, and time to the manager database.
-        /// </summary>
-        /// <param name="userId">The id of the user.</param>
-        /// <param name="message">The message.</param>
-        /// <param name="time">The time that the message was sent.</param>
-        public void Add(int userId, string message, long time)
-        {
-            SimplifiedChatMessage chatMessage = new SimplifiedChatMessage(userId, message, time);
-            messages.Add(chatMessage);
-        }
 
         /// <summary>
         /// Removes a <see cref="SimplifiedChatMessage"/> with the specified index.
