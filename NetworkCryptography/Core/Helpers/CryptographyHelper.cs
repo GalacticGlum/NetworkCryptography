@@ -43,12 +43,13 @@ namespace NetworkCryptography.Core.Helpers
         }
 
         /// <summary>
-        /// Generate a block of bytes.
+        /// Generate a random block of bytes with a specified length.
         /// </summary>
+        /// <param name="length">The length of the block to generate.</param>
         /// <returns></returns>
-        public static ulong GenerateRandomBlock(int bytes)
+        public static ulong GenerateRandomBlock(int length)
         {
-            byte[] password = new byte[bytes];
+            byte[] password = new byte[length];
             using (RNGCryptoServiceProvider randomCryptoService = new RNGCryptoServiceProvider())
             {
                 randomCryptoService.GetBytes(password);
