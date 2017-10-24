@@ -321,7 +321,7 @@ namespace NetworkCryptography.Core
         private ulong Cipher(ulong block, bool isEncrypting)
         {
             ulong initialPermutation = BitHelper.Permute(block, InitialPermutation);
-            var schedule = GetKeySchedule(Key);
+            ulong[] schedule = GetKeySchedule(Key);
 
             const ulong leftHalfMask = 0xFFFFFFFF00000000;
             const ulong rightHalfMask = 0x00000000FFFFFFFF;
@@ -375,10 +375,11 @@ namespace NetworkCryptography.Core
         /// <returns>The right half of data after round calculation.</returns>
         public ulong Round(ulong right, ulong roundKey)
         {
+            // Expand the 32-bit block into 48-bit via the expansion permutation.
             ulong expansion = BitHelper.Permute(right, Expansion);
             ulong data = expansion ^ roundKey;
 
-            // Split our data into 8 6-bit values to make the substitution easier.
+            // Split our data into eight 6-bit values for substitution.
             byte[] bytes = BitHelper.Split48(data);
             ulong substitutionBox = 0;
 

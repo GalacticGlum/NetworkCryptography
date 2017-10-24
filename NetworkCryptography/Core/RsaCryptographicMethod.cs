@@ -21,7 +21,7 @@ namespace NetworkCryptography.Core
     {
         /*
          * This implementation of RSA is not very secure - quite so.
-         * Due to variable size limitations (as the ciphertext is much to large for a datatype)
+         * Due to variable size limitations (as the ciphertext and modulus is much to large for a datatype)
          * we encrypt and decrypt every character separately. This should not be done in a 
          * real-world application but is fine for a proof of concept. In addition, all clients
          * share the smae keys which again should not be done practically but is fine for showing

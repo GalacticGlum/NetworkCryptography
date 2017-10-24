@@ -39,14 +39,14 @@ namespace NetworkCryptography.Core.Helpers
         }
 
         /// <summary>
-        /// Retrieves the left half of a 56-bit block.
+        /// Retrieves the left half of a 56-bit block by a 64-bit integer.
         /// </summary>
         /// <param name="block">The 56-bit block.</param>
         /// <returns>The 28-bit left half of the <paramref name="block"/>.</returns>
         public static ulong GetLeftHalfOf56Block(ulong block) => block & LeftHalf64Mask;
 
         /// <summary>
-        /// Retrieves the right half of a 56-bit block.
+        /// Retrieves the right half of a 56-bit block represented by a 64-bit integer.
         /// </summary>
         /// <param name="block">The 56-bit block.</param>
         /// <returns>The 28-bit left half of the <paramref name="block"/>.</returns>
