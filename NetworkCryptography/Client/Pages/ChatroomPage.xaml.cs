@@ -7,13 +7,10 @@
  * Description: Interaction logic for ChatroomPage.xaml
  */
 
-using System.Net.Mime;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using MaterialDesignThemes.Wpf;
 
 namespace NetworkCryptography.Client.Pages
 {
@@ -121,19 +118,18 @@ namespace NetworkCryptography.Client.Pages
             SettingsDialogPanel.IsOpen = true;
         }
 
+        /// <summary>
+        /// Handle the click event of the SelectPhotoButton.
+        /// Opens a file dialog for image selectioon.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnSelectPhotoButtonClicked(object sender, RoutedEventArgs e)
         {
-            var pic = dialogService.OpenFile("Select image file", "Images (*.jpg;*.png)|*.jpg;*.png");
-            if (!string.IsNullOrEmpty(pic))
+            string imageFilepath = dialogService.OpenDialog("Select image file", "Images (*.jpg;*.png)|*.jpg;*.png");
+            if (!string.IsNullOrEmpty(imageFilepath))
             {
-                //var img = MediaTypeNames.Image.FromFile(pic);
-                //if (img.Width > MaxImageWidth || img.Height > MaxImageHeight)
-                //{
-                //    dialogService.ShowNotification($"Image size should be {MaxImageWidth} x {MaxImageHeight} or less.");
-                //    return;
-                //}
-
-                //Photo = pic;
+                // TODO: Read image file bytes and send over network to server.
             }
         }
     }

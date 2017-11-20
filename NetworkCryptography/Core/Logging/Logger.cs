@@ -430,7 +430,7 @@ namespace NetworkCryptography.Core.Logging
         private static int GetLongestVerbosityLength()
         {
             string[] verbosityNames = Enum.GetNames(typeof(LoggerVerbosity));
-            return verbosityNames.OrderByDescending(str => str.Length).First().Length;
+            return verbosityNames.OrderByDescending(name => name.Length).First().Length;
         }
 
         /// <summary>

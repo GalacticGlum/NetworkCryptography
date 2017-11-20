@@ -20,15 +20,15 @@ namespace NetworkCryptography.Core
     public class RsaCryptographicMethod : ICryptographicMethod
     {
         /*
-         * This implementation of RSA is not very secure - quite so.
-         * Due to variable size limitations (as the ciphertext and modulus is much to large for a datatype)
+         * This implementation of RSA is not very secure.
+         * Due to variable size limitations (as the ciphertext and modulus are to large for a data type)
          * we encrypt and decrypt every character separately. This should not be done in a 
          * real-world application but is fine for a proof of concept. In addition, all clients
          * share the smae keys which again should not be done practically but is fine for showing
          * the implementation of RSA.
          * 
          * It is certainly possible to expand this and encrypt blocks instead of a per-character scheme.
-         * Though it will still exposes redundancies in the ciphertext which could be used to break
+         * Though it will still expose redundancies in the ciphertext which could be used to break
          * the cipher.
          */
 

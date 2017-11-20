@@ -101,7 +101,10 @@ namespace NetworkCryptography.Core.DataStructures
             {
                 for (int j = 0; j < BlockBuffer.BlockSizeForString; j++)
                 {
+                    // Get a specific character byte in a block.
                     ulong character = block >> (BlockBuffer.BlockSizeForString - 1 - j) * BlockBuffer.CharacterSizeInBits;
+
+                    // Get the four bits containing the character value.
                     character &= 0xffff;
 
                     result += Convert.ToChar(character);

@@ -44,17 +44,11 @@ namespace NetworkCryptography.Core
         /// <summary>
         /// Start the loop.
         /// </summary>
-        public void Start()
-        {
-            tickTimer.Start();
-        }
+        public void Start() => tickTimer.Start();
 
         /// <summary>
         /// Stop the loop.
         /// </summary>
-        public void Stop()
-        {
-            tickTimer.Stop();
-        }
+        public void Stop() => tickTimer.Stop();
     }
 }

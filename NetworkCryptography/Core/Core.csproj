@@ -68,7 +68,6 @@
     <Compile Include="Data Structures\PaddedBuffer.cs" />
     <Compile Include="Helpers\StringHelper.cs" />
     <Compile Include="ICryptographicMethod.cs" />
-    <Compile Include="Logging\BackendConsole.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Logging\LoggerDestination.cs" />
     <Compile Include="Logging\LoggerVerbosity.cs" />

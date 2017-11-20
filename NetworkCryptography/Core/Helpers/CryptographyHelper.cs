@@ -31,6 +31,8 @@ namespace NetworkCryptography.Core.Helpers
         {
             switch (type)
             {
+                // The keys are hardcoded as this is only to demonstrate the cryptography applications and not
+                // for actual security.
                 case CryptographyMethodType.Caesar:
                     return new CaeserCryptographicMethod();
                 case CryptographyMethodType.DES:

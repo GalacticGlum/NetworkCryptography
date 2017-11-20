@@ -170,7 +170,6 @@
             </DataTemplate>
         </ResourceDictionary>
     </Page.Resources>
-
     <Grid>
         <materialDesign:DialogHost Name="ConnectionDialog" IsOpen="{Binding IsConnecting}">
             <materialDesign:DialogHost.DialogContent>
@@ -203,29 +202,6 @@
                         <client:LoadingSpinnerControl VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="1"
                                                       Margin="0 6 0 0"/>
                     </Grid>
-
-                    <!--<TextBlock>Add a new fruit.</TextBlock>
-                <TextBox Margin="0 8 0 0" HorizontalAlignment="Stretch" x:Name="FruitTextBox" />
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" >
-                    <Button Style="{StaticResource MaterialDesignFlatButton}"
-                            IsDefault="True"
-                            Margin="0 8 8 0"
-                            Command="materialDesign:DialogHost.CloseDialogCommand">
-                        <Button.CommandParameter>
-                            <system:Boolean>True</system:Boolean>
-                        </Button.CommandParameter>
-                        ACCEPT
-                    </Button>
-                    <Button Style="{StaticResource MaterialDesignFlatButton}"
-                            IsCancel="True"
-                            Margin="0 8 8 0"
-                            Command="materialDesign:DialogHost.CloseDialogCommand">
-                        <Button.CommandParameter>
-                            <system:Boolean>False</system:Boolean>
-                        </Button.CommandParameter>
-                        CLOSE
-                    </Button>
-                </StackPanel>-->
                 </StackPanel>
             </materialDesign:DialogHost.DialogContent>
 
@@ -248,8 +224,6 @@
                                         </Grid.OpacityMask>
                                         <Ellipse x:Name="ClipEllipse" Fill="White"/>
                                         <materialDesign:PackIcon Kind="AccountCircle" Width="Auto" Height="Auto" Margin="-12"/>
-                                        <!--<Image Source="{Binding Photo, FallbackValue={StaticResource BlankImage},
-                            TargetNullValue={StaticResource BlankImage}}"/>-->
                                     </Grid>
 
                                     <Button  Style="{StaticResource MaterialDesignFloatingActionMiniDarkButton}"
@@ -264,14 +238,6 @@
                                 </Grid>
                             </Border>
 
-                            <!--Pic-->
-                            <!--
-                            <Grid Margin="1" SnapsToDevicePixels="True">
-                                <Image Source="{StaticResource DefaultUserAvatar}" Stretch="UniformToFill" SnapsToDevicePixels="True" Width="Auto" Height="Auto"
-                                       HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-                            </Grid>-->
-
-                            <!--Name-->
                             <TextBlock Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Left"
                                        Margin="10 5 0 0" TextTrimming="CharacterEllipsis"
                                         SnapsToDevicePixels="True">
@@ -279,18 +245,6 @@
                         <LineBreak />
                         <Run Text="{Binding BelongingUser.Name, Mode=OneWay}" Foreground="DarkSlateGray" FontWeight="Regular" FontSize="14"/>
                             </TextBlock>
-
-                            <!--<Button Grid.Column="1" Style="{StaticResource MaterialDesignFlatButton}"
-                            IsDefault="True"
-                            Margin="-5 5 0 0"
-                            Command="materialDesign:DialogHost.CloseDialogCommand"
-                            HorizontalAlignment="Left" VerticalAlignment="Bottom"
-                            HorizontalContentAlignment="Left">
-                        <Button.CommandParameter>
-                            <system:Boolean>True</system:Boolean>
-                        </Button.CommandParameter>
-                        CHANGE AVATAR
-                    </Button>-->
 
                             <Button Grid.Column="1" Style="{StaticResource MaterialDesignFlatButton}"
                             IsCancel="True"
@@ -304,29 +258,6 @@
                             </Button>
 
                         </Grid>
-
-                        <!--<TextBlock>Add a new fruit.</TextBlock>
-                <TextBox Margin="0 8 0 0" HorizontalAlignment="Stretch" x:Name="FruitTextBox" />
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" >
-                    <Button Style="{StaticResource MaterialDesignFlatButton}"
-                            IsDefault="True"
-                            Margin="0 8 8 0"
-                            Command="materialDesign:DialogHost.CloseDialogCommand">
-                        <Button.CommandParameter>
-                            <system:Boolean>True</system:Boolean>
-                        </Button.CommandParameter>
-                        ACCEPT
-                    </Button>
-                    <Button Style="{StaticResource MaterialDesignFlatButton}"
-                            IsCancel="True"
-                            Margin="0 8 8 0"
-                            Command="materialDesign:DialogHost.CloseDialogCommand">
-                        <Button.CommandParameter>
-                            <system:Boolean>False</system:Boolean>
-                        </Button.CommandParameter>
-                        CLOSE
-                    </Button>
-                </StackPanel>-->
                     </StackPanel>
                 </materialDesign:DialogHost.DialogContent>
 

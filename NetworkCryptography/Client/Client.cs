@@ -30,11 +30,6 @@ namespace NetworkCryptography.Client
         /// </summary>
         public ClientChatMessageManager ChatMessageManager { get; }
 
-        /// <summary>
-        /// The amount of times we have detected not being connected.
-        /// </summary>
-        private int timedOutAmount;
-
         public Client()
         {
             UserManager = new ClientUserManager(Packets);

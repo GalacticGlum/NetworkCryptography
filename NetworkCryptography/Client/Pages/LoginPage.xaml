@@ -17,12 +17,15 @@
                     <RowDefinition Height="160"/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
+                
+                <!-- App logo box -->
                 <materialDesign:ColorZone Mode="Light" Margin="0,0,0,53" VerticalAlignment="Stretch" Background="WhiteSmoke">
                     <Grid HorizontalAlignment="Center" Width="120" Height="120" VerticalAlignment="Center"
                           SnapsToDevicePixels="True">
                         <materialDesign:PackIcon Kind="Airballoon" Width="100" Height="100" Margin="10,10,0,0"/>
                     </Grid>
                 </materialDesign:ColorZone>
+                
                 <Border BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="0,1,0,0" Margin="0,107,0,0"
                         Grid.Row="0" Grid.RowSpan="2">
                     <StackPanel Orientation="Vertical" HorizontalAlignment="Center"
@@ -30,12 +33,15 @@
                         <TextBox x:Name="UsernameTextBox" Width="150" Margin="0,5"
                                  materialDesign:HintAssist.Hint="Username">
 
+                            <!-- Username textbox -->
                             <Binding Path="Username" UpdateSourceTrigger="Default">
                                 <Binding.ValidationRules>
                                     <client:NotEmptyValidationRule ValidatesOnTargetUpdated="False" />
                                 </Binding.ValidationRules>
                             </Binding>
                         </TextBox>
+                        
+                        <!-- IP Address textbox -->
                         <TextBox x:Name="IpAddressTextBox" Width="150" Margin="0,5"
                                  materialDesign:HintAssist.Hint="IP Address">
                             <Binding Path="IpAddress" UpdateSourceTrigger="Default">
@@ -44,6 +50,8 @@
                                 </Binding.ValidationRules>
                             </Binding>
                         </TextBox>
+                        
+                        <!-- Port textbox -->
                         <TextBox x:Name="PortTextBox" Width="150" Margin="0,5"
                                  materialDesign:HintAssist.Hint="Port" PreviewTextInput="ValidatePortText" MaxLength="5">
                             <Binding Path="Port" UpdateSourceTrigger="Default">

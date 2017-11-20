@@ -70,9 +70,9 @@ namespace NetworkCryptography.Core.Helpers
         {
             for (int i = 0; i < count; i++)
             {
-                // Get the most significant bit.
-                ulong msb = value & 0x8000000000000000;
-                value = (value << 1) & 0xFFFFFFE000000000 | msb >> 27;
+                // Get the most significant bit.    
+                ulong mostSignificantBit = value & 0x8000000000000000;
+                value = (value << 1) & 0xFFFFFFE000000000 | mostSignificantBit >> 27;
             }
 
             return value;
